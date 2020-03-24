@@ -3,6 +3,7 @@ import 'package:workmanager/layouts/authenticate/sendResetPasswordEmail.dart';
 import 'package:workmanager/services/auth.dart';
 import 'package:workmanager/shared/constants.dart';
 import 'package:workmanager/shared/loading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget{
 
@@ -54,13 +55,13 @@ class _SignInState extends State<SignIn>{
                 children: <Widget>[
                   SizedBox(height: 30.0),
                   Icon(
-                    Icons.lock_open,
+                    Icons.lock,
                     size: 100.0,
                   ),
                   SizedBox(height: 20.0),
                   TextFormField(
                     autofocus: false,
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                     decoration: textInputDecoration.copyWith(hintText: "Email"),
                     validator: (val) {
                       return val.isEmpty ? "Entrez un email": null;
@@ -72,7 +73,7 @@ class _SignInState extends State<SignIn>{
                   SizedBox(height: 20.0),
                   TextFormField(
                     autofocus: false,
-                    style: TextStyle(color: Colors.black,),
+                    style: TextStyle(color: Colors.white,),
                     decoration: textInputDecoration.copyWith(hintText: "Mot de passe").copyWith(
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -99,7 +100,7 @@ class _SignInState extends State<SignIn>{
                   SizedBox(height: 20.0),
                   RaisedButton(
                     color: Colors.white,
-                    child: Text("Se connecter", style: TextStyle(color: Colors.black)),
+                    child: Icon(Icons.lock_open),
                     onPressed: () async {
                       if(_formKey.currentState.validate()) {
                         setState(() {
@@ -111,6 +112,11 @@ class _SignInState extends State<SignIn>{
                             loading = false;
                             error= "svp entrez un email valide";
                           });
+                        }
+                        else{
+                          final SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.setString(("email"), email);
+                          prefs.setString("password", password);
                         }
                       }
                     },

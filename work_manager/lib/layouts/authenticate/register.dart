@@ -23,6 +23,7 @@ class _RegisterState extends State<Register>{
 
   bool loading =false;
   bool passwordVisible= true;
+  bool check= false;
   String name= '';
   String surname= '';
   String email= '';
@@ -51,13 +52,13 @@ class _RegisterState extends State<Register>{
             children: <Widget>[
               SizedBox(height: 10.0),
               Icon(
-                Icons.add,
+                Icons.account_circle,
                 size: 75.0,
                 semanticLabel: 'rejoins-nous',
               ),
-              SizedBox(height: 10.0),
+              SizedBox(height: 5.0),
               TextFormField(
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
                 decoration: textInputDecoration.copyWith(hintText: "Nom"),
                 validator: (val) {
                   return val.isEmpty ? "veuillez saisir votre nom": null;
@@ -68,7 +69,7 @@ class _RegisterState extends State<Register>{
               ),
               SizedBox(height: 10.0),
               TextFormField(
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
                 decoration: textInputDecoration.copyWith(hintText: "Prenom"),
                 validator: (val) {
                   return val.isEmpty ? "veuillez saisir votre prenom": null;
@@ -79,7 +80,7 @@ class _RegisterState extends State<Register>{
               ),
               SizedBox(height: 10.0),
               TextFormField(
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
                 decoration: textInputDecoration.copyWith(hintText: "Email"),
                 validator: (val) {
                   return val.isEmpty ? "saisissez votre email": null;
@@ -90,7 +91,7 @@ class _RegisterState extends State<Register>{
               ),
               SizedBox(height: 10.0),
               TextFormField(
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
                 decoration: textInputDecoration.copyWith(hintText: "Mot de passe").copyWith(
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -116,7 +117,7 @@ class _RegisterState extends State<Register>{
               ),
               SizedBox(height: 10.0),
               TextFormField(
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
                 decoration: textInputDecoration.copyWith(hintText: "confirmez votre mdp"),
                 validator: (val) {
                   return val != password  ? "mots de passes sont différents": null;
@@ -124,26 +125,39 @@ class _RegisterState extends State<Register>{
                 obscureText: true,
                 onChanged: (val) {}
               ),
-              SizedBox(height: 10.0),
+              SizedBox(height: 5.0),
+              CheckboxListTile(
+                secondary: Text("j'accepte les conditions\n d'utilisation ") ,
+                onChanged: (bool value) => setState(() {check= !check;}),
+                value: check,
+
+              ),
+              SizedBox(height: 0.0),
               RaisedButton(
                 color: Colors.white,
-                child: Text("S'inscrire", style: TextStyle(color: Colors.black)),
+                child: Icon(Icons.send),
                 onPressed: () async {
-                  if(_formKey.currentState.validate()) {
-                    setState(() {
-                      loading = true;
-                    });
-                    dynamic result = await _authService.registerWithEmailAndPassword(email, password);
-                    if (result == null){
+                  if(check) {
+                    if (_formKey.currentState.validate()) {
                       setState(() {
-                        loading = false;
-                        error= "please supply a valid email";
+                        loading = true;
                       });
+                      dynamic result = await _authService.registerWithEmailAndPassword(email, password);
+                      if (result == null) {
+                        setState(() {
+                          loading = false;
+                          error = "email non valide";
+                        });
+                      }
                     }
+                  }else{
+                    setState(() {
+                      error = "acceptez les conditions";
+                    });
                   }
                 },
               ),
-              SizedBox(height: 12.0),
+              SizedBox(height: 5.0),
               Text(
                 error,
                 style: TextStyle(color: Colors.red),
