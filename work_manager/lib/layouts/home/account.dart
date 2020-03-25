@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/layouts/account/account_userIdentity.dart';
+import 'package:workmanager/layouts/account/account_userPassword.dart';
+import 'package:workmanager/services/auth.dart';
 import 'package:workmanager/shared/constants.dart';
 
 class Account extends StatefulWidget {
@@ -11,37 +15,119 @@ class Account extends StatefulWidget {
 
 class _AccountState extends State<Account> {
 
-  final List<String> entries = <String>['A', 'B', 'C'];
-  final List<int> colorCodes = <int>[600, 500, 100];
+  final AuthService _authService = AuthService();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return ListView(
-      padding: const EdgeInsets.all(8),
+    return Column(
       children: <Widget>[
+        Expanded(
+        child: CustomScrollView(
+          primary: false,
+          slivers: <Widget>[
+            SliverPadding(
+              padding: const EdgeInsets.all(20),
+              sliver: SliverGrid.count(
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                crossAxisCount: 2,
+                children: <Widget>[
+                  GestureDetector(
+                    child: Container(
+                      decoration: new BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+                        border: new Border.all(
+                            color: Colors.cyan,
+                            width: 2.0,
+                            style: BorderStyle.solid) ),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(children: <Widget>[
+                        Text("Identité",style: TextStyle(fontSize: 20),),
+                        Icon(Icons.person,size: 50,color: Colors.cyan,),
+                    ],),
+                  ),
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Identity()),
+                    );
+                  },),
+                  Container(
+                    decoration: new BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+                        border: new Border.all(
+                            color: Colors.cyan,
+                            width: 2.0,
+                            style: BorderStyle.solid) ),
+                    padding: const EdgeInsets.all(20),
+                      child: Column(children: <Widget>[
+                        Text("Préférences",style: TextStyle(fontSize: 20)),
+                        Icon(Icons.settings,size: 50,color: Colors.cyan),
+                    ],),
+                  ),
+                    GestureDetector(
+                      child:
+                      Container(
+                        decoration: new BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+                        border: new Border.all(
+                              color: Colors.cyan,
+                              width: 2.0,
+                              style: BorderStyle.solid) ),
+                        padding: const EdgeInsets.all(20),
+                        child: Column(children: <Widget>[
+                         Text("Sécurité",style: TextStyle(fontSize: 20)),
+                         Icon(Icons.lock,size: 50,color: Colors.cyan),
+                        ],),
+                      ),
+                      onTap:() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Password()),
+                        );
+                      },
+                  ),
+                  GestureDetector(
+                    child:Container(
+                    decoration: new BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+                        border: new Border.all(
+                            color: Colors.cyan,
+                            width: 2.0,
+                            style: BorderStyle.solid) ),
+                    padding: const EdgeInsets.all(20),
+                      child: Column(children: <Widget>[
+                        Text("deconnexion",style: TextStyle(fontSize: 18)),
+                        Icon(Icons.power_settings_new,size: 50,color: Colors.cyan),
+                    ],),
+                  ),
+                    onTap: () async {
+                      await _authService.signOut();
+                      _deleteSharedPrefs();
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        ),
         Row(
           children: <Widget>[
-            Text("Profil et réglages",style: TextStyle(fontSize: 17.0,color: Colors.cyan),)
-          ],),
-        Container(
-          height: 50,
-          color: Colors.white,
-          child:  Row(
-              children:<Widget>[Icon(Icons.person), Text('identité')]),
-        ),
-        Container(
-          height: 50,
-          color: Color(0xffe100ff),
-          child: Row(
-              children:<Widget>[Icon(Icons.settings), Text('Préférences')]),
-        ),
-        Container(
-          height: 50,
-          color: Colors.amber[100],
-          child: Row(
-              children:<Widget>[Icon(Icons.lock), Text('Sécutité')]),
-        ),
+            Expanded(child:Icon(Icons.question_answer,color: Colors.cyan,)),
+            Expanded(child:Icon(Icons.lightbulb_outline,color: Colors.cyan)),
+            Expanded(child:Icon(Icons.contacts,color: Colors.cyan))
+          ],
+        )
       ],
     );
   }
+}
+Future<bool> _deleteSharedPrefs() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.clear();
 }

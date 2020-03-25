@@ -119,9 +119,9 @@ class _RegisterState extends State<Register>{
               TextFormField(
                 style: TextStyle(color: Colors.white),
                 decoration: textInputDecoration.copyWith(hintText: "confirmez votre mdp"),
-                validator: (val) {
+                /*validator: (val) {
                   return val != password  ? "mots de passes sont différents": null;
-                },
+                },*/
                 obscureText: true,
                 onChanged: (val) {}
               ),
@@ -142,7 +142,7 @@ class _RegisterState extends State<Register>{
                       setState(() {
                         loading = true;
                       });
-                      dynamic result = await _authService.registerWithEmailAndPassword(email, password);
+                      dynamic result = await _authService.registerWithEmailAndPassword(name,surname,email, password);
                       if (result == null) {
                         setState(() {
                           loading = false;

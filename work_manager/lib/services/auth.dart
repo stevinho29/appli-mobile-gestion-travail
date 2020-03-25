@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:workmanager/models/user.dart';
 
+import 'database.dart';
+
 class AuthService{
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -40,10 +42,11 @@ Future signInWithRegisterAndPassword(String email, String password) async{
 }
 
   // register with email and password
-Future registerWithEmailAndPassword(String email, String password) async{
+Future registerWithEmailAndPassword(String name,String surname,String email, String password) async{
     try{
       AuthResult result=await  _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user= result.user;
+      await DatabaseService(user.uid).createUserData(name, surname,email); // on save le user dans la database
       return _userFromFirebaseUser(user);
     }catch(e){
       print(e);
@@ -68,5 +71,30 @@ Future registerWithEmailAndPassword(String email, String password) async{
       print(e.toString());
       return null;
     }
+  }
+
+  Future<bool> changePassword(String password) async{
+    //Create an instance of the current user.
+    FirebaseUser _user = await _firebaseAuth.currentUser();
+
+    //Pass in the password to updatePassword.
+    try{
+      await _user.updatePassword(password);
+      print("Succesfull changed password");
+      return true;
+    }catch(e)
+    {
+      print("Password can't be changed" + e.toString());
+      return false;
+      //This might happen, when the wrong password is in, the user isn't found, or if the user hasn't logged in recently.
+    }
+    _user.updatePassword(password).then((_){
+      print("Succesfull changed password");
+      return true;
+    }).catchError((error){
+      print("Password can't be changed" + error.toString());
+      return false;
+      //This might happen, when the wrong password is in, the user isn't found, or if the user hasn't logged in recently.
+    });
   }
 }

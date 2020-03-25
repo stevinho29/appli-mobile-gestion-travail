@@ -6,11 +6,17 @@ class User{
 }
 
 class UserData{
-
+  String uid;
   String name;
   String surname;
-  DateTime birthDate;
+  String email;
+  String rue ;
+  String codePostal;
+  int tel;
 
 
-  UserData({this.name,this.surname,this.birthDate});
+
+  UserData({this.uid,this.name,this.surname,this.email,this.rue,this.codePostal,this.tel});
+  UserData.light({this.uid,this.name,this.surname,this.email});
+
 }
