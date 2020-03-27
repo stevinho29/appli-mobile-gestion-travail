@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import 'constants.dart';
+
 
 class Loading extends StatelessWidget {
   @override
@@ -9,7 +9,7 @@ class Loading extends StatelessWidget {
     // TODO: implement build
 
     return Container(
-      color: Colors.cyan,
+      color: Colors.white,
       child: Center(
           child: Column( children: <Widget>[
             Expanded(

@@ -13,10 +13,11 @@ class UserData{
   String rue ;
   String codePostal;
   int tel;
+  bool findable; // whether the user wants to be find by search option or not
+  DateTime createdAt; // date when the user joined our community
 
 
-
-  UserData({this.uid,this.name,this.surname,this.email,this.rue,this.codePostal,this.tel});
+  UserData({this.uid,this.name,this.surname,this.email,this.rue,this.codePostal,this.tel,this.findable,this.createdAt});
   UserData.light({this.uid,this.name,this.surname,this.email});
 
 }

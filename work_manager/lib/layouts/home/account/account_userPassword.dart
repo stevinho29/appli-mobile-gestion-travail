@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:workmanager/layouts/alerts/alert.dart';
 import 'package:workmanager/services/auth.dart';
 
 import 'package:workmanager/shared/constants.dart';
@@ -95,12 +96,16 @@ class _PasswordState extends State<Password>{
                     onPressed: () async {
                       if(_formKey.currentState.validate()){
                           setState(() => loading= true);
-                         _authService.changePassword(password).then((status) {
+                         _authService.changePassword(password).then((status) async {
                            print("statut:  $status ");
-                           if(status)
-                             Navigator.pop(context); // update Ok
-                           else
-                             setState(() => loading= false); // something went wrong
+                           if(status) {
+                             await Alert().goodAlert(context, "mise à jour réussie", "le mot de passe a bien été changé");
+                             Navigator.pop(context);
+                           }
+                           else {
+                             setState(() => loading = false); // something went wrong
+                             Alert().badAlert(context, "mise à jour impossible", "le mot de passe n'a pas pu etre changé\n reconnectez-vous d'abord puis essayez à nouveau ");
+                           }
                          });
 
                       }

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:workmanager/models/user.dart';
 
-import 'database.dart';
+import 'databases/userDao.dart';
 
 class AuthService{
 
@@ -46,7 +46,7 @@ Future registerWithEmailAndPassword(String name,String surname,String email, Str
     try{
       AuthResult result=await  _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user= result.user;
-      await DatabaseService(user.uid).createUserData(name, surname,email); // on save le user dans la database
+      await UserDao(user.uid).createUserData(name, surname,email); // on save le user dans la database
       return _userFromFirebaseUser(user);
     }catch(e){
       print(e);
@@ -88,13 +88,6 @@ Future registerWithEmailAndPassword(String name,String surname,String email, Str
       return false;
       //This might happen, when the wrong password is in, the user isn't found, or if the user hasn't logged in recently.
     }
-    _user.updatePassword(password).then((_){
-      print("Succesfull changed password");
-      return true;
-    }).catchError((error){
-      print("Password can't be changed" + error.toString());
-      return false;
-      //This might happen, when the wrong password is in, the user isn't found, or if the user hasn't logged in recently.
-    });
+
   }
 }

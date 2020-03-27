@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:workmanager/layouts/alerts/alert.dart';
 import 'package:workmanager/models/user.dart';
-import 'package:workmanager/services/database.dart';
+import 'package:workmanager/services/databases/userDao.dart';
 import 'package:workmanager/shared/constants.dart';
 
 
@@ -78,7 +79,8 @@ class _IdentitySettingState extends State<IdentitySetting>{
                               _address['rue']= _rue ?? widget.userData.rue;
                               print("code"+ _address['code_postal']);
                               print("rue"+ _address['rue']);
-                              await DatabaseService(user.uid).updateUserData(widget.userData.name,widget.userData.surname,widget.userData.email,_address,widget.userData.tel);
+                              await UserDao(user.uid).updateUserData(widget.userData.name,widget.userData.surname,widget.userData.email,_address,widget.userData.tel);
+                              await Alert().goodAlert(context, " mise à jour", "l'opération de mise à jour s'est déroulée avec succès");
                               Navigator.pop(context);
                             }
                         }

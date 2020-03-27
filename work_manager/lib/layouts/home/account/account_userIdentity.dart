@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:workmanager/layouts/account/identity_setting_form.dart';
+import 'package:workmanager/layouts/home/account/identity_setting_form.dart';
 import 'package:workmanager/models/user.dart';
-import 'package:workmanager/services/database.dart';
+import 'package:workmanager/services/databases/userDao.dart';
 import 'package:workmanager/shared/loading.dart';
 
 class Identity extends StatefulWidget {
@@ -29,7 +29,7 @@ class _IdentityState extends State<Identity> {
 
     // TODO: implement build
     return StreamBuilder<UserData>(
-        stream: DatabaseService(user.uid).userData,
+        stream: UserDao(user.uid).userData,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             UserData userData = snapshot.data;

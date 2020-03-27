@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
-class Employeur extends StatefulWidget{
+class Propositions extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _EmployeurState();
+    return _PropositionsState();
   }
 
 }
 
-class _EmployeurState extends State<Employeur>{
+class _PropositionsState extends State<Propositions>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Center(child: Text("ses infos en tant qu'employeur")
-    );
+    return Center(child: Text("ListView for propositions is coming"),);
   }
 
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/layouts/account/account_userIdentity.dart';
-import 'package:workmanager/layouts/account/account_userPassword.dart';
+import 'package:workmanager/layouts/home/account/account_userIdentity.dart';
+import 'package:workmanager/layouts/home/account/account_userPassword.dart';
 import 'package:workmanager/services/auth.dart';
-import 'package:workmanager/shared/constants.dart';
+
 
 class Account extends StatefulWidget {
   @override
@@ -22,7 +22,7 @@ class _AccountState extends State<Account> {
     return Column(
       children: <Widget>[
         Expanded(
-        child: CustomScrollView(
+         child: CustomScrollView(
           primary: false,
           slivers: <Widget>[
             SliverPadding(
