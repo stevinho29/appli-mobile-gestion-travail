@@ -29,10 +29,20 @@ class _ContractsOverviewState extends State<ContractsOverview>{
           print("LISTE DE CONTRAT $list");
           if (snapshot.hasData) {
             print("SNAPSHOT $snapshot");
-            return  ContractList(contractList: list);
+            return  Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text("Mes Contrats "),
+              ),
+             body: Container(
+               padding: EdgeInsets.all(20),
+                 child: ContractList(contractList: list))
+            );
           }else
-            return Container(
+            return Scaffold(
+              body:Container(
               child: Text("NO PROPOSITIONS SO FAR"),
+            )
             );
         }
     );

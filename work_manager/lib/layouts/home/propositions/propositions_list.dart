@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:workmanager/layouts/propositions/proposition_tile.dart';
+import 'package:workmanager/layouts/home/propositions/proposition_tile.dart';
 import 'package:workmanager/models/proposition.dart';
 
 

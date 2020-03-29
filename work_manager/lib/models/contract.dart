@@ -24,9 +24,11 @@ class Contract{  // contient des données dénormalisées sur l'employeur et l'e
 
 class Exceptions{ // congés payés, arret maladie and those stuff
   String contratId;   // l'id du contrat auquel l'exception est rattaché
-  String libelle;    // motif
+  String documentId;
+  String motif;    // motif
   DateTime startDate; // date de début de l'exception
   DateTime endDate; // date de fin de l'exception
 
-  Exceptions({this.libelle,this.startDate,this.endDate});
+  Exceptions({this.documentId,this.motif,this.startDate,this.endDate});
 }
+

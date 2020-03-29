@@ -14,7 +14,6 @@ class ContractDao{
       return contractCollection.document(contractData.documentId).updateData({
         'libelle': libelle,
         'price':price,
-        'validate': true,
         'dates': dat,
       });
     }catch(e){
@@ -61,7 +60,37 @@ class ContractDao{
     }
   }
 
-  // liste de propositions
+  Future createContractException(Contract contract, Map<String,DateTime> dat,String motif){
+    try{
+       return contractCollection.document(contract.documentId).collection("exceptions").document().setData({
+          'contratId':contract.documentId,
+          'motif':motif,
+          'startDate':dat['startDate'],
+          'endDate':dat['endDate']
+        });
+    }catch(e){
+      print(e);
+      return null;
+    }
+  }
+  
+  Stream<List<Exceptions>>  getContractExceptions(Contract contract){
+
+   return contractCollection.document(contract.documentId).collection('exceptions').snapshots().map(_fromSnapToExceptions);
+  }
+
+  List<Exceptions> _fromSnapToExceptions(QuerySnapshot snapshot){
+    snapshot.documents.map((doc) {
+      Exceptions(
+        documentId: doc.documentID,
+        motif: doc.data['motif'],
+        startDate: doc.data['startDate'],
+        endDate: doc.data['endDate']
+      );
+    }).toList();
+  }
+
+  // liste de contrats
   Stream<List<Contract>> get getContracts{
 
     Stream<List<Contract>> list= contractCollection.where("employerId",isEqualTo: uid ).snapshots().map(_contractListFromSnapshots);
@@ -105,7 +134,13 @@ class ContractDao{
 
   Future cancelContract(Contract contract){
     try{
+      print("CANCEL CONTRACT ${contract.startDate}");
+      Map<String,DateTime> dat= new Map();
+      dat['startDate']= DateTime.now();
+      dat['endDate']= DateTime.now();
+
       return contractCollection.document(contract.documentId).updateData(({
+        'dates':dat,
         'validate':false
       }));
     }catch(e){

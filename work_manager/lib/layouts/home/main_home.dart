@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:workmanager/layouts/news/main_news.dart';
-import 'package:workmanager/layouts/propositions/main_propositions.dart';
+import 'package:workmanager/layouts/home/news/main_news.dart';
+import 'package:workmanager/layouts/home/propositions/main_propositions.dart';
 
 class MainHome extends StatefulWidget{
   @override

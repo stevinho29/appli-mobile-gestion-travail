@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/layouts/home/home.dart';
+import 'package:workmanager/layouts/home/main_home_layout.dart';
 import 'package:workmanager/models/user.dart';
 
 import 'authenticate/authenticate.dart';

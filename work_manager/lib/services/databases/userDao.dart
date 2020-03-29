@@ -55,7 +55,7 @@ class UserDao{
   //get user to hire data stream
  Stream<List<UserData>> get userTohireData{
     return userCollection.where("uid",isEqualTo: uid).where("findable",isEqualTo: false).snapshots()
-        .map(_HireListFromSnapshot);
+        .map(_hireListFromSnapshot);
 }
 
 // get current user data
@@ -64,7 +64,7 @@ class UserDao{
       return _userDataFromSnapchot(d);
   }
 // user list to hire from snapshot
-   List<UserData> _HireListFromSnapshot(QuerySnapshot snapshot){
+   List<UserData> _hireListFromSnapshot(QuerySnapshot snapshot){
 
     return snapshot.documents.map((doc) {
       print(doc.data['name']);
@@ -99,10 +99,8 @@ class UserDao{
               )).toList();
 
   }
-Future<Stream<List<UserData>>> hireUser() async { // liste de personnes non trouvables
 
-    //return userCollection.where("findable",isEqualTo: false).snapshots();
-}
+
 
   Future<QuerySnapshot> specificHireableUser(String name){  // utilisé
     int pos= name.indexOf(" ");

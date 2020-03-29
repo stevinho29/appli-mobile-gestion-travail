@@ -83,7 +83,6 @@ class PropositionDao{
       senderInfo['senderName']= doc.data['senderInfo']['senderName'];
       senderInfo['senderSurname']= doc.data['senderInfo']['senderSurname'];
       senderInfo['senderEmail']= doc.data['senderInfo']['senderEmail'];
-
       return Proposition(
         documentId: doc.documentID,
         senderId: doc.data['senderId'],

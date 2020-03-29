@@ -78,7 +78,7 @@ class _SearchStationState extends State<SearchStation>{
 
                       UserDao(user.uid).specificHireableUser(_name).then((value) {
                         setState(() {
-                          print("VALUER DE LA LISTE $value");
+                          print("VALEUR DE LA LISTE $value");
                           
                           list = UserDao(user.uid).hireableUserFromQshot(value);
                           isBlank=false;

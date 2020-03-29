@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/layouts/alerts/alert.dart';
-import 'package:workmanager/layouts/propositions/proposition_setting.dart';
+import 'package:workmanager/layouts/home/propositions/proposition_setting.dart';
 import 'package:workmanager/models/proposition.dart';
 import 'package:workmanager/models/user.dart';
 import 'package:workmanager/services/databases/propositionDao.dart';
@@ -184,7 +184,7 @@ class _PropositionsTileState extends State<PropositionTile>{
                         //backgroundImage: ,
                       ),
                       title: Text(widget.propositionsData.libelle),
-                      subtitle: Text(" ${widget.propositionsData.price.toString()} €" ),
+                      subtitle: Text(" ${widget.propositionsData.price.toString()} € / heure" ),
                       trailing: GestureDetector(
                         child: Icon(Icons.expand_more),
                         onTap: () {

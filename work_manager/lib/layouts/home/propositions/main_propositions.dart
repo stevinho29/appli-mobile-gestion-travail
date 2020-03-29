@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:workmanager/layouts/propositions/propositions_list.dart';
+import 'package:workmanager/layouts/home/propositions/propositions_list.dart';
 import 'package:workmanager/models/proposition.dart';
 import 'package:workmanager/models/user.dart';
 import 'package:workmanager/services/databases/propositionDao.dart';

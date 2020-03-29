@@ -13,7 +13,7 @@ class _EmployeState extends State<Employe>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Center(child: Text("ses infos en tant qu'employé")
+    return Center(child: Text("ses infos finances, fiche de paie etc")
     );
   }
 
