@@ -80,6 +80,7 @@ class _RegisterState extends State<Register>{
               ),
               SizedBox(height: 10.0),
               TextFormField(
+                keyboardType: TextInputType.emailAddress,
                 style: TextStyle(color: Colors.white),
                 decoration: textInputDecoration.copyWith(hintText: "Email"),
                 validator: (val) {

@@ -8,7 +8,7 @@ class Alert {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
+          title: Center(child: Text(title)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[

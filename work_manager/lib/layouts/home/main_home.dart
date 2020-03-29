@@ -15,16 +15,36 @@ class _MainHomeState extends State<MainHome>{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
+      padding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
       child: ListView(
       children: <Widget>[
+        Text("Actualités"),
+        SizedBox(height: 10),
         Container(
-          height: 200,
+          decoration: new BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+          border: new Border.all(
+              color: Colors.cyan,
+              width: 2.0,
+              style: BorderStyle.solid) ),
+          height: 180,
           child: News(),
         ),
         SizedBox(height: 10,),
+        Text("Propositions"),
+        SizedBox(height: 10,),
         Container(
-          height: 200,
-          child: Propositions(),
+          padding: EdgeInsets.all(5),
+          decoration: new BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+              border: new Border.all(
+                  color: Colors.cyan,
+                  width: 2.0,
+                  style: BorderStyle.solid) ),
+          height: 180,
+          child: PropositionsOverview(),
         ),
       ],
       )

@@ -20,3 +20,15 @@ class Loading extends StatelessWidget {
     );
   }
 }
+
+class Blank extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+        height: 200,
+        child: Icon(Icons.more_horiz,size: 40,),
+      );
+  }
+
+}

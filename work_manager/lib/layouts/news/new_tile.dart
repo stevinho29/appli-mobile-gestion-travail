@@ -1,13 +1,14 @@
 
 import 'package:flutter/material.dart';
-import 'package:workmanager/layouts/home/work/propositions.dart';
-import 'package:workmanager/models/user.dart';
+import 'package:workmanager/models/proposition.dart';
 
 
-class ItemSearchTile extends StatelessWidget{
 
-  final UserData userData;
-  ItemSearchTile({this.userData});
+
+class NewsTile extends StatelessWidget{
+
+  final Proposition propositionsData;
+  NewsTile({this.propositionsData});
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +24,16 @@ class ItemSearchTile extends StatelessWidget{
               //backgroundColor: Colors.cyan,
               //backgroundImage: ,
             ),
-            title: Text(userData.name),
-            subtitle: Text(userData.surname),
+            title: Text(propositionsData.libelle),
+            subtitle: Text(propositionsData.price.toString()),
           ),
         ) ,
       ),
       onTap: (){
-        Navigator.push(
+        /*Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => PropositionMaker(choosedUser: userData)),
-        );
+        );*/
       },
     );
   }

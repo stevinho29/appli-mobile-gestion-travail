@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/layouts/splashscreen/splash_screen.dart';
 import 'package:workmanager/services/auth.dart';
-import 'layouts/wrapper.dart';
 import 'models/user.dart';
 
 void main() => runApp(MyApp());

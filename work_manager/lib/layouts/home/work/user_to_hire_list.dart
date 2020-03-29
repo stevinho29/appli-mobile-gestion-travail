@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:workmanager/layouts/home/work/user_to_hire_tile.dart';
 import 'package:workmanager/models/user.dart';
-import 'package:workmanager/shared/loading.dart';
+
 
 class HireableUser extends StatefulWidget{
 

@@ -1,33 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'package:workmanager/layouts/propositions/propositions_list.dart';
-import 'package:workmanager/models/proposition.dart';
+import 'package:workmanager/models/contract.dart';
 import 'package:workmanager/models/user.dart';
-import 'package:workmanager/services/databases/propositionDao.dart';
+import 'package:workmanager/services/databases/contractDao.dart';
+
+import 'contract_list.dart';
 
 
-class PropositionsOverview extends StatefulWidget{
+class ContractsOverview extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _PropositionsOverviewState();
+    return _ContractsOverviewState();
   }
 
 }
 
-class _PropositionsOverviewState extends State<PropositionsOverview>{
+class _ContractsOverviewState extends State<ContractsOverview>{
   @override
   Widget build(BuildContext context) {
 
     final user = Provider.of<User>(context);
     // TODO: implement build
-    return StreamBuilder<List<Proposition>>(
-        stream: PropositionDao(uid: user.uid).getPropositions,
+    return StreamBuilder<List<Contract>>(
+        stream: ContractDao(uid: user.uid).getContracts,
         builder: (context, snapshot) {
           List list= snapshot.data;
+          print("LISTE DE CONTRAT $list");
           if (snapshot.hasData) {
-            return  PropositionList(propositionList: list);
+            print("SNAPSHOT $snapshot");
+            return  ContractList(contractList: list);
           }else
             return Container(
               child: Text("NO PROPOSITIONS SO FAR"),

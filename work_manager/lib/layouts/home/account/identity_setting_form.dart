@@ -74,12 +74,11 @@ class _IdentitySettingState extends State<IdentitySetting>{
                         ),
                         onPressed: () async {
                             if(_formKey.currentState.validate()){
-
                               _address['code_postal']= _codePostal ?? widget.userData.codePostal;
                               _address['rue']= _rue ?? widget.userData.rue;
                               print("code"+ _address['code_postal']);
                               print("rue"+ _address['rue']);
-                              await UserDao(user.uid).updateUserData(widget.userData.name,widget.userData.surname,widget.userData.email,_address,widget.userData.tel);
+                              await UserDao(user.uid).updateUserData(widget.userData.name,widget.userData.surname,widget.userData.email,_address,widget.userData.tel,widget.userData.findable);
                               await Alert().goodAlert(context, " mise à jour", "l'opération de mise à jour s'est déroulée avec succès");
                               Navigator.pop(context);
                             }

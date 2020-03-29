@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:workmanager/layouts/home/contract/contract_list.dart';
+import 'package:workmanager/layouts/home/contract/main_contract.dart';
 import 'package:workmanager/layouts/home/work/search_station.dart';
 
 class Work extends StatefulWidget{
@@ -41,7 +43,10 @@ class _WorkState extends State<Work>{
             ),
           ),
             onTap: (){
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContractsOverview()),
+              );
             },
           ),
           SizedBox(height: 10,),
@@ -66,11 +71,16 @@ class _WorkState extends State<Work>{
               ],
             ),
           ),
-            onTap: (){},
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContractsOverview()),
+              );
+            },
           ),
           SizedBox(height: 10,),
           GestureDetector(
-          child:Container(
+            child:Container(
             height: 150,
             decoration: new BoxDecoration(
                 color: Colors.white,

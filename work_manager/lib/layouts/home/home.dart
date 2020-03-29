@@ -19,7 +19,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  final AuthService _authService = AuthService();
   final _controller = PageController(
     initialPage: 1,
   );
