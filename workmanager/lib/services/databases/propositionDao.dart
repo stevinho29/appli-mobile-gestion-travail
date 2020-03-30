@@ -74,8 +74,7 @@ class PropositionDao{
     Map<String,String> receiverInfo=  new Map();
     Map<String,String> senderInfo=  new Map();
     Map<String,DateTime> dat=  new Map();
-    dat['startDate']= DateTime(0000,00,00);
-    dat['endDate']= DateTime(0000,00,00);
+
     return snapshot.documents.map((doc){
       receiverInfo['receiverName']= doc.data['receiverInfo']['receiverName'];
       receiverInfo['receiverSurname']= doc.data['receiverInfo']['receiverSurname'];
@@ -83,12 +82,14 @@ class PropositionDao{
       senderInfo['senderName']= doc.data['senderInfo']['senderName'];
       senderInfo['senderSurname']= doc.data['senderInfo']['senderSurname'];
       senderInfo['senderEmail']= doc.data['senderInfo']['senderEmail'];
+      dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
+      dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
       return Proposition(
         documentId: doc.documentID,
         senderId: doc.data['senderId'],
         receiverId: doc.data['receiverId'],
         libelle: doc.data['libelle'],
-          sendDate:  DateTime(0000,00,00),
+          sendDate:  DateTime.fromMillisecondsSinceEpoch(doc.data['sendDate'].millisecondsSinceEpoch),
         price: doc.data['price'],
         status: doc.data['status'],
         visible: doc.data['visible'],

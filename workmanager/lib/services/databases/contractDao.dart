@@ -93,8 +93,8 @@ class ContractDao{
         contratId: doc.data['contratId'],
         motif: doc.data['motif'],
         price: doc.data['price'],
-        startDate: DateTime.now(),
-        endDate: DateTime.now()
+        startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
+        endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
       );
     }).toList();
   }
@@ -113,9 +113,7 @@ class ContractDao{
   List<Contract> _contractListFromSnapshots(QuerySnapshot snapshot){
     Map<String,String> employerInfo=  new Map();
     Map<String,String> employeeInfo=  new Map();
-    Map<String,DateTime> dat=  new Map();
-    dat['startDate']= DateTime(0000,00,00);
-    dat['endDate']= DateTime(0000,00,00);
+
     return snapshot.documents.map((doc){
       print("je print DOC $doc");
       employeeInfo['employeeName']= doc.data['employeeInfo']['employeeName'];
@@ -127,7 +125,7 @@ class ContractDao{
       employerInfo['employerEmail']= doc.data['employerInfo']['employerEmail'];
 
       return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],
-          doc.data['pricePerHour'],dat['startDate'],dat['endDate'],doc.data['validate'],
+          doc.data['pricePerHour'],DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['validate'],
       employerInfo,employeeInfo);
     }).toList();
   }
@@ -145,7 +143,7 @@ class ContractDao{
     try{
       print("CANCEL CONTRACT ${contract.startDate}");
       Map<String,DateTime> dat= new Map();
-      dat['startDate']= DateTime.now();
+      dat['startDate']= contract.startDate;
       dat['endDate']= DateTime.now();
 
       return contractCollection.document(contract.documentId).updateData(({

@@ -39,9 +39,10 @@ class UserDao{
 
   // user data from snapshot
   UserData _userDataFromSnapchot(DocumentSnapshot snapshot){
+    var millis= snapshot.data['createdAt'];
 
-    print("GET USER TEST ${snapshot.data['name']}");
-    return UserData(  // light version of constructor without the birthDate
+    print("GET USER Time TEST ${DateTime.fromMillisecondsSinceEpoch(millis.millisecondsSinceEpoch)}");
+    return UserData(
         uid: uid,
         name: snapshot.data['name'] ?? 'no name',
         surname: snapshot.data['surname'] ?? 'no surname',
@@ -50,7 +51,7 @@ class UserDao{
         codePostal: snapshot.data['address']['code_postal'] ?? 'no code',
         tel: snapshot.data['tel'] ?? 00000000,
         findable: snapshot.data['findable'],
-        createdAt: DateTime(0000,00,00) //DateTime.fromMillisecondsSinceEpoch(snapshot.data['createdAt'])
+        createdAt: DateTime.fromMillisecondsSinceEpoch(millis.millisecondsSinceEpoch) //DateTime.fromMillisecondsSinceEpoch(snapshot.data['createdAt'])
 
     );
   }
