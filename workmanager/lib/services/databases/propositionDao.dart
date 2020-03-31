@@ -28,7 +28,7 @@ class PropositionDao{
     }
   }
 
-  Future createProposition(UserData choosedUserData,String libelle,int price,Map<String,DateTime> dat) async {
+  Future createProposition(UserData choosedUserData,String libelle,int price,Map<String,DateTime> dat,bool planningVariable) async {
 
     UserData userData = await UserDao(uid).getUserData();
 
@@ -56,6 +56,7 @@ class PropositionDao{
         'dates': dat,
         'senderInfo': senderInfo,
         'receiverInfo': receiverInfo,
+        'planningVariable': planningVariable
       });
     } catch(e) {
       print(e);
@@ -95,7 +96,8 @@ class PropositionDao{
         visible: doc.data['visible'],
         dat: dat,
         senderInfo: senderInfo,
-        receiverInfo: receiverInfo
+        receiverInfo: receiverInfo,
+        planningVariable: doc.data['planningVariable'] ?? false
       );
     }).toList();
   }

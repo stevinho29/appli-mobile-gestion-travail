@@ -200,7 +200,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                             try{
                               dat['startDate'] = _currentStartDate;
                               dat['endDate'] = _currentEndDate;
-                            await PropositionDao(uid: user.uid).createProposition(widget.choosedUser,_currentLibelle, _currentPricePerHour,dat).then((res){
+                            await PropositionDao(uid: user.uid).createProposition(widget.choosedUser,_currentLibelle, _currentPricePerHour,dat,false).then((res){
                               Alert().goodAlert(context, "proposition envoyée", "votre proposition a été envoyée avec succès").then(
                                   (value) => Navigator.pop(context));
                             });

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'package:work_manager/layouts/home/contract/show_contract.dart';
 import 'package:work_manager/models/contract.dart';
 
 import 'package:work_manager/models/user.dart';

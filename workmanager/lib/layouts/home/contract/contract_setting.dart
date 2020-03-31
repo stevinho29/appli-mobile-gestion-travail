@@ -6,7 +6,6 @@ import 'package:work_manager/models/contract.dart';
 
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/contractDao.dart';
-import 'package:work_manager/services/databases/propositionDao.dart';
 import 'package:work_manager/shared/constants.dart';
 
 

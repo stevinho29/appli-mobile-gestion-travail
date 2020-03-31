@@ -22,7 +22,9 @@ class Proposition{  // contient des données dénormalisées sur l'employeur et 
  String status;  // la proposition a t-elle été  ["en attente", "REJETE", "ACCEPTE"]
  bool visible;  // proposition est elle visible(affichable) ou pas
  Map<String,DateTime> dat;  // date de début et de fin du contrat
- Proposition({this.documentId,this.senderId,this.receiverId,this.libelle,this.price,this.sendDate,this.status,this.visible,this.dat,this.senderInfo,this.receiverInfo});
+ bool planningVariable;
+
+ Proposition({this.documentId,this.senderId,this.receiverId,this.libelle,this.price,this.sendDate,this.status,this.visible,this.dat,this.senderInfo,this.receiverInfo,this.planningVariable});
 
 
 

@@ -18,8 +18,10 @@ class Contract{  // contient des données dénormalisées sur l'employeur et l'e
   DateTime startDate;
   DateTime endDate;
   bool validate;   // will determine if its whether editable or not
+  bool planningVariable;
+  List<String> validation;  // wether if the contract need geolcation or QR code for validation
   Exceptions _exceptions;
-    Contract(this.documentId,this.employerId,this.employeeId,this.libelle,this.pricePerHour,this.startDate,this.endDate,this.validate,this.employerInfo,this.employeeInfo);
+    Contract(this.documentId,this.employerId,this.employeeId,this.libelle,this.pricePerHour,this.startDate,this.endDate,this.validate,this.employerInfo,this.employeeInfo,this.planningVariable,this.validation);
 }
 
 class Exceptions{ // congés payés, arret maladie and those stuff

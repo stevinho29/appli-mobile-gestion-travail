@@ -52,6 +52,8 @@ class ContractDao{
         'dates': dat,
         'employerInfo': employerInfo,
         'employeeInfo': employeeInfo,
+        'planningVariable':proposition.planningVariable,
+        'validation': ['geolocation']
       });
 
     } catch(e) {
@@ -126,7 +128,7 @@ class ContractDao{
 
       return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],
           doc.data['pricePerHour'],DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['validate'],
-      employerInfo,employeeInfo);
+      employerInfo,employeeInfo,doc.data['planningVariable'] ??false,doc.data['validation'] ??['geolocation']);
     }).toList();
   }
 
