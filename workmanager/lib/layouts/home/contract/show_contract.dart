@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/layouts/home/contract/Exception_in_contract.dart';
@@ -96,7 +96,7 @@ class _ShowContractState extends State<ShowContract>{
               leading: Icon(Icons.file_download),
               title: Text('télécharger au format pdf'),
               onTap: () async {
-                await Permission.storage.request().then((status) {
+    /*  await Permission.storage.request().then((status) {
                   if(status == PermissionStatus.undetermined || status == PermissionStatus.denied ){
                     Navigator.push(
                       context,
@@ -104,7 +104,7 @@ class _ShowContractState extends State<ShowContract>{
                     );
                   }
                 });
-
+*/
               }
             ),
             ListTile(

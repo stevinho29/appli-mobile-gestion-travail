@@ -47,7 +47,7 @@ class PlanningDao{
 
   // liste de planning
   Stream<List<Planning>>  getPlanning (Contract contract){
-    return planningCollection.where("contratId",isEqualTo: contract.documentId).snapshots().map(_planningListFromSnapshots);
+    return planningCollection.where("contratId",isEqualTo: contract.documentId).orderBy("dates.endDate",descending: true).snapshots().map(_planningListFromSnapshots);
 
   }
 
@@ -61,6 +61,18 @@ class PlanningDao{
       dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
       return Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
     }).toList();
+  }
+  
+  Future<List<Planning>> getPlanningRightNow() async {
+    Map<String,DateTime> dat=  new Map();
+    return planningCollection.where("dates.endDate",isLessThanOrEqualTo: DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+3) ).getDocuments().then((qShot) {
+      return qShot.documents.map((doc) {
+        dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
+        dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
+        return Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
+        }).toList();
+      });
+
   }
 
   Future deletePlanning(Planning planning){
@@ -109,7 +121,7 @@ class PlanningDao{
   // liste de jours contenus dans un planning
 
   Stream<List<Day>>  getDaysOfPlanning (Planning planning){
-    return planningCollection.document(planning.documentId).collection("days").snapshots().map(_dayOfPlanningListFromSnapshots);
+    return planningCollection.document(planning.documentId).collection("days").orderBy("dates.startDate").snapshots().map(_dayOfPlanningListFromSnapshots);
 
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/layouts/home/contract/contract_home.dart';
+import 'package:work_manager/layouts/home/contract/planning/day/main_day.dart';
 
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/planning.dart';
@@ -24,10 +25,21 @@ class PlanningTile extends StatefulWidget{
 }
 class _PlanningTileState extends State<PlanningTile>{
 
+Icon indicator= Icon(Icons.fiber_manual_record,color: Colors.amber,);
 
+
+@override
+void initState() {
+  super.initState();
+  if(widget.planningData.endDate.difference(DateTime.now()).inMilliseconds >0)
+    indicator= Icon(Icons.fiber_manual_record,color: Colors.green);
+  else
+    indicator= Icon(Icons.fiber_manual_record,color: Colors.amber);
+}
 
   @override
   Widget build(BuildContext context) {
+
 
     // TODO: implement build
     final user = Provider.of<User>(context);
@@ -54,6 +66,8 @@ class _PlanningTileState extends State<PlanningTile>{
                             .split(" ")[0]}        fin: ${widget
                             .planningData.endDate.toString().split(
                             " ")[0]}"),
+                        SizedBox(width: 20,),
+                        indicator,
                       ],
                     ),
                     SizedBox(height: 15,),
@@ -77,7 +91,7 @@ class _PlanningTileState extends State<PlanningTile>{
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ContractHome(contract: widget.contractData,)),
+                                MaterialPageRoute(builder: (context) => DayOverview(contract: widget.contractData,planning: widget.planningData)),
                               );
                             },
                           ),
@@ -98,14 +112,21 @@ class _PlanningTileState extends State<PlanningTile>{
                               ]),
                             ),
                             onPressed: () async {
-                              try {
-                                await PlanningDao().deletePlanning(
-                                    widget.planningData).then((value) {
-                                  Alert().goodAlert(context, "planning supprimé", "le planning ${widget.planningData.documentId} a bien été supprimé");
-                                });
-                              }catch(e){
-                                print(e);
-
+                              if(widget.planningData.startDate.difference(DateTime.now()).inMinutes > 0) {
+                                try {
+                                  await PlanningDao().deletePlanning(
+                                      widget.planningData).then((value) {
+                                    Alert().goodAlert(
+                                        context, "planning supprimé",
+                                        "le planning identifié par ${widget
+                                            .planningData
+                                            .documentId} a bien été supprimé");
+                                  });
+                                } catch (e) {
+                                  print(e);
+                                }
+                              }else{
+                                Alert().badAlert(context, "suppression impossible", "le planning est deja entamé et ne peut etre supprimé");
                               }
                             },
                           ),
@@ -147,13 +168,15 @@ class _PlanningTileState extends State<PlanningTile>{
                             .split(" ")[0]}        fin: ${widget
                             .planningData.endDate.toString().split(
                             " ")[0]}"),
+                        SizedBox(width: 20,),
+                        indicator,
                       ],
                     ),
                     SizedBox(height: 15,),
                     Row(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          padding: EdgeInsets.symmetric(horizontal: 85),
                           child: RaisedButton(
                             color: Colors.white,
                             child: Container(
@@ -170,7 +193,7 @@ class _PlanningTileState extends State<PlanningTile>{
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) =>  ContractHome(contract: widget.contractData)),
+                                MaterialPageRoute(builder: (context) =>  DayOverview(contract: widget.contractData,planning: widget.planningData)),
                               );
                             },
                           ),
@@ -189,6 +212,8 @@ class _PlanningTileState extends State<PlanningTile>{
       );
     }
   }
+
+
 
 }
 

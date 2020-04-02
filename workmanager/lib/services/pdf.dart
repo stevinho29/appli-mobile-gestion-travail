@@ -1,22 +1,22 @@
-import 'package:pdf/pdf.dart';
+
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:path_provider/path_provider.dart';
+//import 'package:permission_handler/permission_handler.dart';
 
-class CreatePdf {
+/*class CreatePdf {
   final pdf= pw.Document();
   final Permission permission= Permission.storage;
 
   Future<void> generate() async {
-    /*pdf.addPage(Page(
+    *//*pdf.addPage(Page(
         pageFormat: PdfPageFormat.letter.copyWith(marginBottom: 1.5 * PdfPageFormat.cm),
         build: (Context context) {
           return Center(
             child: Text("Hello World"),
           ); // Center
-        }));*/
+        }));*//*
 
           PermissionWidget(permission);
 
@@ -32,10 +32,10 @@ class CreatePdf {
   }
 
 
-}
+}*/
 /// Example Flutter Application demonstrating the functionality of the
 /// Permission Handler plugin.
-class TestingPermission extends StatelessWidget {
+/*class TestingPermission extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -53,7 +53,7 @@ class TestingPermission extends StatelessWidget {
           ],
         ),
         body: PermissionWidget(Permission.storage),
-        /*Center(
+        *//*Center(
           child: ListView(
               children: Permission.values
                   .where((Permission permission) {
@@ -72,14 +72,14 @@ class TestingPermission extends StatelessWidget {
               })
                   .map((permission) => PermissionWidget(permission))
                   .toList()),
-        ),*/
+        ),*//*
       ),
     );
   }
-}
+}*/
 /// Permission widget which displays a permission and allows users to request
 /// the permissions.
-class PermissionWidget extends StatefulWidget {
+/*class PermissionWidget extends StatefulWidget {
   /// Constructs a [PermissionWidget] for the supplied [Permission].
   const PermissionWidget(this._permission);
 
@@ -153,3 +153,4 @@ class _PermissionState extends State<PermissionWidget> {
     });
   }
 }
+*/

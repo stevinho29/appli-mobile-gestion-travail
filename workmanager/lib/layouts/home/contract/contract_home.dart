@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/layouts/home/contract/planning/create_planning.dart';
 import 'package:work_manager/layouts/home/contract/planning/main_planning.dart';
 import 'package:work_manager/layouts/home/contract/show_contract.dart';
 import 'package:work_manager/models/contract.dart';
+import 'package:work_manager/models/planning.dart';
+import 'package:work_manager/services/databases/planningDao.dart';
 
 class ContractHome extends StatelessWidget{
   Contract contract;
@@ -51,11 +54,11 @@ class ContractHome extends StatelessWidget{
                                   color: Colors.white,
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 30),
+                                        vertical: 5, horizontal: 10),
                                     child: Row(children: <Widget>[
                                       Text("termes du contrat",
                                           style: TextStyle(color: Colors.black87)),
-                                      SizedBox(width: 10,),
+                                      SizedBox(width: 50,),
                                       Icon(Icons.collections,
                                         color: Colors.black87,)
                                     ]),
@@ -88,11 +91,19 @@ class ContractHome extends StatelessWidget{
                                     color: Colors.black87,)
                                 ]),
                               ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => CreatePlanning(contract: contract)),
-                                );
+                              onPressed: () async {
+                                await PlanningDao().getPlanningRightNow().then((list) {
+                                  print("NOMBRE DE PLANNING EN COURS ${list.length}");
+                                 if(list.length > 0){
+                                   Navigator.push(
+                                     context,
+                                     MaterialPageRoute(builder: (context) => CreatePlanning(contract: contract)),
+                                   );
+                                 }else{
+                                   Alert().badAlert(context, "Planning en cours", "un planning est déja entamé. Vous pourrez déclarer un nouveau 3 jours avant la fin de celui-ci");
+                                 }
+                               });
+
                               },
                             ),
                           ),
