@@ -37,7 +37,7 @@ dependencies:
   pdf: ^1.6.0
   path_provider: ^1.6.5
   permission_handler: ^5.0.0
-  workmanager: ^0.2.0
+  #workmanager: ^0.2.0
 
 
 dev_dependencies:

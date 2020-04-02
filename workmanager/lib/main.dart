@@ -3,12 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:work_manager/services/auth.dart';
 import 'layouts/splashscreen/splash_screen.dart';
 import 'models/user.dart';
-import 'package:workmanager/workmanager.dart';
+//import 'package:workmanager/workmanager.dart';
 
 void main() {
 
   runApp(MyApp());
 
+/*
   Workmanager.initialize(callbackDispatcher,isInDebugMode:
   true );// If enabled it will post a notification whenever the task is running. Handy for debugging tasks);
   Workmanager.registerOneOffTask(
@@ -23,6 +24,7 @@ void main() {
       'array': [1, 2, 3],
     },
   );
+*/
 
 
 }
@@ -42,6 +44,7 @@ class MyApp extends StatelessWidget {
 }
 
 
+/*
 void callbackDispatcher() {
   Workmanager.executeTask((task,inputData) {
     switch (task) {
@@ -56,4 +59,4 @@ void callbackDispatcher() {
     //Return true when the task executed successfully or not
     return Future.value(true);
   });
-}
+}*/

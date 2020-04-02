@@ -4,7 +4,7 @@ import 'package:work_manager/models/planning.dart';
 
 class PlanningDao{
 
-  final CollectionReference planningCollection= Firestore.instance.collection("propositions");
+  final CollectionReference planningCollection= Firestore.instance.collection("planning");
 
   Future updatePlanningData(Contract contract,Map<String,DateTime> dat) async {
     try{
@@ -17,14 +17,28 @@ class PlanningDao{
     }
   }
 
-  Future createPlanning(Contract contract,Map<String,DateTime> dat) async {
+  Future createPlanning(Contract contract,Map<String,DateTime> dat, Map<int,DateTime> choosedat,Map<int,bool> chooseDays) async {
 
+    List<int> keys = List();
+    chooseDays.forEach((key, value) {   // je récupère toutes les jours qui ont été sélectionnés
+      if(value)
+        keys.add(key);
+    });
+    print(("JOURS SELECTED ${keys[0]}"));
+    String documentId= DateTime.now().toString();
     try {
       print("create PLANNING");
-      return planningCollection.document().setData({
+       await planningCollection.document(documentId).setData({
         'contratId':contract.documentId,
         'dates': dat,
-      });
+      }).then((value) {
+         for (int i=0 ; i < keys.length;i++) { // on récupère les dates de tous les jours qui ont été sélectionnés
+           print(("KEYS ${keys[i]}"));
+           dat['startDate']= choosedat[keys[i]];
+           dat['endDate']= choosedat[keys[i]];
+           createDayOfPlanning(documentId, dat, "no QR");
+         }
+       });
     } catch(e) {
       print(e);
       return null;
@@ -77,12 +91,12 @@ class PlanningDao{
     }
   }
 
-  Future createDayOfPlanning(Planning planning,Map<String,DateTime> dat,String QR) async {
+  Future createDayOfPlanning(String documentId,Map<String,DateTime> dat,String QR) async {
 
     try {
       print("creating DAY of PLANNING");
-      return planningCollection.document(planning.documentId).collection("days").document().setData({
-        'planningId':planning.documentId,
+      return planningCollection.document(documentId).collection("days").document().setData({
+        'planningId':documentId,
         'dates': dat,
         'QR': QR ?? "no QR"
       });

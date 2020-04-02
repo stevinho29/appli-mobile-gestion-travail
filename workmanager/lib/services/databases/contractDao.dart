@@ -158,14 +158,4 @@ class ContractDao{
     }
   }
 
-  Future acceptProposition(Contract contract){   // not  implemented yet
-    try{
-      return contractCollection.document(contract.documentId).updateData(({
-        'visible':false
-      }));
-    }catch(e){
-      print(e);
-      return null;
-    }
-  }
 }

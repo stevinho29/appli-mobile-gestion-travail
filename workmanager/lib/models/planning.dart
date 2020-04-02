@@ -29,5 +29,5 @@ class Seance{
   DateTime startDate;  // date de début réelle d'une session de travail journalière
   DateTime endDate;     // date de fin du réelle d'une session de travail journalière
   String QR;        // QR code effectivement scanné cette journée 
-Seance(this.documentId,this.dayId,this.dayId,this.startDate,this.endDate);
+Seance(this.documentId,this.dayId,this.startDate,this.endDate,this.QR);
 }

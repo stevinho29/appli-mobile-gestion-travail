@@ -20,31 +20,19 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   final _controller = PageController(
-    initialPage: 1,
+    initialPage: 0,
   );
   static Color _colorActive= Colors.cyan;
   static Color _colorInactive= Colors.grey;
 
-  static int _pagePosition= 1;
-  static int _previousPagePosition;
-
+  Icon actu = Icon(Icons.new_releases,color: _colorActive,key: Key("first"));
+  Icon work = Icon(Icons.work,color: _colorActive,key: Key("second"));
+  Icon balance= Icon(Icons.account_balance,color: Colors.cyan,key: Key("third"));
+  Icon account= Icon(Icons.account_circle,color: Colors.cyan,key: Key("fourth"));
 
   int _currentSlideVal= 100;
 
-  int getPage(int page){
-    _previousPagePosition= _pagePosition;
-    _pagePosition= (page -_previousPagePosition);
-    print(_pagePosition);
-    return _pagePosition;
-
-
-    /*if(_pagePosition > page)
-     return _pagePosition.toDouble()-page.toDouble();
-    else if( _pagePosition < page)
-      return page.toDouble() - _pagePosition.toDouble();
-*/
-  }
-
+  
   @override
   Widget build(BuildContext context) {
 
@@ -62,42 +50,63 @@ class _HomeState extends State<Home> {
                     Row(
                       children: <Widget>[
                         Expanded(
-                        child: GestureDetector(child: Icon(Icons.new_releases,color: _colorActive,key: Key("first")),
+                        child: GestureDetector(child: actu,
                             onTap: (){ setState((){
                               setState(() {
                                 _currentSlideVal= 100;
-                                print(_controller.page);
-                                _controller.jumpTo(0.0);
+                                if ( _controller.hasClients) {
+                                  _controller.animateToPage(
+                                    0,
+                                    duration: const Duration(milliseconds: 400),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
                               });
                             });
                             })),
                         Expanded(
-                            child:GestureDetector(child:Icon(Icons.work,color: Colors.cyan,key: Key("second")),
+                            child:GestureDetector(child:work,
                                 onTap: (){ setState((){
                                   setState(() {
-                                    _currentSlideVal= 100+ 1*100;
-                                    print(_controller.page);
-                                    _controller.jumpTo(.0);
+                                    if (_controller.hasClients) {
+                                      _controller.animateToPage(
+                                        1,
+                                        duration: const Duration(milliseconds: 400),
+                                        curve: Curves.easeInOut,
+                                      );
+                                      actu= Icon(Icons.new_releases,color: _colorInactive,key: Key("first"));
+
+                                    }
                                   });
                                 });
                                 })),
                         Expanded(
-                            child:GestureDetector(child:Icon(Icons.account_balance,color: Colors.cyan,key: Key("third")),
+                            child:GestureDetector(child:balance,
                                 onTap: (){ setState((){
                                   setState(() {
                                     _currentSlideVal= 100+ 2*100;
-                                    print(_controller.page);
-                                    _controller.jumpTo(3.0);
+                                    if (_controller.hasClients) {
+                                      _controller.animateToPage(
+                                        2,
+                                        duration: const Duration(milliseconds: 400),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    }
                                   });
                                 });
                                 })),
                         Expanded(
-                            child:GestureDetector(child:Icon(Icons.account_circle,color: Colors.cyan,key: Key("fourth")),
+                            child:GestureDetector(child:account,
                                 onTap: (){ setState((){
                                   setState(() {
                                     _currentSlideVal= 100+ 3*100;
-                                    print(_controller.page);
-                                    _controller.jumpTo(0.0);
+                                    if (_controller.hasClients) {
+                                      _controller.animateToPage(
+                                        3,
+                                        duration: const Duration(milliseconds: 400),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    }
                                   });
                                 });
                                 }))

@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/layouts/home/contract/contract_home.dart';
 
 import 'package:work_manager/models/contract.dart';
+import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/models/user.dart';
+import 'package:work_manager/services/databases/planningDao.dart';
 
 
 
-class ContractTile extends StatefulWidget{
+class DayTile extends StatefulWidget{
 
-  final Contract contractData;
-  ContractTile({this.contractData});
+  final Day dayData;
+  Contract contractData;
+  DayTile({this.dayData,this.contractData});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _ContractTileState();
+    return _DayTileState();
   }
 
 }
-class _ContractTileState extends State<ContractTile>{
+class _DayTileState extends State<DayTile>{
 
-  bool selected= false;
-  
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -38,36 +42,17 @@ class _ContractTileState extends State<ContractTile>{
 
               },
               child: Container(
-                height: selected ? 75.0 : 175.0,
+                height:  100.0,
                 child: Column(
                   children: <Widget>[
-                    ListTile(
-                      title: Text(widget.contractData.libelle),
-                      subtitle: Text(" ${widget.contractData.pricePerHour.toString()} € / heure" ),
-                      trailing: GestureDetector(
-                        child: Icon(Icons.expand_more),
-                        onTap: () {
-                          setState(() {
-                            selected = !selected;
-                          });
-                        },
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10,),
-                        Text("Prestataire: ${widget.contractData
-                            .employeeInfo['employeeName'].toUpperCase()} "),
-                      ],
-                    ),
                     SizedBox(height: 2,),
                     Row(
                       children: <Widget>[
                         SizedBox(width: 10,),
-                        Text("début: ${widget.contractData.startDate
+                        Text("heure début: ${widget.dayData.startDate
                             .toString()
-                            .split(" ")[0]}        fin: ${widget
-                            .contractData.endDate.toString().split(
+                            .split(" ")[0]}        heure fin: ${widget
+                            .dayData.endDate.toString().split(
                             " ")[0]}"),
                       ],
                     ),
@@ -75,7 +60,7 @@ class _ContractTileState extends State<ContractTile>{
                     Row(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 85),
+                          padding: EdgeInsets.symmetric(horizontal: 15),
                           child: RaisedButton(
                             color: Colors.white,
                             child: Container(
@@ -85,7 +70,7 @@ class _ContractTileState extends State<ContractTile>{
                                 Text("consulter",
                                     style: TextStyle(color: Colors.black87)),
                                 SizedBox(width: 5,),
-                                Icon(Icons.collections,
+                                Icon(Icons.calendar_today,
                                   color: Colors.black87,)
                               ]),
                             ),
@@ -97,7 +82,34 @@ class _ContractTileState extends State<ContractTile>{
                             },
                           ),
                         ),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          child: RaisedButton(
+                            color: Colors.white,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 5),
+                              child: Row(children: <Widget>[
+                                Text("supprimer",
+                                    style: TextStyle(color: Colors.black87)),
+                                SizedBox(width: 5,),
+                                Icon(Icons.clear,
+                                  color: Colors.red,)
+                              ]),
+                            ),
+                            onPressed: () async {
+                              try {
+                                await PlanningDao().deleteDayOfPlanning(
+                                    widget.dayData).then((value) {
+                                  Alert().goodAlert(context, "journée supprimée", "la journée identifiée par ${widget.dayData.documentId} a bien été supprimé");
+                                });
+                              }catch(e){
+                                print(e);
 
+                              }
+                            },
+                          ),
+                        ),
 
                       ],
                     ),
@@ -123,36 +135,17 @@ class _ContractTileState extends State<ContractTile>{
 
               },
               child: Container(
-                height: selected ? 75.0 : 180.0,
+                height: 100.0,
                 child: Column(
                   children: <Widget>[
-                    ListTile(
-                      title: Text(widget.contractData.libelle),
-                      subtitle: Text(" ${widget.contractData.pricePerHour.toString()} € / heure" ),
-                      trailing: GestureDetector(
-                        child: Icon(Icons.expand_more),
-                        onTap: () {
-                          setState(() {
-                            selected = !selected;
-                          });
-                        },
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10,),
-                        Text("Employeur: ${widget.contractData
-                            .employerInfo['employerName'].toUpperCase()} "),
-                      ],
-                    ),
                     SizedBox(height: 5,),
                     Row(
                       children: <Widget>[
                         SizedBox(width: 10,),
-                        Text("début: ${widget.contractData.startDate
+                        Text("début: ${widget.dayData.startDate
                             .toString()
                             .split(" ")[0]}        fin: ${widget
-                            .contractData.endDate.toString().split(
+                            .dayData.endDate.toString().split(
                             " ")[0]}"),
                       ],
                     ),
@@ -167,7 +160,7 @@ class _ContractTileState extends State<ContractTile>{
                               padding: EdgeInsets.symmetric(
                                   vertical: 5, horizontal: 5),
                               child: Row(children: <Widget>[
-                                Text("consulter ",
+                                Text("valider ",
                                     style: TextStyle(color: Colors.black87)),
                                 SizedBox(width: 5,),
                                 Icon(Icons.collections,
