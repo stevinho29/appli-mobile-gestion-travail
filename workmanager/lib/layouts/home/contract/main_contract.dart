@@ -8,6 +8,8 @@ import 'contract_list.dart';
 
 
 class ContractsOverview extends StatefulWidget{
+  bool isEmployer;
+  ContractsOverview({this.isEmployer});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -21,8 +23,7 @@ class _ContractsOverviewState extends State<ContractsOverview>{
   Widget build(BuildContext context) {
 
     final user = Provider.of<User>(context);
-    // TODO: implement build
-    return StreamBuilder<List<Contract>>(
+    dynamic employer= StreamBuilder<List<Contract>>(
         stream: ContractDao(uid: user.uid).getContracts,
         builder: (context, snapshot) {
           List list= snapshot.data;
@@ -30,22 +31,49 @@ class _ContractsOverviewState extends State<ContractsOverview>{
           if (snapshot.hasData) {
             print("SNAPSHOT $snapshot");
             return  Scaffold(
-              appBar: AppBar(
-                centerTitle: true,
-                title: Text("Mes Contrats "),
-              ),
-             body: Container(
-               padding: EdgeInsets.all(20),
-                 child: ContractList(contractList: list))
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: Text("Mes Contrats / Employeur"),
+                ),
+                body: Container(
+                    padding: EdgeInsets.all(20),
+                    child: ContractList(contractList: list))
             );
           }else
             return Scaffold(
-              body:Container(
-              child: Text("NO PROPOSITIONS SO FAR"),
-            )
+                body:Container(
+                  child: Text("NO PROPOSITIONS SO FAR"),
+                )
             );
         }
     );
+    dynamic employee= StreamBuilder<List<Contract>>(
+        stream: ContractDao(uid: user.uid).getEmployeeContracts,
+        builder: (context, snapshot) {
+          List list= snapshot.data;
+          print("LISTE DE CONTRAT $list");
+          if (snapshot.hasData) {
+            print("SNAPSHOT $snapshot");
+            return  Scaffold(
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: Text("Mes Contrats / prestataire"),
+                ),
+                body: Container(
+                    padding: EdgeInsets.all(20),
+                    child: ContractList(contractList: list))
+            );
+          }else
+            return Scaffold(
+                body:Container(
+                  child: Text("NO PROPOSITIONS SO FAR"),
+                )
+            );
+        }
+    );
+    // TODO: implement build
+    return widget.isEmployer ? employer: employee;
   }
+
 
 }

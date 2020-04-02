@@ -12,6 +12,8 @@ class Work extends StatefulWidget{
 }
 
 class _WorkState extends State<Work>{
+
+  bool isEmployer;
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -42,9 +44,10 @@ class _WorkState extends State<Work>{
             ),
           ),
             onTap: (){
+            isEmployer= true;
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ContractsOverview()),
+                MaterialPageRoute(builder: (context) => ContractsOverview(isEmployer: isEmployer,)),
               );
             },
           ),
@@ -71,9 +74,10 @@ class _WorkState extends State<Work>{
             ),
           ),
             onTap: (){
+              isEmployer= false;
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ContractsOverview()),
+                MaterialPageRoute(builder: (context) => ContractsOverview(isEmployer: isEmployer,)),
               );
             },
           ),
@@ -98,6 +102,7 @@ class _WorkState extends State<Work>{
             ),
           ),
             onTap: (){
+
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SearchStation()),

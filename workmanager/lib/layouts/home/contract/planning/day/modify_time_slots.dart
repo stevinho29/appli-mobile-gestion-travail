@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/shared/constants.dart';
-
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 
 
@@ -19,24 +19,20 @@ dynamic showTimeSlotModificationDialog= (BuildContext context, Day day) async {
         titlePadding: EdgeInsets.fromLTRB(50.0, 15.0, 10.0, 10.0),
         title: Text('mot de passe oublié'),
         content: SingleChildScrollView(
-          child: Form(
-            key: _forgotFormKey,
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  style: TextStyle(color: Colors.black),
-                  decoration: textInputDecoration.copyWith(hintText: "Email"),
-                  validator: (val) {
-                    return val.isEmpty ? "Entrez un email": null;
-                  },
-                  onChanged: (val) {
-
-                  },
-                ),
-              ],
-            ),
-
-          ),
+          child:  FlatButton(
+              onPressed: () {
+                DatePicker.showTimePicker(context, showTitleActions: true,
+                    onChanged: (date) {
+                      print('change $date in time zone ' +
+                          date.timeZoneOffset.inHours.toString());
+                    }, onConfirm: (date) {
+                      print('confirm $date');
+                    }, currentTime: DateTime.now());
+              },
+              child: Text(
+                'show time picker',
+                style: TextStyle(color: Colors.blue),
+              )),
         ),
         actions: <Widget>[
           Row(

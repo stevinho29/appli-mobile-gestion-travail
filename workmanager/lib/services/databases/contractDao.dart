@@ -110,6 +110,14 @@ class ContractDao{
     });
     return list;
   }
+  Stream<List<Contract>> get getEmployeeContracts{
+
+    Stream<List<Contract>> list= contractCollection.where("employeeId",isEqualTo: uid ).snapshots().map(_contractListFromSnapshots);
+    list.listen((event) {
+      print(event[0].libelle);
+    });
+    return list;
+  }
 
   //fonction utile pour le cast
   List<Contract> _contractListFromSnapshots(QuerySnapshot snapshot){
@@ -128,7 +136,7 @@ class ContractDao{
 
       return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],
           doc.data['pricePerHour'],DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['validate'],
-      employerInfo,employeeInfo,doc.data['planningVariable'] ??false,doc.data['validation'] ??['geolocation']);
+      employerInfo,employeeInfo,doc.data['planningVariable'] ??false, ['geolocation']);
     }).toList();
   }
 
