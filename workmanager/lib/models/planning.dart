@@ -18,9 +18,11 @@ class Day{
   String documentId;
   DateTime startDate;  // jour et heure de début fixée
   DateTime endDate;  // jour et heure de fin fixée
+  bool startValidated; // si le début de séance a été validé ( la séance a été crée)
+  bool endValidated; // si la fin de séance a été validée ( la séance a été crée)
   String QR;        // QR code associé à la journée
   
-    Day(this.documentId,this.planningId,this.startDate,this.endDate,this.QR);
+    Day(this.documentId,this.planningId,this.startDate,this.endDate,this.startValidated,this.endValidated,this.QR);
 }
 class Seance{
   

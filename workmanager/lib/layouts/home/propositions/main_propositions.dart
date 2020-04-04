@@ -25,8 +25,9 @@ class _PropositionsOverviewState extends State<PropositionsOverview>{
     return StreamBuilder<List<Proposition>>(
         stream: PropositionDao(uid: user.uid).getPropositions,
         builder: (context, snapshot) {
-          List list= snapshot.data;
+          List<Proposition> list= snapshot.data;
           if (snapshot.hasData) {
+            print("dans MAIN PROPOSITION  ${list[0].dat['startDate']}");
             return  PropositionList(propositionList: list);
           }else
             return Container(

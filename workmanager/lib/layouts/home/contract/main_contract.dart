@@ -50,8 +50,8 @@ class _ContractsOverviewState extends State<ContractsOverview>{
     dynamic employee= StreamBuilder<List<Contract>>(
         stream: ContractDao(uid: user.uid).getEmployeeContracts,
         builder: (context, snapshot) {
-          List list= snapshot.data;
-          print("LISTE DE CONTRAT $list");
+          List secondlist= snapshot.data;
+          print("LISTE DE CONTRAT $secondlist");
           if (snapshot.hasData) {
             print("SNAPSHOT $snapshot");
             return  Scaffold(
@@ -61,7 +61,7 @@ class _ContractsOverviewState extends State<ContractsOverview>{
                 ),
                 body: Container(
                     padding: EdgeInsets.all(20),
-                    child: ContractList(contractList: list))
+                    child: ContractList(contractList: secondlist))
             );
           }else
             return Scaffold(

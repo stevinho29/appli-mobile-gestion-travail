@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
-import 'package:work_manager/layouts/home/contract/contract_home.dart';
+import 'package:intl/intl.dart';
+import 'package:work_manager/layouts/home/contract/planning/day/custom_time_slots.dart';
 
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/planningDao.dart';
+import 'package:work_manager/services/position_validator.dart';
 
-import 'modify_time_slots.dart';
+
 
 
 
@@ -17,6 +19,7 @@ class DayTile extends StatefulWidget{
   final Day dayData;
   Contract contractData;
   DayTile({this.dayData,this.contractData});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -24,19 +27,39 @@ class DayTile extends StatefulWidget{
   }
 
 }
+
 class _DayTileState extends State<DayTile>{
 
 
   Icon indicator= Icon(Icons.fiber_manual_record,color: Colors.amber,);
+  List<String> weekday= ['Lundi', 'Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 
-
+  Icon startState= Icon(Icons.check_circle_outline,
+    color: Colors.black87,);
+  Icon endState= Icon(Icons.check_circle_outline,
+    color: Colors.black87,);
   @override
   void initState() {
     super.initState();
+    if(widget.dayData.startValidated)
+      startState= Icon(Icons.check_circle_outline,
+        color: Colors.green,);
+    else
+      startState= Icon(Icons.check_circle_outline,
+        color: Colors.black87,);
+
+    if(widget.dayData.endValidated)
+      endState= Icon(Icons.check_circle_outline,
+        color: Colors.green,);
+    else
+      endState= Icon(Icons.check_circle_outline,
+        color: Colors.black87,);
+
     if(widget.dayData.endDate.difference(DateTime.now()).inMilliseconds >0)
       indicator= Icon(Icons.fiber_manual_record,color: Colors.green);
     else
       indicator= Icon(Icons.fiber_manual_record,color: Colors.amber);
+
   }
 
   @override
@@ -44,7 +67,7 @@ class _DayTileState extends State<DayTile>{
 
     // TODO: implement build
     final user = Provider.of<User>(context);
-    if (widget.contractData.employerId == user.uid) {  //  controle la provenance de la proposition
+    if (widget.contractData.employerId != user.uid) {  //  controle la provenance de la proposition
       return GestureDetector(
         child: Padding(
           padding: EdgeInsets.only(top: 5.0),
@@ -61,17 +84,23 @@ class _DayTileState extends State<DayTile>{
                     SizedBox(height: 2,),
                     Row(
                       children: <Widget>[
+                        SizedBox(width: 90,),
+                        Text(weekday[widget.dayData.startDate.weekday-1]),
                         SizedBox(width: 10,),
-                        Text("début: ${widget.dayData.startDate
-                            .toString()
-                            .split(" ")[0]}        fin: ${widget
-                            .dayData.endDate.toString().split(
-                            " ")[0]}"),
+                        Text( new DateFormat.yMMMd().format(widget.dayData.startDate) ),
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
                         SizedBox(width: 20,),
+                        Text("début: ${DateFormat.Hm().format(widget.dayData.startDate)}                   fin: ${DateFormat.Hm().format(widget
+                            .dayData.endDate)}"),
+                        SizedBox(width: 40,),
+                        Icon(Icons.calendar_today),
                         indicator,
                       ],
                     ),
-                    SizedBox(height: 15,),
+                    SizedBox(height: 10,),
                     Row(
                       children: <Widget>[
                         Container(
@@ -85,12 +114,15 @@ class _DayTileState extends State<DayTile>{
                                 Text("plage horaire",
                                     style: TextStyle(color: Colors.black87)),
                                 SizedBox(width: 5,),
-                                Icon(Icons.edit,
+                                Icon(Icons.watch_later,
                                   color: Colors.black87,)
                               ]),
                             ),
                             onPressed: () {
-                              showTimeSlotModificationDialog( context,widget.dayData);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => CustomTimeSlot(contract: widget.contractData,dayData: widget.dayData,)),
+                              );
                             },
                           ),
                         ),
@@ -154,21 +186,30 @@ class _DayTileState extends State<DayTile>{
 
               },
               child: Container(
-                height: 100.0,
+                height: 120.0,
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 5,),
                     Row(
                       children: <Widget>[
+                        SizedBox(width: 90,),
+                        Text(weekday[widget.dayData.startDate.weekday-1]),
                         SizedBox(width: 10,),
-                        Text("début: ${widget.dayData.startDate
-                            .toString()
-                            .split(" ")[0]}        fin: ${widget
-                            .dayData.endDate.toString().split(
-                            " ")[0]}"),
+                        Text( new DateFormat.yMMMd().format(widget.dayData.startDate) ),
                       ],
                     ),
-                    SizedBox(height: 15,),
+                    SizedBox(height: 5,),
+                    Row(
+                      children: <Widget>[
+                        SizedBox(width: 30,),
+                        Text("début: ${DateFormat.Hm().format(widget.dayData.startDate)}                   fin: ${DateFormat.Hm().format(widget
+                            .dayData.endDate)}"),
+                        SizedBox(width: 30,),
+                        Icon(Icons.calendar_today),
+                        indicator,
+                      ],
+                    ),
+                    SizedBox(height: 5,),
                     Row(
                       children: <Widget>[
                         Container(
@@ -182,13 +223,77 @@ class _DayTileState extends State<DayTile>{
                                 Text("arrivée ",
                                     style: TextStyle(color: Colors.black87)),
                                 SizedBox(width: 5,),
-                                Icon(Icons.directions_run,
-                                  color: Colors.black87,)
+                                startState
                               ]),
                             ),
                             onPressed: () {
+                              Map<String,DateTime> dat= new Map();
+                              dat['startDate']= DateTime.now();
+                              dat['endDate']= null;
+                              if(!widget.dayData.startValidated) {
+                                if (widget.dayData.startDate
+                                    .difference(DateTime.now())
+                                    .inMinutes > 15 && widget.dayData.endDate
+                                    .difference(DateTime.now())
+                                    .inMinutes > 15) {
+                                  PositionValidator()
+                                      .checkIfLocationPermission()
+                                      .then((value) {
+                                    if (value) {
+                                      PositionValidator()
+                                          .checkIfLocationIsNearEnough(
+                                          widget.contractData
+                                              .employerInfo['employerAddress'] +
+                                              ' ' + widget.contractData
+                                              .employerInfo['employerCodePostal'])
+                                          .then((value) async {
+                                        if (value) {
+                                          widget.dayData.startValidated = true;
+                                          try {
+                                            await PlanningDao()
+                                                .createSeanceOfDay(
+                                                widget.dayData, dat, "no QR")
+                                                .then((value) {
+                                              Alert().goodAlert(
+                                                  context, "Arrivée validée",
+                                                  "votre heure d'arrivée a bien été prise en compte");
+                                              setState(() {
+                                                startState = Icon(
+                                                  Icons.check_circle_outline,
+                                                  color: Colors.green,);
+                                              });
+                                            });
+                                          } catch (e) {
+                                            print(e);
+                                            Alert().badAlert(
+                                                context, "l'Opération a échoué",
+                                                "votre arrivée n'a pas été prise en compte...veuillez réessayer");
+                                          }
+                                        } else {
+                                          Alert().badAlert(
+                                              context, "Validation impossible",
+                                              "Vous semblez ne pas etre au domicile de l'employeur ");
+                                        }
+                                      });
+                                    } else {
+                                      Alert().badAlert(
+                                          context, "Validation impossible",
+                                          "Vous devez autorisez l'application à accéder àla localisation pour pouvoir valider ");
+                                    }
+                                  });
+                                } else {
+                                  Alert().badAlert(
+                                      context, "Validation impossible",
+                                      "impossible de valider l'arrivée plus de 15 minutes avant et moins de 15 minutes avant la fin de la séance ");
+                                }
+                              }else{
+                                Alert().badAlert(
+                                    context, "Deja validé",
+                                    "votre heure d'arrivée a deja été prise en compte ");
 
+                              }
                             },
+
                           ),
                         ),
                         Container(
@@ -202,13 +307,75 @@ class _DayTileState extends State<DayTile>{
                                 Text("départ ",
                                     style: TextStyle(color: Colors.black87)),
                                 SizedBox(width: 5,),
-                                Icon(Icons.check_circle_outline,
-                                  color: Colors.black87,)
+                                endState
                               ]),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
+                              if (!widget.dayData.endValidated) {
+                                PositionValidator()
+                                    .checkIfLocationPermission()
+                                    .then((value) {
+                                  if (value) {
+                                    PositionValidator()
+                                        .checkIfLocationIsNearEnough(
+                                        widget.contractData
+                                            .employerInfo['employerAddress'] +
+                                            ' ' + widget.contractData
+                                            .employerInfo['employerCodePostal'])
+                                        .then((value) async {
+                                      if (value) {
+                                        Map<String, DateTime> dat = new Map();
+                                        dat['endDate'] = DateTime.now();
+                                        try {
+                                          await PlanningDao()
+                                              .getSeance(widget.dayData)
+                                              .then((list) async {
+                                            print(" DATE VALID${list[0]
+                                                .startDate}");
+                                            dat['startDate'] = list[0]
+                                                .startDate; // on remet la date de validation à l'arrivée
+                                            widget.dayData.endValidated =
+                                            true; // on valide le départ
+                                            await PlanningDao()
+                                                .updateSeanceOfDay(list[0],
+                                                widget.dayData, dat, "no QR")
+                                                .then((value) {
+                                              Alert().goodAlert(
+                                                  context, "Départ validé",
+                                                  "votre heure de départ a été prise en compte");
 
-                            },
+                                              setState(() {
+                                                endState = Icon(
+                                                  Icons.check_circle_outline,
+                                                  color: Colors.green,);
+                                              });
+                                            });
+                                          });
+                                        } catch (e) {
+                                          print(e);
+                                          Alert().badAlert(
+                                              context, "l'Opération a échoué",
+                                              "votre heure de départ n'a pas pu etre validée");
+                                        }
+                                      } else {
+                                        Alert().badAlert(
+                                            context, "Validation impossible",
+                                            "Vous semblez ne pas etre au domicile de l'employeur ");
+                                      }
+                                    });
+                                  } else {
+                                    Alert().badAlert(
+                                        context, "Validation impossible",
+                                        "Vous devez autorisez l'application à accéder àla localisation pour pouvoir valider ");
+                                  }
+                                });
+                              }
+                              else {
+                                Alert().badAlert(
+                                    context, "Deja validé",
+                                    "votre heure de départ a deja été prise en compte ");
+                              }
+                            }
                           ),
                         ),
 

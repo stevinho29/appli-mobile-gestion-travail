@@ -7,11 +7,15 @@ class Proposition{  // contient des données dénormalisées sur l'employeur et 
  String senderName;   // nom de l'employeur
  String senderSurname; // prenom de l'employeur
  String senderEmail;   // email de l'amployeur
+ String senderAddress;         // adresse de l'employeur
+ String senderCodePostal;    // code postal de l'employeur
 
  Map<String,String> receiverInfo;
  String receiverName;   // nom de l'employé
  String receiverSurname; // prenom de l'employé
  String receiverEmail;   //  email de l'amployé
+ String receiverAddress;         // adresse de l'employé
+ String reveiverCodePostal;    // code postal de l'employé
 
  String documentId;
  String  senderId;    // id de l'employeur

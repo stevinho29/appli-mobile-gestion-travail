@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
-import 'package:work_manager/layouts/home/contract/contract_home.dart';
 import 'package:work_manager/layouts/home/contract/planning/day/main_day.dart';
-
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/models/user.dart';

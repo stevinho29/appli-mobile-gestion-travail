@@ -39,9 +39,9 @@ class _IdentitySettingState extends State<IdentitySetting>{
                 children: <Widget>[
                   SizedBox(height: 15),
                   TextFormField(
-                    initialValue: widget.userData.rue ?? 'non renseigné',
+                    initialValue: widget.userData.address ?? 'non renseigné',
                     style: TextStyle(color: Colors.black87),
-                    decoration: textInputDecoration.copyWith(hintText: "Rue"),
+                    decoration: textInputDecoration.copyWith(hintText: "Adresse"),
                     validator: (val) {
                           return val.isEmpty ? "veuillez saisir votre rue": null;
                           },
@@ -75,9 +75,9 @@ class _IdentitySettingState extends State<IdentitySetting>{
                         onPressed: () async {
                             if(_formKey.currentState.validate()){
                               _address['code_postal']= _codePostal ?? widget.userData.codePostal;
-                              _address['rue']= _rue ?? widget.userData.rue;
+                              _address['rue']= _rue ?? widget.userData.address;
                               print("code"+ _address['code_postal']);
-                              print("rue"+ _address['rue']);
+                              print("rue"+ _address['address']);
                               await UserDao(user.uid).updateUserData(widget.userData.name,widget.userData.surname,widget.userData.email,_address,00000000,widget.userData.findable);
                               await Alert().goodAlert(context, " mise à jour", "l'opération de mise à jour s'est déroulée avec succès");
                               Navigator.pop(context);

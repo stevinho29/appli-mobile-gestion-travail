@@ -63,16 +63,38 @@ class PlanningDao{
     }).toList();
   }
   
-  Future<List<Planning>> getPlanningRightNow() async {
+  Future<bool> checkIfPlanningAlreadyExist() async {
     Map<String,DateTime> dat=  new Map();
-    return planningCollection.where("dates.endDate",isLessThanOrEqualTo: DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+3) ).getDocuments().then((qShot) {
-      return qShot.documents.map((doc) {
+    bool result;
+    await planningCollection.where("dates.endDate",isLessThanOrEqualTo: DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+3) ).getDocuments().then((qShot) async {
+       List<Planning> list= qShot.documents.map((doc) {
         dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
         dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-        return Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
+         Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
         }).toList();
+       await planningCollection.getDocuments().then((qShot){
+        List<Planning> list2= qShot.documents.map((doc){
+          dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
+          dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
+          Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
+         }).toList();
+        print("LIST2 ${list2.length}");
+        if( list2.length > 0){ // si au moins un planning existe
+          if(list.length > 0){  // si je suis rentré dans la période de création
+             result= false;
+          }
+          else {
+            result = true;
+            print("mauvaise période");
+          }
+        }
+        else{ // je n'ai jamais crée de planning
+          result = false;
+          print("pas de planning at all");
+        }
+       });
       });
-
+    return result;
   }
 
   Future deletePlanning(Planning planning){
@@ -96,6 +118,8 @@ class PlanningDao{
     try{
       return planningCollection.document(day.planningId).collection("days").document(day.documentId).updateData({
         'dates': dat,
+        'startValidated':day.startValidated,
+        'endValidated': day.endValidated
       });
     }catch(e){
       print(e);
@@ -110,6 +134,8 @@ class PlanningDao{
       return planningCollection.document(documentId).collection("days").document().setData({
         'planningId':documentId,
         'dates': dat,
+        'startValited':false,
+        'endValidated':false,
         'QR': QR ?? "no QR"
       });
     } catch(e) {
@@ -133,7 +159,7 @@ class PlanningDao{
 
       dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
       dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-      return Day(doc.documentID,doc.data['planningId'],dat['startDate'],dat['endDate'],doc.data['QR']);
+      return Day(doc.documentID,doc.data['planningId'],dat['startDate'],dat['endDate'],doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
     }).toList();
   }
 
@@ -146,7 +172,24 @@ class PlanningDao{
     }
   }
 
-
+Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Planning planning) async {
+  Map<String,DateTime> dats=  new Map();
+  bool result;
+  print("ENDDATE${dat["endDate"]}");
+    await planningCollection.document(planning.documentId).collection('days').where("dates.endDate",isGreaterThan: dat['startDate']).where("dates.endDate",isLessThan:dat['endDate']).getDocuments().then((docs){
+     List<Day> list=  docs.documents.map((doc){
+       dats['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
+       dats['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
+         Day(doc.documentID,doc.data['planningId'],dat['startDate'],dat['endDate'],doc.data['startValidated'],doc.data['endValidated'],doc.data['QR']);
+      }).toList();
+     if(list.length > 0)
+       result= true;
+     else
+       result= false;
+    });
+     print(result);
+     return result;
+}
 
 // DAO POUR LES SEANCES EFFECTIVES  D UN PLANNING DEFINI
 
@@ -154,7 +197,8 @@ class PlanningDao{
   Future createSeanceOfDay(Day day,Map<String,DateTime> dat,String QR) async {  // col Planning => Doc => col Days => Doc => col Seances
     try {
       print("creating SEANCE OF DAY of PLANNING");
-      return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seances").document().setData({
+      await updateDayOfPlanningData(day, {'startDate':day.startDate, 'endDate':day.endDate}); // on met à jour le day avec le début de séance et/ou la fin validée
+      return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").document().setData({
         'dayId':day.documentId,
         'dates': dat,
         'QR': QR ?? "no QR"
@@ -164,12 +208,37 @@ class PlanningDao{
       return null;
     }
   }
+  Future updateSeanceOfDay(Seance seance,Day day,dat,String QR) async {
+    try{
+      await updateDayOfPlanningData(day, {'startDate':day.startDate, 'endDate':day.endDate}); // on met à jour le day avec le début de séance et/ou la fin validée
+      return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").document(seance.documentId).setData({
+        'dayId':day.documentId,
+        'dates': dat,
+        'QR': QR ?? "no QR"
+      });
+    }catch(e){
+      print(e);
+      return null;
+    }
+  }
 
   // liste de jours contenus dans un planning
 
-  Stream<List<Seance>>  getSeancesOfDays (Day day){
-    return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seances").snapshots().map(_seanceOfDayListFromSnapshots);
+  Stream<List<Seance>>  getSeanceOfDay (Day day){
+    return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").snapshots().map(_seanceOfDayListFromSnapshots);
 
+  }
+
+  Future<List<Seance>> getSeance(Day day) async {
+    Map<String,DateTime> dat=  new Map();
+   return await planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").getDocuments().then((qShot) {
+     return qShot.documents.map((doc){
+       print(" SEANCE ${doc.data['dates']}");
+        dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
+        dat['endDate']= DateTime.now();
+      return  Seance(doc.documentID,doc.data['dayId'],dat['startDate'],dat['endDate'],doc.data['QR']);
+      }).toList();
+    });
   }
 
   //fonction utile pour le cast

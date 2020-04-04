@@ -28,11 +28,11 @@ class _PlannignListState extends State<PlanningList>{
 
     // TODO: implement build
 
-    if(widget.planningList == null) {
+    if(widget.planningList.length == 0) {
       return Scaffold(
         body: Container(
           padding: EdgeInsets.all( 60),
-          child: Text("aucun contrat pour le moment",style: TextStyle(color: Colors.black87,fontSize: 20),),
+          child: Text("aucun planning pour ce contrat",style: TextStyle(color: Colors.black87,fontSize: 20),),
         ),
       );
     }

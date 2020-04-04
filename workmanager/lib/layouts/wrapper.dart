@@ -7,6 +7,7 @@ import 'package:work_manager/models/user.dart';
 import 'authenticate/authenticate.dart';
 
 class Wrapper extends StatelessWidget{
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/work/user_to_hire_list.dart';
@@ -21,23 +21,6 @@ class _SearchStationState extends State<SearchStation>{
 
   static List<UserData> list;
   static String _name= "";
-
-  List<UserData> _mapping(QuerySnapshot snapshot){
-   return snapshot.documents.map((doc) {
-      print(doc.data['name']);
-      return UserData(
-          uid: doc.data['uid'] ?? 'no uid',
-          name: doc.data['name'] ?? 'no name',
-          surname: doc.data['surname'] ?? 'no surname',
-          email: doc.data['email'] ?? 'no email',
-          rue: doc.data['address']['rue'] ?? 'no address',
-          codePostal: doc.data['address']['code_postal'] ?? 'no address',
-          tel: doc.data['tel'] ?? 'no tel',
-          findable: doc.data['findable'] ?? false,
-          createdAt:  DateTime(0000,00,00) // DateTime.fromMillisecondsSinceEpoch(
-      );
-    }).toList();
-  }
 
   bool isBlank = true;
   bool loading = false;

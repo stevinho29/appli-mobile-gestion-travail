@@ -32,11 +32,15 @@ class ContractDao{
     employerInfo['employerName']= proposition.senderInfo['senderName'];
     employerInfo['employerSurname']= proposition.senderInfo['senderSurname'];
     employerInfo['employerEmail']= proposition.senderInfo['senderEmail'];
+    employerInfo['employerAddress']= proposition.senderInfo['senderAddress'];
+    employerInfo['employerCodePostal']= proposition.senderInfo['senderCodePostal'];
 
     Map<String,String> employeeInfo= new Map();
     employeeInfo['employeeName']= proposition.receiverInfo['receiverName'];
     employeeInfo['employeeSurname']= proposition.receiverInfo['receiverSurname'];
     employeeInfo['employeeEmail']= proposition.receiverInfo['receiverEmail'];
+    employeeInfo['employeeAddress']= proposition.receiverInfo['receiverAddress'];
+    employeeInfo['employeeCodePostal']= proposition.receiverInfo['receiverCodePostal'];
 
     Map<String,DateTime> dat= new Map();
     dat['startDate']= DateTime.now();
@@ -48,7 +52,7 @@ class ContractDao{
         'employeeId': proposition.receiverId,
         'libelle': proposition.libelle,
         'pricePerHour': proposition.price,
-        'validate': false,
+        'canceled': false,
         'dates': dat,
         'employerInfo': employerInfo,
         'employeeInfo': employeeInfo,
@@ -104,7 +108,7 @@ class ContractDao{
   // liste de contrats
   Stream<List<Contract>> get getContracts{
 
-    Stream<List<Contract>> list= contractCollection.where("employerId",isEqualTo: uid ).snapshots().map(_contractListFromSnapshots);
+    Stream<List<Contract>> list= contractCollection.where("employerId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
     list.listen((event) {
       print(event[0].libelle);
     });
@@ -112,7 +116,7 @@ class ContractDao{
   }
   Stream<List<Contract>> get getEmployeeContracts{
 
-    Stream<List<Contract>> list= contractCollection.where("employeeId",isEqualTo: uid ).snapshots().map(_contractListFromSnapshots);
+    Stream<List<Contract>> list= contractCollection.where("employeeId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
     list.listen((event) {
       print(event[0].libelle);
     });
@@ -129,13 +133,17 @@ class ContractDao{
       employeeInfo['employeeName']= doc.data['employeeInfo']['employeeName'];
       employeeInfo['employeeSurname']= doc.data['employeeInfo']['employeeSurname'];
       employeeInfo['employeeEmail']= doc.data['employeeInfo']['employeeEmail'];
+      employeeInfo['employeeAddress']= doc.data['employeeInfo']['employeeAddress'] ?? "41 Boulevard Vauban";
+      employeeInfo['employeeCodePostal']= doc.data['employeeInfo']['employeeCodePostal'] ?? "59000";
 
       employerInfo['employerName']= doc.data['employerInfo']['employerName'];
       employerInfo['employerSurname']= doc.data['employerInfo']['employerSurname'];
       employerInfo['employerEmail']= doc.data['employerInfo']['employerEmail'];
-
+      employerInfo['employerAddress']= doc.data['employerInfo']['employerAddress'] ?? "41 Boulevard Vauban";
+      employerInfo['employerCodePostal']= doc.data['employerInfo']['employerCodePostal'] ?? "59000";
+      //print("JE REGARDE LADDRESS${doc.data['employerInfo']['employerAddress']}");
       return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],
-          doc.data['pricePerHour'],DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['validate'],
+          doc.data['pricePerHour'],DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
       employerInfo,employeeInfo,doc.data['planningVariable'] ??false, ['geolocation']);
     }).toList();
   }
@@ -158,7 +166,7 @@ class ContractDao{
 
       return contractCollection.document(contract.documentId).updateData(({
         'dates':dat,
-        'validate':false
+        'canceled':false
       }));
     }catch(e){
       print(e);

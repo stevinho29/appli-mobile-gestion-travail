@@ -123,7 +123,7 @@ class _IdentityState extends State<Identity> {
                       child: Row(
                         children: <Widget>[
                           Text('Adresse: '),
-                          Text((userData.rue +' '+userData.codePostal) ?? "no address" )
+                          Text((userData.address +' '+userData.codePostal) ?? "no address" )
                         ],
                       ),
                     ),

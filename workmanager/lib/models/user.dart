@@ -10,14 +10,21 @@ class UserData{
   String name;
   String surname;
   String email;
-  String rue ;
+  String address ;
   String codePostal;
   int tel;
   bool findable; // whether the user wants to be find by search option or not
   DateTime createdAt; // date when the user joined our community
+  Token userToken;
 
 
-  UserData({this.uid,this.name,this.surname,this.email,this.rue,this.codePostal,this.tel,this.findable,this.createdAt});
+  UserData({this.uid,this.name,this.surname,this.email,this.address,this.codePostal,this.tel,this.findable,this.createdAt});
   UserData.light({this.uid,this.name,this.surname,this.email});
 
+}
+
+class Token{
+  DateTime createdAt;
+  String token;     // needed to send individual notification to this user
+  String platform;
 }

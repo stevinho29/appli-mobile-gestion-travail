@@ -20,10 +20,21 @@ class UserDao{
       'findable': findable,
     });
   }
-
+Future updateUserDataWithToken(String token,String platform){
+    try{
+    userCollection.document(uid).collection("tokens").document(token).setData({
+      'createdAt':FieldValue.serverTimestamp(),
+      'token':token,
+      'platform':platform
+    });
+    }catch(e){
+      print(e);
+      return null;
+    }
+}
   Future createUserData(String name, String surname,String email) async{
       Map<String,String> address= new Map();
-      address['rue']= 'not filled';
+      address['address']= 'not filled';
       address['code_postal']= 'not filled';
     return await userCollection.document(uid).setData({
       'uid':uid,
@@ -47,7 +58,7 @@ class UserDao{
         name: snapshot.data['name'] ?? 'no name',
         surname: snapshot.data['surname'] ?? 'no surname',
         email: snapshot.data['email'] ?? 'no email',
-        rue: snapshot.data['address']['rue'] ?? 'no address',
+        address: snapshot.data['address']['address'] ?? 'no address',
         codePostal: snapshot.data['address']['code_postal'] ?? 'no code',
         tel: snapshot.data['tel'] ?? 00000000,
         findable: snapshot.data['findable'],
@@ -82,7 +93,7 @@ class UserDao{
           name: doc.data['name'] ?? 'no name',
           surname: doc.data['surname'] ?? 'no surname',
           email: doc.data['email'] ?? 'no email',
-          rue: doc.data['address']['rue'] ?? 'no address',
+          address: doc.data['address']['address'] ?? 'no address',
           codePostal: doc.data['address']['code_postal'] ?? 'no address',
           tel: doc.data['tel'] ?? 'no tel',
           findable: doc.data['findable'] ?? false,
@@ -100,7 +111,7 @@ class UserDao{
                   name: doc.data['name'] ?? 'no name',
                   surname: doc.data['surname'] ?? 'no surname',
                   email: doc.data['email'] ?? 'no email',
-                  rue: doc.data['address']['rue'] ?? 'no address',
+                  address: doc.data['address']['address'] ?? 'no address',
                   codePostal: doc.data['address']['code_postal'] ?? 'no address',
                   tel: doc.data['tel'] ?? 'no tel',
                   findable: doc.data['findable'] ?? false,

@@ -37,11 +37,15 @@ class PropositionDao{
     senderInfo['senderName']= userData.name;
     senderInfo['senderSurname']= userData.surname;
     senderInfo['senderEmail']= userData.email;
+    senderInfo['senderAddress']= userData.address;
+    senderInfo['senderCodePostal']= userData.codePostal;
 
     Map<String,String> receiverInfo= new Map();
     receiverInfo['receiverName']= choosedUserData.name;
     receiverInfo['receiverSurname']= choosedUserData.surname;
     receiverInfo['receiverEmail']= choosedUserData.email;
+    receiverInfo['receiverAddress']= choosedUserData.address;
+    receiverInfo['receiverCodePostal']= choosedUserData.codePostal;
 
     try {
       print("create PROPOSITION");
@@ -80,11 +84,18 @@ class PropositionDao{
       receiverInfo['receiverName']= doc.data['receiverInfo']['receiverName'];
       receiverInfo['receiverSurname']= doc.data['receiverInfo']['receiverSurname'];
       receiverInfo['receiverEmail']= doc.data['receiverInfo']['receiverEmail'];
+      receiverInfo['receiverAddress']= doc.data['receiverInfo']['receiverAddress'];
+      receiverInfo['receiverCodePostal']= doc.data['receiverInfo']['receiverCodePostal'];
+
       senderInfo['senderName']= doc.data['senderInfo']['senderName'];
       senderInfo['senderSurname']= doc.data['senderInfo']['senderSurname'];
       senderInfo['senderEmail']= doc.data['senderInfo']['senderEmail'];
+      senderInfo['senderAddress']= doc.data['senderInfo']['senderAddress'];
+      senderInfo['senderCodePostal']= doc.data['senderInfo']['senderCodePostal'];
+
       dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
       dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
+      print("DATES PROPOSITIONS ${dat['endDate']}");
       return Proposition(
         documentId: doc.documentID,
         senderId: doc.data['senderId'],

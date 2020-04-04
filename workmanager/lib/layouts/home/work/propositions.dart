@@ -20,6 +20,7 @@ class PropositionMaker extends StatefulWidget{
 
 }
 
+enum Planning { fixe, variable} // nécessite un planning hebdomadaire(variable) ou alors fixe
 class _PropositionMakerState extends State<PropositionMaker>{
 
   final _formKey= GlobalKey<FormState>();
@@ -28,8 +29,8 @@ class _PropositionMakerState extends State<PropositionMaker>{
   int _currentPricePerHour;
   Map<String,DateTime> dat= new Map();
 
-
-
+  Planning _planning = Planning.fixe;
+  bool planningVariable= false;
   DateTime _currentStartDate= DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+1);
   DateTime _currentEndDate= DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+1);
   String _endDate;
@@ -101,9 +102,8 @@ class _PropositionMakerState extends State<PropositionMaker>{
           key: _formKey,
           child: Column(
             children: <Widget>[
-              SizedBox(height: 5),
               Center(child: Text("Offre faite à Mr/Mme ${widget.choosedUser.name.toUpperCase()} ${widget.choosedUser.surname} ",style: TextStyle(fontSize: 15),),),
-              SizedBox(height: 20),
+              SizedBox(height: 15),
               TextFormField(
                 style: TextStyle(color: Colors.black87),
                 decoration: textInputDecoration.copyWith(hintText: "Libellé de la proposition").copyWith(labelText: "un thème accrocheur",).copyWith(
@@ -131,7 +131,35 @@ class _PropositionMakerState extends State<PropositionMaker>{
                   setState(() => _currentPricePerHour =  num.tryParse(val));
                 },
               ),
-              SizedBox(height: 20,),
+              SizedBox(height: 10,),
+              Card(
+                child: ListTile(
+                  title: const Text('ne necessite pas de prévision: planning fixe '),
+                  leading: Radio(
+                    value: Planning.fixe ,
+                    groupValue: _planning,
+                    onChanged: (Planning value) {
+                      setState(() { _planning = value;
+                      planningVariable= false;});
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(height: 5,),
+              Card(
+                child: ListTile(
+                  title: const Text('necessite des prévisions: planning variable'),
+                  leading: Radio(
+                    value: Planning.variable ,
+                    groupValue: _planning,
+                    onChanged: (Planning value) {
+                      setState(() { _planning = value;
+                      planningVariable= true;});
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(height: 5,),
               Row(
                 children: <Widget>[
                   Text(" début"),
@@ -200,7 +228,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                             try{
                               dat['startDate'] = _currentStartDate;
                               dat['endDate'] = _currentEndDate;
-                            await PropositionDao(uid: user.uid).createProposition(widget.choosedUser,_currentLibelle, _currentPricePerHour,dat,false).then((res){
+                            await PropositionDao(uid: user.uid).createProposition(widget.choosedUser,_currentLibelle, _currentPricePerHour,dat,planningVariable).then((res){
                               Alert().goodAlert(context, "proposition envoyée", "votre proposition a été envoyée avec succès").then(
                                   (value) => Navigator.pop(context));
                             });

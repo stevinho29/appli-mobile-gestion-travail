@@ -4,7 +4,6 @@ import 'package:work_manager/layouts/home/contract/planning/create_planning.dart
 import 'package:work_manager/layouts/home/contract/planning/main_planning.dart';
 import 'package:work_manager/layouts/home/contract/show_contract.dart';
 import 'package:work_manager/models/contract.dart';
-import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/services/databases/planningDao.dart';
 
 class ContractHome extends StatelessWidget{
@@ -92,9 +91,8 @@ class ContractHome extends StatelessWidget{
                                 ]),
                               ),
                               onPressed: () async {
-                                await PlanningDao().getPlanningRightNow().then((list) {
-                                  print("NOMBRE DE PLANNING EN COURS ${list.length}");
-                                 if(list.length > 0){
+                                await PlanningDao().checkIfPlanningAlreadyExist().then((result) {
+                                 if(!result){
                                    Navigator.push(
                                      context,
                                      MaterialPageRoute(builder: (context) => CreatePlanning(contract: contract)),

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +9,7 @@ import 'package:work_manager/models/user.dart';
 import 'new_tile.dart';
 
 class News extends StatefulWidget{
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -16,6 +19,8 @@ class News extends StatefulWidget{
 
 class _NewsState extends State<News>{
 
+  final Firestore _db = Firestore.instance;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
   @override
   Widget build(BuildContext context) {
 
@@ -32,7 +37,19 @@ class _NewsState extends State<News>{
             },);
         }else
           return Container(
-            child: Text("UP TO DATE"),
+            child: Column(
+              children: <Widget>[
+                FlatButton(
+                  child: Text('I like puppies'),
+                  onPressed: () => _fcm.subscribeToTopic('puppies'),
+                ),
+
+                FlatButton(
+                  child: Text('I hate puppies'),
+                  onPressed: () => _fcm.unsubscribeFromTopic('puppies'),
+                ),
+              ],
+            ),
           );
       }
     );

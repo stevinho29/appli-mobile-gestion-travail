@@ -37,7 +37,7 @@ class _CreatePlanningState extends State<CreatePlanning>{
   String error="";
 
   DateTime littleFunction(int day){
-    return DateTime(startDate.year,startDate.month,startDate.day+day);
+    return startDate.add(new Duration(days: day));
   }
   @override
   void initState() {

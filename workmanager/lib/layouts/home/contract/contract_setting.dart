@@ -213,13 +213,13 @@ class _ContractSettingState extends State<ContractSetting> {
                             dat['endDate'] = _currentEndDate ?? widget.contractData.endDate;
                             await ContractDao(uid: user.uid).updateContractData(widget.contractData, _currentLibelle, _currentPricePerHour, dat)
                                 .then((res) {
-                              Alert().goodAlert(context, "proposition modifiée", "votre proposition a été modifiée avec succès")
+                              Alert().goodAlert(context, "contrat modifiée", "votre contrat a été modifiée avec succès")
                                   .then((value) => Navigator.pop(context));
                             });
                           } catch (e) {
                             print(e.toString());
                             Alert().badAlert(context, "opération a échoué",
-                                "votre proposition n'a pas pu etre modifiée");
+                                "votre contrat n'a pas pu etre modifiée");
                           }
                         } else {
                           setState(() {
