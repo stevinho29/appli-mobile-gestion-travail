@@ -17,14 +17,16 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
 
 
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    _showSplashScreen().then((value) {
+    _splashScreenDelay().then((value) {
 
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-              builder: (BuildContext context) => Wrapper()));});
+              builder: (BuildContext context) => Wrapper()));
+    });
 
     return  Scaffold(
       body: Container(
@@ -54,11 +56,17 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  SplashScreen();
+  }
+
 
 }
 
 // on attends 2 s pour montrer le splashscreen
-Future<bool> _showSplashScreen() async {
+Future<bool> _splashScreenDelay() async {
   await Future.delayed(Duration(milliseconds: 2000),() {});
 return true;
 }

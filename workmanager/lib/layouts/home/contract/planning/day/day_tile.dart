@@ -261,6 +261,7 @@ class _DayTileState extends State<DayTile>{
                                                 startState = Icon(
                                                   Icons.check_circle_outline,
                                                   color: Colors.green,);
+                                                widget.dayData.startValidated= false;
                                               });
                                             });
                                           } catch (e) {
@@ -348,6 +349,7 @@ class _DayTileState extends State<DayTile>{
                                                 endState = Icon(
                                                   Icons.check_circle_outline,
                                                   color: Colors.green,);
+                                                widget.dayData.endValidated= false;
                                               });
                                             });
                                           });

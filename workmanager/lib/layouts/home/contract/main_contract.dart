@@ -6,7 +6,6 @@ import 'package:work_manager/services/databases/contractDao.dart';
 
 import 'contract_list.dart';
 
-
 class ContractsOverview extends StatefulWidget{
   bool isEmployer;
   ContractsOverview({this.isEmployer});

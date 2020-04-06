@@ -45,7 +45,7 @@ try {
     distanceBetween= await Geolocator().distanceBetween(employeeCurrentPosition.latitude, employeeCurrentPosition.longitude, employerAddress[0].position.latitude, employerAddress[0].position.longitude);
     print("DISTANCE $distanceBetween");
     print(employerAddress[0].position.latitude);
-    if(distanceBetween < 50.0)  // l'employé est trop loin du domicile de l'employeur à plus de 50 m
+    if(distanceBetween > 50.0)  // l'employé est trop loin du domicile de l'employeur à plus de 50 m
       return true;
     else
       return false;

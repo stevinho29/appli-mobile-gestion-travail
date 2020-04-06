@@ -21,11 +21,12 @@ class UserDao{
     });
   }
 Future updateUserDataWithToken(String token,String platform){
+    Map<String,String> tok= new Map();
+    tok['token']= token;
+    tok['platform']= platform;
     try{
-    userCollection.document(uid).collection("tokens").document(token).setData({
-      'createdAt':FieldValue.serverTimestamp(),
-      'token':token,
-      'platform':platform
+    userCollection.document(uid).updateData({
+      'token':tok,
     });
     }catch(e){
       print(e);
@@ -62,7 +63,7 @@ Future updateUserDataWithToken(String token,String platform){
         codePostal: snapshot.data['address']['code_postal'] ?? 'no code',
         tel: snapshot.data['tel'] ?? 00000000,
         findable: snapshot.data['findable'],
-        createdAt: DateTime.fromMillisecondsSinceEpoch(millis.millisecondsSinceEpoch) //DateTime.fromMillisecondsSinceEpoch(snapshot.data['createdAt'])
+        createdAt: DateTime.fromMillisecondsSinceEpoch(millis.millisecondsSinceEpoch) ?? DateTime.now() //DateTime.fromMillisecondsSinceEpoch(snapshot.data['createdAt'])
 
     );
   }

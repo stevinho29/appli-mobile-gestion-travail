@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:work_manager/models/user.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'databases/userDao.dart';
 
 class AuthService{
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
 
   User _userFromFirebaseUser(FirebaseUser user){
     return user != null ? User(uid: user.uid): null ;
@@ -47,6 +50,8 @@ Future registerWithEmailAndPassword(String name,String surname,String email, Str
       AuthResult result=await  _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user= result.user;
       await UserDao(user.uid).createUserData(name, surname,email); // on save le user dans la database
+      String fcmToken = await _fcm.getToken();
+      await UserDao(user.uid).updateUserDataWithToken(fcmToken, Platform.operatingSystem);  // on save le token
       return _userFromFirebaseUser(user);
     }catch(e){
       print(e);

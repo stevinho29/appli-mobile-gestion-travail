@@ -29,7 +29,7 @@ class PlanningDao{
     try {
       print("create PLANNING");
        await planningCollection.document(documentId).setData({
-        'contratId':contract.documentId,
+        'contractId':contract.documentId,
         'dates': dat,
       }).then((value) {
          for (int i=0 ; i < keys.length;i++) { // on récupère les dates de tous les jours qui ont été sélectionnés
@@ -47,7 +47,7 @@ class PlanningDao{
 
   // liste de planning
   Stream<List<Planning>>  getPlanning (Contract contract){
-    return planningCollection.where("contratId",isEqualTo: contract.documentId).orderBy("dates.endDate",descending: true).snapshots().map(_planningListFromSnapshots);
+    return planningCollection.where("contractId",isEqualTo: contract.documentId).orderBy("dates.endDate",descending: true).snapshots().map(_planningListFromSnapshots);
 
   }
 
@@ -59,7 +59,7 @@ class PlanningDao{
 
       dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
       dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-      return Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
+      return Planning(doc.documentID,doc.data['contractId'],dat['startDate'],dat['endDate']);
     }).toList();
   }
   
@@ -70,13 +70,13 @@ class PlanningDao{
        List<Planning> list= qShot.documents.map((doc) {
         dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
         dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-         Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
+         Planning(doc.documentID,doc.data['contractId'],dat['startDate'],dat['endDate']);
         }).toList();
        await planningCollection.getDocuments().then((qShot){
         List<Planning> list2= qShot.documents.map((doc){
           dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
           dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-          Planning(doc.documentID,doc.data['contratId'],dat['startDate'],dat['endDate']);
+          Planning(doc.documentID,doc.data['contractId'],dat['startDate'],dat['endDate']);
          }).toList();
         print("LIST2 ${list2.length}");
         if( list2.length > 0){ // si au moins un planning existe
@@ -128,13 +128,12 @@ class PlanningDao{
   }
 
   Future createDayOfPlanning(String documentId,Map<String,DateTime> dat,String QR) async {
-
     try {
       print("creating DAY of PLANNING");
       return planningCollection.document(documentId).collection("days").document().setData({
         'planningId':documentId,
         'dates': dat,
-        'startValited':false,
+        'startValidated':false,
         'endValidated':false,
         'QR': QR ?? "no QR"
       });

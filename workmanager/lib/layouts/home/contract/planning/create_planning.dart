@@ -246,6 +246,7 @@ print(DateTime.now().toString());
                                             context, "planning crée",
                                             "le planning pour les $_numberOfDays suivant a été crée avec succes");
                                          Navigator.pop(context);
+                                         Navigator.pop(context);
                                       });
 
                                     }catch(e){
