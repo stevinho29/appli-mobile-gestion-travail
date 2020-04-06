@@ -1,8 +1,5 @@
-
-
 import 'dart:async';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +7,19 @@ import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/account.dart';
 import 'package:work_manager/layouts/home/work.dart';
 import 'package:work_manager/models/user.dart';
-import 'package:work_manager/services/databases/userDao.dart';
-
-
-
 import 'employe.dart';
 import 'main_home.dart';
 
 class Home extends StatefulWidget {
+
+  Stream<int> timedCounter(Duration interval, [int maxCount]) async* {
+    int i = 0;
+    while (true) {
+      await Future.delayed(interval);
+      yield i++;
+      if (i == maxCount) break;
+    }
+  }
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -46,6 +48,7 @@ class _HomeState extends State<Home> {
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: ${message}");
+
         showDialog(
           context: context,
           builder: (context) => AlertDialog(

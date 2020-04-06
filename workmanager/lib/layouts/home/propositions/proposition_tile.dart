@@ -20,7 +20,7 @@ class PropositionTile extends StatefulWidget{
 }
 class _PropositionsTileState extends State<PropositionTile>{
 
-  bool selected= false;
+  bool selected= true;
 
 
 
@@ -69,84 +69,91 @@ class _PropositionsTileState extends State<PropositionTile>{
                         },
                       ),
                     ),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10,),
-                        Text("Auteur: ${widget.propositionsData
-                            .senderInfo['senderName'].toUpperCase()} "),
-                      ],
-                    ),
-                    SizedBox(height: 2,),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10,),
-                        Text("début: ${widget.propositionsData.dat['startDate']
-                            .toString()
-                            .split(" ")[0]}        fin: ${widget
-                            .propositionsData.dat['endDate'].toString().split(
-                            " ")[0]}"),
-                      ],
-                    ),
-                    SizedBox(height: 5,),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: RaisedButton(
-                            color: Colors.white,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 5),
-                              child: Row(children: <Widget>[
-                                Text("accepter",
-                                    style: TextStyle(color: Colors.black87)),
-                                SizedBox(width: 5,),
-                                Icon(Icons.done_outline,
-                                  color: Colors.greenAccent,)
-                              ]),
-                            ),
-                            onPressed: () {
-                              try {
-                                PropositionDao(uid: user.uid).acceptProposition(
-                                    widget.propositionsData);
-                                Alert().goodAlert(context, "Proposition acceptée", "le contrat sera crée conformément aux termes ");
-                              }catch(e){
-                                print(e);
-                                Alert().badAlert(context, "problème survenu", "l'opération n'a pas pu etre éffectuée...");
-                              }
-                            },
+                    Visibility(
+                      visible: !selected,
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              SizedBox(width: 10,),
+                              Text("Auteur: ${widget.propositionsData
+                                  .senderInfo['senderName'].toUpperCase()} "),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: 10,),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: RaisedButton(
-                            color: Colors.white,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 5),
-                              child: Row(children: <Widget>[
-                                Text("refuser",
-                                  style: TextStyle(color: Colors.black87),),
-                                SizedBox(width: 5,),
-                                Icon(Icons.clear, color: Colors.red,)
-                              ]),
-                            ),
-                            onPressed: () async {
-                              try {
-                                await PropositionDao(uid: user.uid)
-                                    .refuseProposition(widget.propositionsData).then((value){
-                                      Alert().goodAlert(context, "Opération réussie", "la proposition a bien été rejetée");
-                                });
+                          SizedBox(height: 2,),
+                          Row(
+                            children: <Widget>[
+                              SizedBox(width: 10,),
+                              Text("début: ${widget.propositionsData.dat['startDate']
+                                  .toString()
+                                  .split(" ")[0]}        fin: ${widget
+                                  .propositionsData.dat['endDate'].toString().split(
+                                  " ")[0]}"),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: RaisedButton(
+                                  color: Colors.white,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 5),
+                                    child: Row(children: <Widget>[
+                                      Text("accepter",
+                                          style: TextStyle(color: Colors.black87)),
+                                      SizedBox(width: 5,),
+                                      Icon(Icons.done_outline,
+                                        color: Colors.greenAccent,)
+                                    ]),
+                                  ),
+                                  onPressed: () {
+                                    try {
+                                      PropositionDao(uid: user.uid).acceptProposition(
+                                          widget.propositionsData);
+                                      Alert().goodAlert(context, "Proposition acceptée", "le contrat sera crée conformément aux termes ");
+                                    }catch(e){
+                                      print(e);
+                                      Alert().badAlert(context, "problème survenu", "l'opération n'a pas pu etre éffectuée...");
+                                    }
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 10,),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: RaisedButton(
+                                  color: Colors.white,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 5),
+                                    child: Row(children: <Widget>[
+                                      Text("refuser",
+                                        style: TextStyle(color: Colors.black87),),
+                                      SizedBox(width: 5,),
+                                      Icon(Icons.clear, color: Colors.red,)
+                                    ]),
+                                  ),
+                                  onPressed: () async {
+                                    try {
+                                      await PropositionDao(uid: user.uid)
+                                          .refuseProposition(widget.propositionsData).then((value){
+                                            Alert().goodAlert(context, "Opération réussie", "la proposition a bien été rejetée");
+                                      });
 
-                              }catch(e){
-                                print(e);
-                                Alert().badAlert(context, "problème survenu", "l'opération n'a pas pu etre éffectuée...");
-                              }
-                            },
+                                    }catch(e){
+                                      print(e);
+                                      Alert().badAlert(context, "problème survenu", "l'opération n'a pas pu etre éffectuée...");
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -194,86 +201,93 @@ class _PropositionsTileState extends State<PropositionTile>{
                         },
                       ),
                     ),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10,),
-                        Text("Contacté: ${widget.propositionsData
-                            .receiverInfo['receiverName'].toUpperCase()} "),
-                      ],
-                    ),
-                    SizedBox(height: 2,),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10,),
-                        Text("début: ${widget.propositionsData.dat['startDate']
-                            .toString()
-                            .split(" ")[0]}        fin: ${widget
-                            .propositionsData.dat['endDate'].toString().split(
-                            " ")[0]}"),
-                      ],
-                    ),
-                    SizedBox(height: 5,),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 10,),
-                        Text("Statut"),
-                        SizedBox(width: 5,),
-                        Text(widget.propositionsData.status,style: TextStyle(color: Colors.green),),
-                      ],
-                    ),
-                    SizedBox(height: 3,),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: RaisedButton(
-                            color: Colors.white,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 5),
-                              child: Row(children: <Widget>[
-                                Text("annuler ",
-                                    style: TextStyle(color: Colors.black87)),
-                                SizedBox(width: 5,),
-                                Icon(Icons.clear,
-                                  color: Colors.red,)
-                              ]),
-                            ),
-                            onPressed: () async{
-                              try {
-                                await PropositionDao(uid: user.uid)
-                                    .deleteProposition(widget.propositionsData).then((value){
-                                      Alert().goodAlert(context, "Opération réussie", "votre proposition a bien été annulée");
-                                });
+                    Visibility(
+                      visible: !selected,
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              SizedBox(width: 10,),
+                              Text("Contacté: ${widget.propositionsData
+                                  .receiverInfo['receiverName'].toUpperCase()} "),
+                            ],
+                          ),
+                          SizedBox(height: 2,),
+                          Row(
+                            children: <Widget>[
+                              SizedBox(width: 10,),
+                              Text("début: ${widget.propositionsData.dat['startDate']
+                                  .toString()
+                                  .split(" ")[0]}        fin: ${widget
+                                  .propositionsData.dat['endDate'].toString().split(
+                                  " ")[0]}"),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Row(
+                            children: <Widget>[
+                              SizedBox(width: 10,),
+                              Text("Statut"),
+                              SizedBox(width: 5,),
+                              Text(widget.propositionsData.status,style: TextStyle(color: Colors.green),),
+                            ],
+                          ),
+                          SizedBox(height: 3,),
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: RaisedButton(
+                                  color: Colors.white,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 5),
+                                    child: Row(children: <Widget>[
+                                      Text("annuler ",
+                                          style: TextStyle(color: Colors.black87)),
+                                      SizedBox(width: 5,),
+                                      Icon(Icons.clear,
+                                        color: Colors.red,)
+                                    ]),
+                                  ),
+                                  onPressed: () async{
+                                    try {
+                                      await PropositionDao(uid: user.uid)
+                                          .deleteProposition(widget.propositionsData).then((value){
+                                            Alert().goodAlert(context, "Opération réussie", "votre proposition a bien été annulée");
+                                      });
 
-                              }catch(e){
-                                print(e);
-                                Alert().badAlert(context, "l'opération a échoué", "votre proposition n'a pas pu etre annulée");
-                              }
-                            },
+                                    }catch(e){
+                                      print(e);
+                                      Alert().badAlert(context, "l'opération a échoué", "votre proposition n'a pas pu etre annulée");
+                                    }
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 10,),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: RaisedButton(
+                                  color: Colors.white,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 5),
+                                    child: Row(children: <Widget>[
+                                      Text("modifier",
+                                        style: TextStyle(color: Colors.black87),),
+                                      SizedBox(width: 5,),
+                                      Icon(Icons.edit, color: Colors.cyan,)
+                                    ]),
+                                  ),
+                                  onPressed: () {
+                                    _showSettingsPanel(widget.propositionsData);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: 10,),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: RaisedButton(
-                            color: Colors.white,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 5),
-                              child: Row(children: <Widget>[
-                                Text("modifier",
-                                  style: TextStyle(color: Colors.black87),),
-                                SizedBox(width: 5,),
-                                Icon(Icons.edit, color: Colors.cyan,)
-                              ]),
-                            ),
-                            onPressed: () {
-                              _showSettingsPanel(widget.propositionsData);
-                            },
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -33,7 +33,7 @@ class _DayListState extends State<DayList>{
       return Scaffold(
         body: Container(
           padding: EdgeInsets.all( 60),
-          child: Text("aucun contrat pour le moment",style: TextStyle(color: Colors.black87,fontSize: 20),),
+          child: Text("aucune journée déclarée pour le moment",style: TextStyle(color: Colors.black87,fontSize: 20),),
         ),
       );
     }

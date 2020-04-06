@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:intl/intl.dart';
 import 'package:work_manager/layouts/home/contract/planning/day/custom_time_slots.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/models/user.dart';
@@ -41,6 +41,7 @@ class _DayTileState extends State<DayTile>{
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting('fr-FR');
     if(widget.dayData.startValidated)
       startState= Icon(Icons.check_circle_outline,
         color: Colors.green,);
@@ -67,7 +68,7 @@ class _DayTileState extends State<DayTile>{
 
     // TODO: implement build
     final user = Provider.of<User>(context);
-    if (widget.contractData.employerId != user.uid) {  //  controle la provenance de la proposition
+    if (widget.contractData.employerId == user.uid) {  //  controle la provenance de la proposition
       return GestureDetector(
         child: Padding(
           padding: EdgeInsets.only(top: 5.0),
@@ -81,26 +82,26 @@ class _DayTileState extends State<DayTile>{
                 height:  100.0,
                 child: Column(
                   children: <Widget>[
-                    SizedBox(height: 2,),
+                    SizedBox(height: 5,),
                     Row(
                       children: <Widget>[
                         SizedBox(width: 90,),
                         Text(weekday[widget.dayData.startDate.weekday-1]),
-                        SizedBox(width: 10,),
-                        Text( new DateFormat.yMMMd().format(widget.dayData.startDate) ),
+                        SizedBox(width: 7,),
+                        Text( new DateFormat.yMMMMd('fr-FR').format(widget.dayData.startDate) ),
                       ],
                     ),
                     Row(
                       children: <Widget>[
                         SizedBox(width: 20,),
-                        Text("début: ${DateFormat.Hm().format(widget.dayData.startDate)}                   fin: ${DateFormat.Hm().format(widget
+                        Text("début: ${DateFormat.Hm('fr-FR').format(widget.dayData.startDate)}                   fin: ${DateFormat.Hm().format(widget
                             .dayData.endDate)}"),
                         SizedBox(width: 40,),
                         Icon(Icons.calendar_today),
                         indicator,
                       ],
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(height: 7,),
                     Row(
                       children: <Widget>[
                         Container(
@@ -194,8 +195,8 @@ class _DayTileState extends State<DayTile>{
                       children: <Widget>[
                         SizedBox(width: 90,),
                         Text(weekday[widget.dayData.startDate.weekday-1]),
-                        SizedBox(width: 10,),
-                        Text( new DateFormat.yMMMd().format(widget.dayData.startDate) ),
+                        SizedBox(width: 7,),
+                        Text( new DateFormat.yMMMMd('fr-FR').format(widget.dayData.startDate) ),
                       ],
                     ),
                     SizedBox(height: 5,),

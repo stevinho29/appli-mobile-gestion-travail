@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:work_manager/models/user.dart';
 
 
+import '../main_home_layout.dart';
 import 'new_tile.dart';
 
 class News extends StatefulWidget{
@@ -26,30 +27,23 @@ class _NewsState extends State<News>{
 
     final user = Provider.of<User>(context);
     // TODO: implement build
-    return StreamBuilder<List<News>>(
+    return StreamBuilder<int>(
       stream: null,
       builder: (context, snapshot) {
-        List list= snapshot.data;
+        //List list= snapshot.data;
         if (snapshot.hasData) {
           return ListView.builder(
             itemBuilder: (context, index) {
-              return NewsTile(propositionsData: list[index]);
+             // return NewsTile(propositionsData: list[index]);
+              return Scaffold(
+                body: Center(child: Text(snapshot.toString())),
+              );
             },);
         }else
           return Container(
-            child: Column(
-              children: <Widget>[
-                FlatButton(
-                  child: Text('I like puppies'),
-                  onPressed: () => _fcm.subscribeToTopic('puppies'),
-                ),
-
-                FlatButton(
-                  child: Text('I hate puppies'),
-                  onPressed: () => _fcm.unsubscribeFromTopic('puppies'),
-                ),
-              ],
-            ),
+              child: ListTile(
+                title: Center(child: Icon(Icons.more_horiz)),
+              ),
           );
       }
     );

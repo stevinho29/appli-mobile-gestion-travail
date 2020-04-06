@@ -23,6 +23,7 @@ class _MainHomeState extends State<MainHome>{
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
       child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 5),
       children: <Widget>[
         Text("Actualités"),
         SizedBox(height: 10),
@@ -50,6 +51,7 @@ class _MainHomeState extends State<MainHome>{
                   width: 2.0,
                   style: BorderStyle.solid) ),
           height: 180,
+
           child: PropositionsOverview(),
         ),
       ],

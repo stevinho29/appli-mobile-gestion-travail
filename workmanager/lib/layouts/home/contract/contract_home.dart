@@ -1,14 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/layouts/home/contract/planning/create_planning.dart';
 import 'package:work_manager/layouts/home/contract/planning/main_planning.dart';
 import 'package:work_manager/layouts/home/contract/show_contract.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/services/databases/planningDao.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class ContractHome extends StatelessWidget{
+class ContractHome extends StatefulWidget {
   Contract contract;
   ContractHome({this.contract});
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _ContractHomeState();
+  }
+}
+class _ContractHomeState extends State<ContractHome>{
+  List<String> weekday= ['Lundi', 'Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+  bool notVariable= false;
+  @override
+  void initState() {
+    initializeDateFormatting('fr-FR');
+    if(widget.contract.planningVariable)
+        notVariable= false;
+    else
+      notVariable= true;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -23,11 +45,21 @@ class ContractHome extends StatelessWidget{
                   child: ListTile(
                     title: Column(
                       children: <Widget>[
-                        Text("Contrat N° ${contract.documentId}", style: TextStyle(color: Colors.deepPurple,fontSize: 15),),
+                        Text("Contrat N° ${widget.contract.documentId}", style: TextStyle(color: Colors.deepPurple,fontSize: 15),),
                         SizedBox(height: 10,),
-                        Text("Employeur: ${contract.employerInfo['employerName'].toUpperCase()}",style: TextStyle(color: Colors.deepPurple,fontSize: 15.5)),
+                        Row(
+                          children: <Widget>[
+                            Text("Début:"),
+                            Text("${weekday[(widget.contract.startDate.weekday-1)]} ${ DateFormat.yMMMMd('fr-FR').format(widget.contract.startDate)}",style: TextStyle(color: Colors.deepPurple,fontSize: 15.5)),
+                          ],
+                        ),
                         SizedBox(height: 10,),
-                        Text("Prestataire: ${contract.employeeInfo['employeeName'].toUpperCase()}",style: TextStyle(color: Colors.deepPurple,fontSize: 15.5)),
+                        Row(
+                          children: <Widget>[
+                            Text("Fin: "),
+                            Text("${weekday[(widget.contract.endDate.weekday-1)]} ${ DateFormat.yMMMMd('fr-FR').format(widget.contract.endDate)}",style: TextStyle(color: Colors.deepPurple,fontSize: 15.5)),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -65,7 +97,7 @@ class ContractHome extends StatelessWidget{
                                   onPressed: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => ShowContract(contract: contract)),
+                                      MaterialPageRoute(builder: (context) => ShowContract(contract: widget.contract)),
                                     );
                                   },
                                 ),
@@ -75,7 +107,7 @@ class ContractHome extends StatelessWidget{
                             ],
                           ),
                           SizedBox(height: 20,),
-                          Container(
+                          notVariable ? SizedBox() :Container(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: RaisedButton(
                               color: Colors.white,
@@ -95,7 +127,7 @@ class ContractHome extends StatelessWidget{
                                  if(!result){
                                    Navigator.push(
                                      context,
-                                     MaterialPageRoute(builder: (context) => CreatePlanning(contract: contract)),
+                                     MaterialPageRoute(builder: (context) => CreatePlanning(contract: widget.contract)),
                                    );
                                  }else{
                                    Alert().badAlert(context, "Planning en cours", "un planning est déja entamé. Vous pourrez déclarer un nouveau 3 jours avant la fin de celui-ci");
@@ -106,7 +138,7 @@ class ContractHome extends StatelessWidget{
                             ),
                           ),
                           SizedBox(height: 20,),
-                          Container(
+                          notVariable ? SizedBox():Container(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: RaisedButton(
                               color: Colors.white,
@@ -124,7 +156,7 @@ class ContractHome extends StatelessWidget{
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => PlanningOverview(contract: contract) ),
+                                  MaterialPageRoute(builder: (context) => PlanningOverview(contract: widget.contract) ),
                                 );
                               },
                             ),
@@ -140,6 +172,7 @@ class ContractHome extends StatelessWidget{
       ),
     );
   }
+
 
 
 }
