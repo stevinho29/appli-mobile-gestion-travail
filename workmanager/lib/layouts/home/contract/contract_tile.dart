@@ -160,7 +160,7 @@ class _ContractTileState extends State<ContractTile>{
                     Row(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          padding: EdgeInsets.symmetric(horizontal: 85),
                           child: RaisedButton(
                             color: Colors.white,
                             child: Container(

@@ -21,96 +21,78 @@ class CustomTimeSlot extends StatefulWidget{
 class _CustomTimeSlotState extends State<CustomTimeSlot>{
   List<String> weekday= ['Lundi', 'Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 
-  TimeOfDay startHour= TimeOfDay.now();
-  TimeOfDay endHour= TimeOfDay.now();
+
   DateTime helperStart;
   DateTime helperEnd;
   String error="";
   @override
   Widget build(BuildContext context) {
+    TimeOfDay startHour= TimeOfDay.fromDateTime(widget.dayData.startHour);
+    TimeOfDay endHour= TimeOfDay.fromDateTime(widget.dayData.endHour);
     // TODO: implement build
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 90,horizontal: 35),
+        padding: EdgeInsets.symmetric(vertical: 70,horizontal: 35),
         child: Column(
           children: <Widget>[
-            Text(weekday[widget.dayData.startDate.weekday-1]),
+            Text(weekday[widget.dayData.startHour.weekday-1]),
             SizedBox(width: 10,),
-            Text(DateFormat.yMMMd().format(widget.dayData.startDate)),
+            Text(DateFormat.yMMMd().format(widget.dayData.startHour)),
             Icon(Icons.watch_later,size: 100,),
             SizedBox(height: 30,),
-            Container(
-              child: Row(
-                children: <Widget>[
-                  SizedBox(width: 50,),
-                  Card(child: Container(
-                    height: 40,
-                    width: 60,
-                    child: Center(child: Text("début")),
-                  ),),
-                  SizedBox(width: 40,),
-                  Card(child: Container(
-                    height: 40,
-                    child: GestureDetector(child: Center(child:Text(widget.dayData.startDate.hour.toString() +" H : "+ widget.dayData.startDate.minute.toString()+" m" )),
-                        onTap: () async {
-                          await showTimePicker(context: context, initialTime: TimeOfDay.now()).then((value) {
-                            setState(() {
-                              startHour= value ?? startHour;
-                              //widget.dayData.startDate= widget.dayData.startDate.add(new Duration(hours: startHour.hour,minutes: startHour.minute));
-                              helperStart= widget.dayData.startDate;
+            Card(
+              child: GestureDetector(
+                child: ListTile(
+                  leading: Text("Début"),
+                  title: Center(child: Text(DateFormat.Hm().format(widget.dayData.startHour))),
+                  trailing: Icon(Icons.watch_later),
+                ),
+                onTap: () async {
+                  await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(widget.dayData.startHour)).then((value) {
+                    setState(() {
+                      startHour= value ?? startHour;
+                      helperStart= widget.dayData.startHour;
 
-                              widget.dayData.startDate= DateTime(helperStart.year,helperStart.month,helperStart.day,startHour.hour,startHour.minute);
+                      widget.dayData.startHour= DateTime(helperStart.year,helperStart.month,helperStart.day,startHour.hour,startHour.minute);
 
-                              print(widget.dayData.startDate);
-                            });
-                          });
+                      print(widget.dayData.startHour);
 
-                        }),
-                  ),),
-                  SizedBox(width: 20,),
-                ],
+                    });
+                  });
+                },
               ),
             ),
+                  SizedBox(width: 20,),
             SizedBox(height: 10,),
-            Container(
-              child: Row(
-                children: <Widget>[
-                  SizedBox(width: 50,),
-                   Card(
-                     child: Container(
-                      height: 40,
-                      width: 60,
-                      child: Center(child: Text("fin")),
-                  ),
-                   ),
-                  SizedBox(width: 40,),
-                  Card(child: Container(
-                    height: 40,
-                    child: GestureDetector(child: Center(child:Text(widget.dayData.endDate.hour.toString() +" H : "+ widget.dayData.endDate.minute.toString()+" m" )),
-                    onTap: () async {
-                      await showTimePicker(context: context, initialTime: TimeOfDay.now()).then((value) {
-                        setState(() {
-                        endHour= value ?? endHour;
-                        //widget.dayData.endDate= widget.dayData.endDate.add(new Duration(hours: endHour.hour,minutes: endHour.minute));
-                        helperEnd= widget.dayData.endDate;
 
-                        widget.dayData.endDate= DateTime(helperEnd.year,helperEnd.month,helperEnd.day,endHour.hour,endHour.minute);
+                  Card(
+                    child: GestureDetector(
+                      child: ListTile(
+                        leading: Text("Fin"),
+                        title: Center(child: Text(DateFormat.Hm().format(widget.dayData.endHour))),
+                        trailing: Icon(Icons.watch_later),
+                      ),
+                      onTap: () async {
+                        await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(widget.dayData.endHour)).then((value) {
+                          setState(() {
+                            endHour= value ?? endHour;
+                            helperEnd= widget.dayData.endHour;
 
-                        print(widget.dayData.endDate);
+                            widget.dayData.endHour= DateTime(helperEnd.year,helperEnd.month,helperEnd.day,endHour.hour,endHour.minute);
+
+                            print(widget.dayData.endHour);
+
+                          });
                         });
-                      });
-
-                    },),
-                  ),),
+                      },
+                    ),
+                  ),
                   SizedBox(width: 20,),
-                ],
-              ),
-            ),
             SizedBox(height: 15,),
             Row(
               children: <Widget>[
                 SizedBox(width: 45,),
-                Text(error,style: TextStyle(color: Colors.red,fontSize: 15),),
+                Text(error,style: TextStyle(color: Colors.red,fontSize: 13),),
               ],
             ),
             Container(
@@ -139,8 +121,8 @@ class _CustomTimeSlotState extends State<CustomTimeSlot>{
                     setState(() {
                       error= "";
                       Map<String,DateTime> dat= new Map();
-                      dat['startDate']= widget.dayData.startDate;
-                      dat['endDate']= widget.dayData.endDate;
+                      dat['startHour']= widget.dayData.startHour;
+                      dat['endHour']= widget.dayData.endHour;
                       try {
                         PlanningDao().updateDayOfPlanningData(widget.dayData,
                             dat).then((value) {

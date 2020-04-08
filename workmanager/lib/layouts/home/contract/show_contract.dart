@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-//import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/layouts/home/contract/Exception_in_contract.dart';
@@ -8,7 +6,7 @@ import 'package:work_manager/layouts/home/contract/exceptions/main_exceptions.da
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/contractDao.dart';
-import 'package:work_manager/services/pdf.dart';
+
 
 import 'contract_setting.dart';
 

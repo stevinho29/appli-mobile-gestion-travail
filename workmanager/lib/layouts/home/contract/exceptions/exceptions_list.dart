@@ -7,8 +7,9 @@ import 'exception_tile.dart';
 
 class ExceptionList extends StatefulWidget{
 
+  Contract contract;
   List<Exceptions> exceptionList;
-  ExceptionList({this.exceptionList});
+  ExceptionList({this.contract,this.exceptionList});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -37,7 +38,7 @@ class _ExceptionListState extends State<ExceptionList>{
       return ListView.builder(
         itemCount: widget.exceptionList.length,
         itemBuilder: (context, index) {
-          return ExceptionTile(exceptionData: widget.exceptionList[index]);
+          return ExceptionTile(contract: widget.contract,exceptionData: widget.exceptionList[index]);
         },
       );
     }

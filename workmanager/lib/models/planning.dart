@@ -14,22 +14,22 @@ Planning(this.documentId,this.contratId,this.startDate,this.endDate);
 
 class Day{
   
-  String planningId;
+  String contractId;
   String documentId;
-  DateTime startDate;  // jour et heure de début fixée
-  DateTime endDate;  // jour et heure de fin fixée
+  DateTime startHour;  // jour et heure de début fixée
+  DateTime endHour;  // jour et heure de fin fixée
   bool startValidated; // si le début de séance a été validé ( la séance a été crée)
   bool endValidated; // si la fin de séance a été validée ( la séance a été crée)
   String QR;        // QR code associé à la journée
   
-    Day(this.documentId,this.planningId,this.startDate,this.endDate,this.startValidated,this.endValidated,this.QR);
+    Day(this.documentId,this.contractId,this.startHour,this.endHour,this.startValidated,this.endValidated,this.QR);
 }
 class Seance{
   
   String dayId;
   String documentId;
-  DateTime startDate;  // date de début réelle d'une session de travail journalière
-  DateTime endDate;     // date de fin du réelle d'une session de travail journalière
+  DateTime startHour;  // date de début réelle d'une session de travail journalière
+  DateTime endHour;     // date de fin du réelle d'une session de travail journalière
   String QR;        // QR code effectivement scanné cette journée 
-Seance(this.documentId,this.dayId,this.startDate,this.endDate,this.QR);
+Seance(this.documentId,this.dayId,this.startHour,this.endHour,this.QR);
 }

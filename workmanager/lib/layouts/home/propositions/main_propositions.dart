@@ -27,7 +27,9 @@ class _PropositionsOverviewState extends State<PropositionsOverview>{
         builder: (context, snapshot) {
           List<Proposition> list= snapshot.data;
           if (snapshot.hasData) {
-            print("dans MAIN PROPOSITION  ${list[0].dat['endDate']}");
+            try {
+              print("dans MAIN PROPOSITION  ${list[0].dat['endDate']}");
+            }catch(e){print(e);}
             return  PropositionList(propositionList: list);
           }else
             return Container(

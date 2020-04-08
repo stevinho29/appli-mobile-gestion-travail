@@ -25,7 +25,6 @@ class DayTile extends StatefulWidget{
     // TODO: implement createState
     return _DayTileState();
   }
-
 }
 
 class _DayTileState extends State<DayTile>{
@@ -56,7 +55,7 @@ class _DayTileState extends State<DayTile>{
       endState= Icon(Icons.check_circle_outline,
         color: Colors.black87,);
 
-    if(widget.dayData.endDate.difference(DateTime.now()).inMilliseconds >0)
+    if(widget.dayData.endHour.difference(DateTime.now()).inMilliseconds >0)
       indicator= Icon(Icons.fiber_manual_record,color: Colors.green);
     else
       indicator= Icon(Icons.fiber_manual_record,color: Colors.amber);
@@ -86,16 +85,16 @@ class _DayTileState extends State<DayTile>{
                     Row(
                       children: <Widget>[
                         SizedBox(width: 90,),
-                        Text(weekday[widget.dayData.startDate.weekday-1]),
+                        Text(weekday[widget.dayData.startHour.weekday-1]),
                         SizedBox(width: 7,),
-                        Text( new DateFormat.yMMMMd('fr-FR').format(widget.dayData.startDate) ),
+                        Text( new DateFormat.yMMMMd('fr-FR').format(widget.dayData.startHour) ),
                       ],
                     ),
                     Row(
                       children: <Widget>[
                         SizedBox(width: 20,),
-                        Text("début: ${DateFormat.Hm('fr-FR').format(widget.dayData.startDate)}                   fin: ${DateFormat.Hm().format(widget
-                            .dayData.endDate)}"),
+                        Text("début: ${DateFormat.Hm('fr-FR').format(widget.dayData.startHour)}                   fin: ${DateFormat.Hm().format(widget
+                            .dayData.endHour)}"),
                         SizedBox(width: 40,),
                         Icon(Icons.calendar_today),
                         indicator,
@@ -143,7 +142,9 @@ class _DayTileState extends State<DayTile>{
                               ]),
                             ),
                             onPressed: () async {
-                              if(widget.dayData.startDate.difference(DateTime.now()).inMinutes > 0) {
+                              print("DIFFERENCE ${widget.dayData.startHour.difference(DateTime.now()).inMinutes}");
+                              if(widget.dayData.startHour.difference(DateTime.now()).inMinutes > 0) {
+
                                 try {
                                   await PlanningDao().deleteDayOfPlanning(
                                       widget.dayData).then((value) {
@@ -194,17 +195,17 @@ class _DayTileState extends State<DayTile>{
                     Row(
                       children: <Widget>[
                         SizedBox(width: 90,),
-                        Text(weekday[widget.dayData.startDate.weekday-1]),
+                        Text(weekday[widget.dayData.startHour.weekday-1]),
                         SizedBox(width: 7,),
-                        Text( new DateFormat.yMMMMd('fr-FR').format(widget.dayData.startDate) ),
+                        Text( new DateFormat.yMMMMd('fr-FR').format(widget.dayData.startHour) ),
                       ],
                     ),
                     SizedBox(height: 5,),
                     Row(
                       children: <Widget>[
                         SizedBox(width: 30,),
-                        Text("début: ${DateFormat.Hm().format(widget.dayData.startDate)}                   fin: ${DateFormat.Hm().format(widget
-                            .dayData.endDate)}"),
+                        Text("début: ${DateFormat.Hm().format(widget.dayData.startHour)}                   fin: ${DateFormat.Hm().format(widget
+                            .dayData.endHour)}"),
                         SizedBox(width: 30,),
                         Icon(Icons.calendar_today),
                         indicator,
@@ -229,12 +230,11 @@ class _DayTileState extends State<DayTile>{
                             ),
                             onPressed: () {
                               Map<String,DateTime> dat= new Map();
-                              dat['startDate']= DateTime.now();
-                              dat['endDate']= null;
+                              dat['startHour']= DateTime.now();
+                              dat['endHour']= null;
                               if(!widget.dayData.startValidated) {
-                                if (widget.dayData.startDate
-                                    .difference(DateTime.now())
-                                    .inMinutes > 15 && widget.dayData.endDate
+                                if (DateTime.now().difference(widget.dayData.startHour)
+                                    .inMinutes > 0 && widget.dayData.endHour
                                     .difference(DateTime.now())
                                     .inMinutes > 15) {
                                   PositionValidator()
@@ -262,7 +262,7 @@ class _DayTileState extends State<DayTile>{
                                                 startState = Icon(
                                                   Icons.check_circle_outline,
                                                   color: Colors.green,);
-                                                widget.dayData.startValidated= false;
+                                                widget.dayData.startValidated= true;
                                               });
                                             });
                                           } catch (e) {
@@ -286,7 +286,7 @@ class _DayTileState extends State<DayTile>{
                                 } else {
                                   Alert().badAlert(
                                       context, "Validation impossible",
-                                      "impossible de valider l'arrivée plus de 15 minutes avant et moins de 15 minutes avant la fin de la séance ");
+                                      "impossible de valider l'arrivée avant le début du créneau avant et moins de 15 minutes avant la fin de la séance ");
                                 }
                               }else{
                                 Alert().badAlert(
@@ -327,17 +327,16 @@ class _DayTileState extends State<DayTile>{
                                         .then((value) async {
                                       if (value) {
                                         Map<String, DateTime> dat = new Map();
-                                        dat['endDate'] = DateTime.now();
+                                        dat['endHour'] = DateTime.now();
                                         try {
                                           await PlanningDao()
                                               .getSeance(widget.dayData)
                                               .then((list) async {
                                             print(" DATE VALID${list[0]
-                                                .startDate}");
-                                            dat['startDate'] = list[0]
-                                                .startDate; // on remet la date de validation à l'arrivée
-                                            widget.dayData.endValidated =
-                                            true; // on valide le départ
+                                                .startHour}");
+                                            dat['startHour'] = list[0]
+                                                .startHour; // on remet la date de validation à l'arrivée
+                                            widget.dayData.endValidated = true; // on valide le départ
                                             await PlanningDao()
                                                 .updateSeanceOfDay(list[0],
                                                 widget.dayData, dat, "no QR")
@@ -350,7 +349,7 @@ class _DayTileState extends State<DayTile>{
                                                 endState = Icon(
                                                   Icons.check_circle_outline,
                                                   color: Colors.green,);
-                                                widget.dayData.endValidated= false;
+                                                widget.dayData.endValidated= true;
                                               });
                                             });
                                           });

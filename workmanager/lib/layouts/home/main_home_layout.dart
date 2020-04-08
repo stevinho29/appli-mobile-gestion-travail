@@ -29,7 +29,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  final Firestore _db = Firestore.instance;
   final FirebaseMessaging _fcm = FirebaseMessaging();
   StreamSubscription iosSubscription;
 
@@ -79,7 +78,7 @@ class _HomeState extends State<Home> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final user = Provider.of<User>(context);
+
   }
 
   final _controller = PageController(

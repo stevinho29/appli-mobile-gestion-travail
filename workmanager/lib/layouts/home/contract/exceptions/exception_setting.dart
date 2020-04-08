@@ -1,52 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/contractDao.dart';
 import 'package:work_manager/shared/constants.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class CreateException extends StatefulWidget{
 
-  Contract contract;
-  CreateException({this.contract});
+class ExceptionSetting extends StatefulWidget{
+
+  Exceptions exceptionData;
+  ExceptionSetting({this.exceptionData});
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _CreateExceptionState();
+    return _ExceptionSettingState();
   }
 
 }
 
-class _CreateExceptionState extends State<CreateException> {
+class _ExceptionSettingState extends State<ExceptionSetting> {
 
   final _formKey = GlobalKey<FormState>();
   String error = "";
   String _currentMotif;
   int _currentPricePerHour;
-
   Map<String, DateTime> dat = new Map();
 
-  DateTime _currentStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
-  DateTime _currentEndDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
-  String _endDate;
+  DateTime _currentStartDate ;
+  DateTime _currentEndDate ;
   String _startDate;
+  String _endDate;
 
-  Future selectedDate(BuildContext context, String side) async {
-    showDatePicker(
-      context: context,
-      initialDate: _currentStartDate,
-      firstDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-      lastDate: DateTime(DateTime.now().year + 1, DateTime.now().month, DateTime.now().day + 1),
-    ).then((value) {
+  Future processDate(String side,DateTime value) async {
       if (side == "left") {
         if (value != null) {
           setState(() {
             _currentStartDate = value;
-            _startDate = value.toString().split(" ")[0];
-            print(_startDate);
+            _startDate= DateFormat.yMd('fr-FR').format(_currentStartDate);
+            print(DateFormat.yMd('fr-FR').format(_currentStartDate));
           });
         }
       }
@@ -54,28 +50,22 @@ class _CreateExceptionState extends State<CreateException> {
         if (value != null) {
           setState(() {
             _currentEndDate = value;
-            _endDate = value.toString().split(" ")[0];
-            print(_endDate);
+            _endDate= DateFormat.yMd('fr-FR').format(_currentEndDate);
+            print(DateFormat.yMd('fr-FR').format(_currentEndDate));
           });
         }
       }
-    });
   }
 
+  @override
+  void initState() {
+  super.initState();
+  initializeDateFormatting('fr-FR');
+  }
 
   @override
   Widget build(BuildContext context) {
-
     final user = Provider.of<User>(context);
-    final myController = TextEditingController();
-
-    @override
-    void dispose() {
-      // Clean up the controller when the widget is removed from the
-      // widget tree.
-      myController.dispose();
-      super.dispose();
-    }
 
     String numberValidator(String value) {
       if (value == null) {
@@ -92,37 +82,29 @@ class _CreateExceptionState extends State<CreateException> {
           return null;
       }
     }
-
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Déclarer un...."),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-      ),
+      resizeToAvoidBottomInset: true,
       body: Container(
-        padding:
-        EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
-              Icon(Icons.calendar_today,size: 40,color: Colors.black87,),
-              SizedBox(height: 10),
+              SizedBox(height: 5),
               TextFormField(
+                initialValue: widget.exceptionData.motif ?? 'non renseigné',
                 style: TextStyle(color: Colors.black87),
-                decoration: textInputDecoration.copyWith(hintText: "motif du ...").copyWith(
-                  labelText: "motif",),
+                decoration: textInputDecoration.copyWith(hintText: "libellé"),
                 validator: (val) {
                   return val.isEmpty ? "veuillez saisir un motif" : null;
                 },
-                onChanged: (val){
+                onChanged: (val) {
                   setState(() => _currentMotif = val);
                 },
-
               ),
               SizedBox(height: 15),
               TextFormField(
+                initialValue: widget.exceptionData.price.toString() ?? '11',
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
@@ -139,7 +121,7 @@ class _CreateExceptionState extends State<CreateException> {
                   setState(() => _currentPricePerHour = num.tryParse(val));
                 },
               ),
-              SizedBox(height: 15,),
+              SizedBox(height: 10),
               Row(
                   children: <Widget>[
                     Text(" début"),
@@ -155,16 +137,14 @@ class _CreateExceptionState extends State<CreateException> {
                                 color: Colors.black87,
                                 width: 2.0,
                                 style: BorderStyle.solid)),
-                        child: Text(_startDate ?? DateTime(DateTime
-                            .now()
-                            .year, DateTime
-                            .now()
-                            .month, DateTime
-                            .now()
-                            .day + 1).toString().split(" ")[0]),
+                        child: Text( _startDate ??DateFormat.yMd('fr-FR').format(widget.exceptionData.startDate)),
                       ),
                       onTap: () {
-                        selectedDate(context, "left");
+                        showDatePicker(context: context, initialDate: _currentStartDate ?? widget.exceptionData.startDate, firstDate: DateTime.now(), lastDate: DateTime(DateTime.now().year + 1, DateTime.now().month, DateTime.now().day + 1),
+                        ).then((value) => {
+                        processDate("left",value)
+                        });
+
                       },
                     ),
                     SizedBox(width: 15,),
@@ -181,16 +161,14 @@ class _CreateExceptionState extends State<CreateException> {
                                 color: Colors.black87,
                                 width: 2.0,
                                 style: BorderStyle.solid)),
-                        child: Text(_endDate ?? DateTime(DateTime
-                            .now()
-                            .year, DateTime
-                            .now()
-                            .month, DateTime
-                            .now()
-                            .day + 1).toString().split(" ")[0]),
+                        child: Text(_endDate ?? DateFormat.yMd('fr-FR').format(widget.exceptionData.endDate) ),
                       ),
                       onTap: () {
-                        selectedDate(context, "right");
+                        showDatePicker(context: context, initialDate: _currentEndDate ?? widget.exceptionData.endDate, firstDate: DateTime.now(), lastDate: DateTime(DateTime.now().year + 1, DateTime.now().month, DateTime.now().day + 1),
+                        ).then((value) => {
+                          processDate("right",value)
+                        });
+
                       },
                     ),
 
@@ -204,13 +182,15 @@ class _CreateExceptionState extends State<CreateException> {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 50),
                       child: Row(children: <Widget>[
-                        Text("déclarer"),
+                        Text("modifier"),
                         SizedBox(width: 5,),
                         Icon(Icons.update)
                       ]),
                     ),
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {
+                        _currentStartDate= _currentStartDate ?? widget.exceptionData.startDate;
+                        _currentEndDate= _currentEndDate ?? widget.exceptionData.endDate;
                         Duration difference = _currentEndDate.difference(
                             _currentStartDate);
                         print(difference);
@@ -219,17 +199,19 @@ class _CreateExceptionState extends State<CreateException> {
                             error = "";
                           });
                           try {
+                            _currentPricePerHour= _currentPricePerHour ?? widget.exceptionData.price;
+                            _currentMotif= _currentMotif ?? widget.exceptionData.motif;
+
                             dat['startDate'] = _currentStartDate ;
                             dat['endDate'] = _currentEndDate ;
-                            await ContractDao(uid: user.uid).createContractException(widget.contract, dat, _currentMotif,_currentPricePerHour)
-                                .then((res) {
-                              Alert().goodAlert(context, "exception enregistrée", "votre exception a été enregistrée avec succès")
+                            await ContractDao().updateContractException(widget.exceptionData, _currentPricePerHour,dat,_currentMotif) .then((res) {
+                              Alert().goodAlert(context, "Exception modifiée", "votre ${_currentMotif} a été modifiée avec succès")
                                   .then((value) => Navigator.pop(context));
                             });
                           } catch (e) {
                             print(e.toString());
                             Alert().badAlert(context, "opération a échoué",
-                                "votre exception n'a pas pu etre enregistrée");
+                                "votre exception: ${_currentMotif}  n'a pas pu etre modifiée");
                           }
                         } else {
                           setState(() {

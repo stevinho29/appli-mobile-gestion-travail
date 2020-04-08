@@ -5,11 +5,13 @@ import 'package:permission_handler/permission_handler.dart';
 
 class PositionValidator {
 
-  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager= true;
+  static Geolocator geolocator = Geolocator()..forceAndroidLocationManager= true;
 
 
   Future<bool> checkIfLocationPermission() async{
     bool result;
+    geolocator = Geolocator()..forceAndroidLocationManager= true;
+
 try {
   await geolocator.checkGeolocationPermissionStatus().then((value) async {
     if (value == GeolocationStatus.granted)
@@ -35,20 +37,29 @@ try {
 
     double distanceBetween;
     Position employeeCurrentPosition;
-    List<Placemark> employerAddress = await geolocator.placemarkFromAddress(address);
+    try {
+      List<Placemark> employerAddress = await geolocator.placemarkFromAddress(
+          address);
 
-    await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((pos) {
-      employeeCurrentPosition = pos;
-      print(pos);
-    });
+      await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((pos) {
+        employeeCurrentPosition = pos;
+        print(pos);
+      });
 
-    distanceBetween= await Geolocator().distanceBetween(employeeCurrentPosition.latitude, employeeCurrentPosition.longitude, employerAddress[0].position.latitude, employerAddress[0].position.longitude);
-    print("DISTANCE $distanceBetween");
-    print(employerAddress[0].position.latitude);
-    if(distanceBetween > 50.0)  // l'employé est trop loin du domicile de l'employeur à plus de 50 m
-      return true;
-    else
+      distanceBetween= await Geolocator().distanceBetween(employeeCurrentPosition.latitude, employeeCurrentPosition.longitude, employerAddress[0].position.latitude, employerAddress[0].position.longitude);
+      print("DISTANCE $distanceBetween");
+      print(employerAddress[0].position.latitude);
+      if(distanceBetween < 50.0)  // l'employé est trop loin du domicile de l'employeur à plus de 50 m
+        return true;
+      else
+        return false;
+    }catch(e){
+      print(e);
+      print("the provided address( address of the employer) is wrong");
       return false;
+    }
+
+
   }
 }
 

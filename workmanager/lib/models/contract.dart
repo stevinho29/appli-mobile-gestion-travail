@@ -31,6 +31,7 @@ class Contract{  // contient des données dénormalisées sur l'employeur et l'e
 class Exceptions{ // congés payés, arret maladie and those stuff
   String contratId;   // l'id du contrat auquel l'exception est rattaché
   String documentId;
+  String origin;   //{employer, employee"} représente l'origine de l'exception: employeur ou employé
   String motif;    // motif
   int price;    // rémunération appliquée pour cette exception
   DateTime startDate; // date de début de l'exception

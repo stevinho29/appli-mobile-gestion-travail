@@ -39,7 +39,7 @@ class _ExceptionsOverviewState extends State<ExceptionsOverview>{
                 ),
                 body: Container(
                     padding: EdgeInsets.all(20),
-                    child: ExceptionList(exceptionList: list))
+                    child: ExceptionList(contract: widget.contract,exceptionList: list))
             );
           }else
             return Scaffold(

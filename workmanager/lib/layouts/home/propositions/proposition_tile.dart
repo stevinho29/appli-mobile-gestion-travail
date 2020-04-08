@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
@@ -21,9 +20,6 @@ class PropositionTile extends StatefulWidget{
 class _PropositionsTileState extends State<PropositionTile>{
 
   bool selected= true;
-
-
-
   @override
   Widget build(BuildContext context) {
 

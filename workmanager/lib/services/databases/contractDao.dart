@@ -53,7 +53,7 @@ class ContractDao{
         'libelle': proposition.libelle,
         'pricePerHour': proposition.price,
         'canceled': false,
-        'dates': dat,
+        'dates': proposition.dat,
         'employerInfo': employerInfo,
         'employeeInfo': employeeInfo,
         'planningVariable':proposition.planningVariable,
@@ -62,14 +62,33 @@ class ContractDao{
 
     } catch(e) {
       print(e);
+      print("failure when attempting to create a contract");
       return null;
     }
   }
 
-  Future createContractException(Contract contract, Map<String,DateTime> dat,String motif,int price){
+  Future updateContractException(Exceptions exceptions,int price,Map<String,DateTime> dat,String motif) async{
     try{
-       return contractCollection.document(contract.documentId).collection("exceptions").document().setData({
+        return await contractCollection.document(exceptions.contratId).collection('exceptions').document(exceptions.documentId)
+            .updateData({
+          'motif':motif,
+          'price':price,
+          'startDate': dat['startDate'],
+          'endDate': dat['endDate']
+        });
+    }catch(e){
+      print(e);
+      print("failure when attempting to uopdate an exception of a contract");
+    }
+  }
+  Future createContractException(Contract contract, Map<String,DateTime> dat,String motif,int price) async{
+    try{
+      String origin;
+      if(contract.employerId== uid) origin= "employer";
+      else origin= "employee";
+       return await contractCollection.document(contract.documentId).collection("exceptions").document().setData({
           'contratId':contract.documentId,
+          'origin': origin,
           'motif':motif,
           'price': price,
           'startDate':dat['startDate'],
@@ -77,12 +96,21 @@ class ContractDao{
         });
     }catch(e){
       print(e);
+      print("failure when attempting to create exception in a contract");
       return null;
+    }
+  }
+  Future deleteContractException(Exceptions exceptionData) async {
+    try{
+      return await contractCollection.document(exceptionData.contratId).collection("exceptions").document(exceptionData.documentId).delete();
+    }catch(e){
+      print(e);
+      print("failure when attempting to delete exception in a contract");
     }
   }
 
   Stream<List<Exceptions>>  getContractExceptions(Contract contract){
-    print("EXCEPTIONS CONTRACT ${contract.documentId}");
+    //print("EXCEPTIONS CONTRACT ${contract.documentId}");
     Stream<List<Exceptions>> list= contractCollection.document(contract.documentId).collection('exceptions').snapshots().map(_fromSnapToExceptions);
     list.listen((event) {
       print(event[0].motif);
@@ -93,7 +121,7 @@ class ContractDao{
 
   List<Exceptions> _fromSnapToExceptions(QuerySnapshot snapshot){
    return snapshot.documents.map((doc) {
-     print(doc.documentID);
+     //print(doc.documentID);
      return Exceptions(
         documentId: doc.documentID,
         contratId: doc.data['contratId'],
@@ -110,7 +138,12 @@ class ContractDao{
 
     Stream<List<Contract>> list= contractCollection.where("employerId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
     list.listen((event) {
-      print(event[0].libelle);
+      try {
+        print("ICI ${event[0].libelle}");
+      }catch(e){
+        print(e);
+        print("failure on getContracts stream");
+        }
     });
     return list;
   }
@@ -118,7 +151,9 @@ class ContractDao{
 
     Stream<List<Contract>> list= contractCollection.where("employeeId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
     list.listen((event) {
-      print(event[0].libelle);
+      try {
+        print(event[0].libelle);
+      }catch(e){print(e);}
     });
     return list;
   }
@@ -153,6 +188,7 @@ class ContractDao{
       return contractCollection.document(contract.documentId).delete();
     }catch(e){
       print(e);
+      print("failure when deleting contract");
       return null;
     }
   }
@@ -170,6 +206,7 @@ class ContractDao{
       }));
     }catch(e){
       print(e);
+      print("failure when cancelling contract");
       return null;
     }
   }

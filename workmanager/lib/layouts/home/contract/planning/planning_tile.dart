@@ -89,7 +89,7 @@ void initState() {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => DayOverview(contract: widget.contractData,planning: widget.planningData)),
+                                MaterialPageRoute(builder: (context) => DayOverview(contract: widget.contractData)),
                               );
                             },
                           ),
@@ -191,7 +191,7 @@ void initState() {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) =>  DayOverview(contract: widget.contractData,planning: widget.planningData)),
+                                MaterialPageRoute(builder: (context) =>  DayOverview(contract: widget.contractData)),
                               );
                             },
                           ),

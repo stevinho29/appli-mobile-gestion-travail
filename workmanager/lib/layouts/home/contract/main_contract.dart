@@ -28,7 +28,9 @@ class _ContractsOverviewState extends State<ContractsOverview>{
           List list= snapshot.data;
           print("LISTE DE CONTRAT $list");
           if (snapshot.hasData) {
-            print("SNAPSHOT $snapshot");
+            try {
+              print("SNAPSHOT $snapshot");
+            }catch(e){print(e);}
             return  Scaffold(
                 appBar: AppBar(
                   centerTitle: true,

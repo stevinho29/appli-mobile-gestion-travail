@@ -5,6 +5,7 @@ import 'package:work_manager/models/planning.dart';
 class PlanningDao{
 
   final CollectionReference planningCollection= Firestore.instance.collection("planning");
+  final CollectionReference contractCollection= Firestore.instance.collection("contracts");
 
   Future updatePlanningData(Contract contract,Map<String,DateTime> dat) async {
     try{
@@ -116,7 +117,7 @@ class PlanningDao{
 
   Future updateDayOfPlanningData(Day day,Map<String,DateTime> dat) async {
     try{
-      return planningCollection.document(day.planningId).collection("days").document(day.documentId).updateData({
+      return await contractCollection.document(day.contractId).collection("days").document(day.documentId).updateData({
         'dates': dat,
         'startValidated':day.startValidated,
         'endValidated': day.endValidated
@@ -130,8 +131,8 @@ class PlanningDao{
   Future createDayOfPlanning(String documentId,Map<String,DateTime> dat,String QR) async {
     try {
       print("creating DAY of PLANNING");
-      return planningCollection.document(documentId).collection("days").document().setData({
-        'planningId':documentId,
+      return await contractCollection.document(documentId).collection("days").document().setData({
+        'contractId':documentId,
         'dates': dat,
         'startValidated':false,
         'endValidated':false,
@@ -145,8 +146,8 @@ class PlanningDao{
 
   // liste de jours contenus dans un planning
 
-  Stream<List<Day>>  getDaysOfPlanning (Planning planning){
-    return planningCollection.document(planning.documentId).collection("days").orderBy("dates.startDate").snapshots().map(_dayOfPlanningListFromSnapshots);
+  Stream<List<Day>>  getDaysOfPlanning (Contract contract){
+    return contractCollection.document(contract.documentId).collection("days").orderBy("dates.startHour").snapshots().map(_dayOfPlanningListFromSnapshots);
 
   }
 
@@ -155,39 +156,56 @@ class PlanningDao{
 
     Map<String,DateTime> dat=  new Map();
     return snapshot.documents.map((doc){
-
-      dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
-      dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-      return Day(doc.documentID,doc.data['planningId'],dat['startDate'],dat['endDate'],doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
+      print("DAYS ${doc.data['contractId']}");
+      dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
+      dat['endHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endHour'].millisecondsSinceEpoch);
+      return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
     }).toList();
   }
 
-  Future deleteDayOfPlanning(Day day){
+  Future deleteDayOfPlanning(Day day) async {
     try{
-      return planningCollection.document(day.planningId).collection("days").document(day.documentId).delete();
+       return await contractCollection.document(day.contractId).collection("days").document(day.documentId).delete();
     }catch(e){
       print(e);
       return null;
     }
   }
 
-Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Planning planning) async {
+Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Contract contract) async {
   Map<String,DateTime> dats=  new Map();
   bool result;
-  print("ENDDATE${dat["endDate"]}");
-    await planningCollection.document(planning.documentId).collection('days').where("dates.endDate",isGreaterThan: dat['startDate']).where("dates.endDate",isLessThan:dat['endDate']).getDocuments().then((docs){
-     List<Day> list=  docs.documents.map((doc){
-       dats['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
-       dats['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-         Day(doc.documentID,doc.data['planningId'],dat['startDate'],dat['endDate'],doc.data['startValidated'],doc.data['endValidated'],doc.data['QR']);
+  print("ENDDATE${dat["endHour"]}");
+  try {
+    await contractCollection.document(contract.documentId).collection('days')
+        .where("dates.endHour", isGreaterThan: dat['startHour']).where(
+        "dates.endHour", isLessThan: dat['endHour']).getDocuments()
+        .then((docs) {
+      List<Day> list = docs.documents.map((doc) {
+        dats['startHour'] = DateTime.fromMillisecondsSinceEpoch(
+            doc.data['dates']['startHour'].millisecondsSinceEpoch);
+        dats['endHour'] = DateTime.fromMillisecondsSinceEpoch(
+            doc.data['dates']['endHour'].millisecondsSinceEpoch);
+        Day(
+            doc.documentID,
+            doc.data['contractId'],
+            dat['startHour'],
+            dat['endHour'],
+            doc.data['startValidated'],
+            doc.data['endValidated'],
+            doc.data['QR']);
       }).toList();
-     if(list.length > 0)
-       result= true;
-     else
-       result= false;
+      if (list.length > 0)
+        result = true;
+      else
+        result = false;
     });
-     print(result);
-     return result;
+    print(result);
+    return result;
+  }catch(e){
+    print(e);
+    print("failure while checking if period of day already exits");
+  }
 }
 
 // DAO POUR LES SEANCES EFFECTIVES  D UN PLANNING DEFINI
@@ -196,8 +214,8 @@ Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Planning pl
   Future createSeanceOfDay(Day day,Map<String,DateTime> dat,String QR) async {  // col Planning => Doc => col Days => Doc => col Seances
     try {
       print("creating SEANCE OF DAY of PLANNING");
-      await updateDayOfPlanningData(day, {'startDate':day.startDate, 'endDate':day.endDate}); // on met à jour le day avec le début de séance et/ou la fin validée
-      return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").document().setData({
+      await updateDayOfPlanningData(day, {'startHour':day.startHour, 'endHour':day.endHour}); // on met à jour le day avec le début de séance et/ou la fin validée
+      return contractCollection.document(day.contractId).collection("days").document(day.documentId).collection("seance").document().setData({
         'dayId':day.documentId,
         'dates': dat,
         'QR': QR ?? "no QR"
@@ -209,8 +227,8 @@ Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Planning pl
   }
   Future updateSeanceOfDay(Seance seance,Day day,dat,String QR) async {
     try{
-      await updateDayOfPlanningData(day, {'startDate':day.startDate, 'endDate':day.endDate}); // on met à jour le day avec le début de séance et/ou la fin validée
-      return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").document(seance.documentId).setData({
+      await updateDayOfPlanningData(day, {'startHour':day.startHour, 'endHour':day.endHour}); // on met à jour le day avec le début de séance et/ou la fin validée
+      return contractCollection.document(day.contractId).collection("days").document(day.documentId).collection("seance").document(seance.documentId).setData({
         'dayId':day.documentId,
         'dates': dat,
         'QR': QR ?? "no QR"
@@ -223,19 +241,18 @@ Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Planning pl
 
   // liste de jours contenus dans un planning
 
-  Stream<List<Seance>>  getSeanceOfDay (Day day){
-    return planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").snapshots().map(_seanceOfDayListFromSnapshots);
-
+  Stream<List<Seance>>  getAllSeance (){
+    return Firestore.instance.collectionGroup("seance").snapshots().map(_seanceOfDayListFromSnapshots);
   }
 
   Future<List<Seance>> getSeance(Day day) async {
     Map<String,DateTime> dat=  new Map();
-   return await planningCollection.document(day.planningId).collection("days").document(day.documentId).collection("seance").getDocuments().then((qShot) {
+   return await contractCollection.document(day.contractId).collection("days").document(day.documentId).collection("seance").getDocuments().then((qShot) {
      return qShot.documents.map((doc){
        print(" SEANCE ${doc.data['dates']}");
-        dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
-        dat['endDate']= DateTime.now();
-      return  Seance(doc.documentID,doc.data['dayId'],dat['startDate'],dat['endDate'],doc.data['QR']);
+        dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
+        dat['endHour']= DateTime.now();
+      return  Seance(doc.documentID,doc.data['dayId'],dat['startHour'],dat['endHour'],doc.data['QR']);
       }).toList();
     });
   }
@@ -245,10 +262,10 @@ Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Planning pl
 
     Map<String,DateTime> dat=  new Map();
     return snapshot.documents.map((doc){
-
-      dat['startDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch);
-      dat['endDate']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch);
-      return Seance(doc.documentID,doc.data['dayId'],dat['startDate'],dat['endDate'],doc.data['QR']);
+      print("ALL ${doc.data['dates']['endHour']}");
+      dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
+      dat['endHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endHour'].millisecondsSinceEpoch);
+      return Seance(doc.documentID,doc.data['dayId'],dat['startHour'],dat['endHour'],doc.data['QR']);
     }).toList();
   }
 

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/planningDao.dart';
 
+import 'create_day.dart';
 import 'day_list.dart';
 
 
 
 class DayOverview extends StatefulWidget{
-  Planning planning;
+
   Contract contract;
-  DayOverview({this.contract,this.planning});
+  DayOverview({this.contract});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -32,7 +32,7 @@ bool permission;
       permission= false;
     // TODO: implement build
     return StreamBuilder<List<Day>>(
-        stream: PlanningDao().getDaysOfPlanning(widget.planning),
+        stream: PlanningDao().getDaysOfPlanning(widget.contract),
         builder: (context, snapshot) {
           List list= snapshot.data;
           print("LISTE DES JOURNEES $list");
@@ -48,29 +48,10 @@ bool permission;
                     child: DayList(contract: widget.contract,dayList: list,)),
               floatingActionButton: permission ? null:FloatingActionButton.extended(
                 onPressed: () async{
-                  await  showDatePicker(context: context, initialDate: widget.planning.startDate, firstDate: widget.planning.startDate, lastDate: widget.planning.endDate).then((value) async {
-
-                    if(value != null ){
-                      Map<String,DateTime> dat= new Map();
-                      dat['startDate']= value;
-                      dat['endDate']= value;
-                      try{
-                        await PlanningDao().checkIfPeriodOfDayAlreadyExist(dat, widget.planning ).then((result) async {
-                        if(!result) {
-                          await PlanningDao().createDayOfPlanning(
-                              widget.planning.documentId, dat, "no QR");
-                          Alert().goodAlert(context, "Journée ajoutée",
-                              "une journée a été ajoutée au planning");
-                        }else{
-                          Alert().badAlert(context, "Opération impossible", "un planning qui chevauche ce créneau existe deja");
-                        }
-                        });
-                      }catch(e){
-                        print(e);
-                        Alert().badAlert(context, "l'Opération a échoué", "une nouvelle journée n'a pas pu etre ajoutée au planning");
-                      }
-                    }
-                 });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CreateDay(contract: widget.contract) ),
+                  );
                 },
                 label: Text('un jour de plus ?'),
                 icon: Icon(Icons.add),

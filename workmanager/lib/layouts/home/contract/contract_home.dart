@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:work_manager/layouts/alerts/alert.dart';
-import 'package:work_manager/layouts/home/contract/planning/create_planning.dart';
-import 'package:work_manager/layouts/home/contract/planning/main_planning.dart';
+import 'package:work_manager/layouts/home/contract/planning/day/create_day.dart';
+import 'package:work_manager/layouts/home/contract/planning/day/main_day.dart';
+import 'package:work_manager/layouts/home/contract/planning/day/seance/main_seance.dart';
 import 'package:work_manager/layouts/home/contract/show_contract.dart';
 import 'package:work_manager/models/contract.dart';
-import 'package:work_manager/services/databases/planningDao.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class ContractHome extends StatefulWidget {
@@ -18,6 +17,7 @@ class ContractHome extends StatefulWidget {
     return _ContractHomeState();
   }
 }
+
 class _ContractHomeState extends State<ContractHome>{
   List<String> weekday= ['Lundi', 'Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
   bool notVariable= false;
@@ -36,7 +36,7 @@ class _ContractHomeState extends State<ContractHome>{
     // TODO: implement build
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 100,horizontal: 30),
+        padding: EdgeInsets.symmetric(vertical: 60,horizontal: 30),
         child:
             Column(
               children: <Widget>[
@@ -73,7 +73,7 @@ class _ContractHomeState extends State<ContractHome>{
 
                     },
                     child: Container(
-                      height: 220.0,
+                      height: notVariable ?150 :300.0,
                       child: Column(
                         children: <Widget>[
                           SizedBox(height: 15,),
@@ -106,8 +106,62 @@ class _ContractHomeState extends State<ContractHome>{
 
                             ],
                           ),
+                          Visibility(
+                            visible: !notVariable,
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(height: 20,),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  child: RaisedButton(
+                                    color: Colors.white,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 5),
+                                      child: Row(children: <Widget>[
+                                        Text(" journée de travail ",
+                                            style: TextStyle(color: Colors.black87)),
+                                        SizedBox(width: 10,),
+                                        Icon(Icons.calendar_today,
+                                          color: Colors.black87,)
+                                      ]),
+                                    ),
+                                    onPressed: () async {
+
+                                         Navigator.push(
+                                           context,
+                                           MaterialPageRoute(builder: (context) => CreateDay(contract: widget.contract)),
+                                         );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  child: RaisedButton(
+                                    color: Colors.white,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 5),
+                                      child: Row(children: <Widget>[
+                                        Text(" planning en cours ",
+                                            style: TextStyle(color: Colors.black87)),
+                                        SizedBox(width: 10,),
+                                        Icon(Icons.edit,
+                                          color: Colors.black87,)
+                                      ]),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => DayOverview(contract: widget.contract) ),
+                                      );
+                                    },
+                                  ),
+                                ),
+
                           SizedBox(height: 20,),
-                          notVariable ? SizedBox() :Container(
+                          Container(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: RaisedButton(
                               color: Colors.white,
@@ -115,50 +169,23 @@ class _ContractHomeState extends State<ContractHome>{
                                 padding: EdgeInsets.symmetric(
                                     vertical: 5, horizontal: 5),
                                 child: Row(children: <Widget>[
-                                  Text("créer un nouveau planning ",
+                                  Text(" journées effectives ",
                                       style: TextStyle(color: Colors.black87)),
-                                  SizedBox(width: 10,),
-                                  Icon(Icons.calendar_today,
-                                    color: Colors.black87,)
+                                  SizedBox(width: 40,),
+                                  Icon(Icons.check_circle_outline,
+                                    color: Colors.green,)
                                 ]),
                               ),
                               onPressed: () async {
-                                await PlanningDao().checkIfPlanningAlreadyExist().then((result) {
-                                 if(!result){
-                                   Navigator.push(
-                                     context,
-                                     MaterialPageRoute(builder: (context) => CreatePlanning(contract: widget.contract)),
-                                   );
-                                 }else{
-                                   Alert().badAlert(context, "Planning en cours", "un planning est déja entamé. Vous pourrez déclarer un nouveau 3 jours avant la fin de celui-ci");
-                                 }
-                               });
 
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => SeanceOverview(contract: widget.contract)),
+                                );
                               },
                             ),
                           ),
-                          SizedBox(height: 20,),
-                          notVariable ? SizedBox():Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: RaisedButton(
-                              color: Colors.white,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 5),
-                                child: Row(children: <Widget>[
-                                  Text("éditer le planning en cours ",
-                                      style: TextStyle(color: Colors.black87)),
-                                  SizedBox(width: 10,),
-                                  Icon(Icons.edit,
-                                    color: Colors.black87,)
-                                ]),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => PlanningOverview(contract: widget.contract) ),
-                                );
-                              },
+                              ],
                             ),
                           ),
                         ],

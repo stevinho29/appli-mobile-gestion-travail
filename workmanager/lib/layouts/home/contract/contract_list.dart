@@ -26,7 +26,7 @@ class _ContractListState extends State<ContractList>{
 
     // TODO: implement build
 
-    if(widget.contractList == null) {
+    if(widget.contractList.length == 0) {
       return Scaffold(
         body: Container(
           padding: EdgeInsets.all( 60),

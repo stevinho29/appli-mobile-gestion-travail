@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_manager/services/auth.dart';
 import 'layouts/splashscreen/splash_screen.dart';
 import 'models/user.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 
 void main() {
