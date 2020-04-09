@@ -35,15 +35,15 @@ Future updateUserDataWithToken(String token,String platform){
 }
   Future createUserData(String name, String surname,String email) async{
       Map<String,String> address= new Map();
-      address['address']= 'not filled';
-      address['code_postal']= 'not filled';
+      address['address']= null;
+      address['code_postal']= null;
     return await userCollection.document(uid).setData({
       'uid':uid,
       'name':name,
       'surname': surname,
       'email': email,
       'address': address ,
-       'tel': 00000000,
+       'tel': 0,
       'findable':true,
       'createdAt': DateTime.now()
     });
@@ -61,7 +61,7 @@ Future updateUserDataWithToken(String token,String platform){
         email: snapshot.data['email'] ?? 'no email',
         address: snapshot.data['address']['address'] ?? 'no address',
         codePostal: snapshot.data['address']['code_postal'] ?? 'no code',
-        tel: snapshot.data['tel'] ?? 00000000,
+        tel: snapshot.data['tel'] ?? 0,
         findable: snapshot.data['findable'],
         createdAt: DateTime.fromMillisecondsSinceEpoch(millis.millisecondsSinceEpoch) ?? DateTime.now() //DateTime.fromMillisecondsSinceEpoch(snapshot.data['createdAt'])
 

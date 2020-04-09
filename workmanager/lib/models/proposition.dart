@@ -21,6 +21,8 @@ class Proposition{  // contient des données dénormalisées sur l'employeur et 
  String  senderId;    // id de l'employeur
  String receiverId;  // id de l'employé
  String libelle;    // libelle de la proposition
+ String origin;     // origine de la proposition employeur/prestataire voulant vendre ses services
+ String description; // descriptif détaillé de la proposition
  int price;
  DateTime sendDate; // date d'envoi de la proposition
  String status;  // la proposition a t-elle été  ["en attente", "REJETE", "ACCEPTE"]
@@ -28,7 +30,7 @@ class Proposition{  // contient des données dénormalisées sur l'employeur et 
  Map<String,DateTime> dat;  // date de début et de fin du contrat
  bool planningVariable;
 
- Proposition({this.documentId,this.senderId,this.receiverId,this.libelle,this.price,this.sendDate,this.status,this.visible,this.dat,this.senderInfo,this.receiverInfo,this.planningVariable});
+ Proposition({this.documentId,this.senderId,this.receiverId,this.libelle,this.origin,this.description,this.price,this.sendDate,this.status,this.visible,this.dat,this.senderInfo,this.receiverInfo,this.planningVariable});
 
 
 

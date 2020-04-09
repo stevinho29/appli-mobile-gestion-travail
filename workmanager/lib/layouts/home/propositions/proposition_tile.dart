@@ -20,6 +20,16 @@ class PropositionTile extends StatefulWidget{
 class _PropositionsTileState extends State<PropositionTile>{
 
   bool selected= true;
+  String statut;
+  @override
+  void initState() {
+  super.initState();
+  if(widget.propositionsData.origin== "employer")
+    statut= "employé";
+  else
+    statut= "employeur";
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -72,8 +82,8 @@ class _PropositionsTileState extends State<PropositionTile>{
                           Row(
                             children: <Widget>[
                               SizedBox(width: 10,),
-                              Text("Auteur: ${widget.propositionsData
-                                  .senderInfo['senderName'].toUpperCase()} "),
+                              Text("Recu de: ${widget.propositionsData
+                                  .senderInfo['senderName'].toUpperCase()}     fonction:$statut"),
                             ],
                           ),
                           SizedBox(height: 2,),
@@ -205,7 +215,7 @@ class _PropositionsTileState extends State<PropositionTile>{
                             children: <Widget>[
                               SizedBox(width: 10,),
                               Text("Contacté: ${widget.propositionsData
-                                  .receiverInfo['receiverName'].toUpperCase()} "),
+                                  .receiverInfo['receiverName'].toUpperCase()}         fonction: $statut"),
                             ],
                           ),
                           SizedBox(height: 2,),

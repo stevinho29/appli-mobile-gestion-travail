@@ -29,18 +29,36 @@ class ContractDao{
     print("object dat ${proposition.dat}" );
 
     Map<String,String> employerInfo= new Map();
-    employerInfo['employerName']= proposition.senderInfo['senderName'];
-    employerInfo['employerSurname']= proposition.senderInfo['senderSurname'];
-    employerInfo['employerEmail']= proposition.senderInfo['senderEmail'];
-    employerInfo['employerAddress']= proposition.senderInfo['senderAddress'];
-    employerInfo['employerCodePostal']= proposition.senderInfo['senderCodePostal'];
-
     Map<String,String> employeeInfo= new Map();
-    employeeInfo['employeeName']= proposition.receiverInfo['receiverName'];
-    employeeInfo['employeeSurname']= proposition.receiverInfo['receiverSurname'];
-    employeeInfo['employeeEmail']= proposition.receiverInfo['receiverEmail'];
-    employeeInfo['employeeAddress']= proposition.receiverInfo['receiverAddress'];
-    employeeInfo['employeeCodePostal']= proposition.receiverInfo['receiverCodePostal'];
+    if(proposition.origin== "employer") {
+      employerInfo['employerName'] = proposition.senderInfo['senderName'];
+      employerInfo['employerSurname'] = proposition.senderInfo['senderSurname'];
+      employerInfo['employerEmail'] = proposition.senderInfo['senderEmail'];
+      employerInfo['employerAddress'] = proposition.senderInfo['senderAddress'];
+      employerInfo['employerCodePostal'] =
+      proposition.senderInfo['senderCodePostal'];
+
+      employeeInfo['employeeName'] = proposition.receiverInfo['receiverName'];
+      employeeInfo['employeeSurname'] =
+      proposition.receiverInfo['receiverSurname'];
+      employeeInfo['employeeEmail'] = proposition.receiverInfo['receiverEmail'];
+      employeeInfo['employeeAddress'] =
+      proposition.receiverInfo['receiverAddress'];
+      employeeInfo['employeeCodePostal'] =
+      proposition.receiverInfo['receiverCodePostal'];
+    }else{
+      employerInfo['employerName'] = proposition.receiverInfo['receiverName'];
+      employerInfo['employerSurname'] = proposition.receiverInfo['receiverSurname'];
+      employerInfo['employerEmail'] = proposition.receiverInfo['receiverEmail'];
+      employerInfo['employerAddress'] = proposition.receiverInfo['receiverAddress'];
+      employerInfo['employerCodePostal'] = proposition.receiverInfo['receiverCodePostal'];
+
+      employeeInfo['employeeName'] = proposition.senderInfo['senderName'];
+      employeeInfo['employeeSurname'] =proposition.senderInfo['senderSurname'];
+      employeeInfo['employeeEmail'] = proposition.senderInfo['senderEmail'];
+      employeeInfo['employeeAddress'] =proposition.senderInfo['senderAddress'];
+      employeeInfo['employeeCodePostal'] =proposition.senderInfo['senderCodePostal'];
+    }
 
     Map<String,DateTime> dat= new Map();
     dat['startDate']= DateTime.now();
@@ -51,6 +69,7 @@ class ContractDao{
         'employerId': proposition.senderId,
         'employeeId': proposition.receiverId,
         'libelle': proposition.libelle,
+        'description': proposition.description,
         'pricePerHour': proposition.price,
         'canceled': false,
         'dates': proposition.dat,
@@ -136,8 +155,8 @@ class ContractDao{
   // liste de contrats
   Stream<List<Contract>> get getContracts{
 
-    Stream<List<Contract>> list= contractCollection.where("employerId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
-    list.listen((event) {
+    return  contractCollection.where("employerId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
+    /*list.listen((event) {
       try {
         print("ICI ${event[0].libelle}");
       }catch(e){
@@ -145,7 +164,7 @@ class ContractDao{
         print("failure on getContracts stream");
         }
     });
-    return list;
+    return list;*/
   }
   Stream<List<Contract>> get getEmployeeContracts{
 
@@ -177,7 +196,7 @@ class ContractDao{
       employerInfo['employerAddress']= doc.data['employerInfo']['employerAddress'] ?? "41 Boulevard Vauban";
       employerInfo['employerCodePostal']= doc.data['employerInfo']['employerCodePostal'] ?? "59000";
       //print("JE REGARDE LADDRESS${doc.data['employerInfo']['employerAddress']}");
-      return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],
+      return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],doc.data['description'] ?? "",
           doc.data['pricePerHour'],DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
       employerInfo,employeeInfo,doc.data['planningVariable'] ??false, ['geolocation']);
     }).toList();

@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/account.dart';
 import 'package:work_manager/layouts/home/work.dart';
 import 'package:work_manager/models/user.dart';
-import 'employe.dart';
+import 'finance.dart';
 import 'main_home.dart';
 
 class Home extends StatefulWidget {
@@ -212,7 +212,7 @@ class _HomeState extends State<Home> {
                   children: <Widget>[
                     MainHome(),
                     Work(),
-                    Employe(),
+                    Finance(),
                     Account()
                   ],
                 ),

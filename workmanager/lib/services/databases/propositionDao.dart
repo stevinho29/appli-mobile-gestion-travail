@@ -28,24 +28,24 @@ class PropositionDao{
     }
   }
 
-  Future createProposition(UserData choosedUserData,String libelle,int price,Map<String,DateTime> dat,bool planningVariable) async {
+  Future createProposition(UserData choosedUserData,String libelle,int price,Map<String,DateTime> dat,bool planningVariable,String origin,String description) async {
 
     UserData userData = await UserDao(uid).getUserData();
+    Map<String, String> senderInfo = new Map();
+    Map<String, String> receiverInfo = new Map();
 
+  senderInfo['senderName'] = userData.name;
+  senderInfo['senderSurname'] = userData.surname;
+  senderInfo['senderEmail'] = userData.email;
+  senderInfo['senderAddress'] = userData.address;
+  senderInfo['senderCodePostal'] = userData.codePostal;
 
-    Map<String,String> senderInfo= new Map();
-    senderInfo['senderName']= userData.name;
-    senderInfo['senderSurname']= userData.surname;
-    senderInfo['senderEmail']= userData.email;
-    senderInfo['senderAddress']= userData.address;
-    senderInfo['senderCodePostal']= userData.codePostal;
+  receiverInfo['receiverName'] = choosedUserData.name;
+  receiverInfo['receiverSurname'] = choosedUserData.surname;
+  receiverInfo['receiverEmail'] = choosedUserData.email;
+  receiverInfo['receiverAddress'] = choosedUserData.address;
+  receiverInfo['receiverCodePostal'] = choosedUserData.codePostal;
 
-    Map<String,String> receiverInfo= new Map();
-    receiverInfo['receiverName']= choosedUserData.name;
-    receiverInfo['receiverSurname']= choosedUserData.surname;
-    receiverInfo['receiverEmail']= choosedUserData.email;
-    receiverInfo['receiverAddress']= choosedUserData.address;
-    receiverInfo['receiverCodePostal']= choosedUserData.codePostal;
 
     try {
       print("create PROPOSITION");
@@ -53,6 +53,8 @@ class PropositionDao{
         'senderId': userData.uid,
         'receiverId': choosedUserData.uid,
         'libelle': libelle,
+        'origin': origin,
+        'description': description,
         'price': price,
         'sendDate': DateTime.now(),
         'status': 'EN ATTENTE',
@@ -101,6 +103,8 @@ class PropositionDao{
         senderId: doc.data['senderId'],
         receiverId: doc.data['receiverId'],
         libelle: doc.data['libelle'],
+          origin: doc.data['origin'] ?? "employer" ,
+          description: doc.data["description"] ?? "",
           sendDate:  DateTime.fromMillisecondsSinceEpoch(doc.data['sendDate'].millisecondsSinceEpoch),
         price: doc.data['price'],
         status: doc.data['status'],

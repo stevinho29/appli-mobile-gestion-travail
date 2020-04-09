@@ -18,6 +18,7 @@ class Contract{  // contient des données dénormalisées sur l'employeur et l'e
   String employerId;
   String employeeId;
   String libelle;
+  String description;   //descriptif des taches ou des compétences
   int pricePerHour;
   DateTime startDate;
   DateTime endDate;
@@ -25,7 +26,7 @@ class Contract{  // contient des données dénormalisées sur l'employeur et l'e
   bool planningVariable;
   List<String> validation;  // wether if the contract need geolcation or QR code for validation
   Exceptions _exceptions;
-    Contract(this.documentId,this.employerId,this.employeeId,this.libelle,this.pricePerHour,this.startDate,this.endDate,this.canceled,this.employerInfo,this.employeeInfo,this.planningVariable,this.validation);
+    Contract(this.documentId,this.employerId,this.employeeId,this.libelle,this.description,this.pricePerHour,this.startDate,this.endDate,this.canceled,this.employerInfo,this.employeeInfo,this.planningVariable,this.validation);
 }
 
 class Exceptions{ // congés payés, arret maladie and those stuff
