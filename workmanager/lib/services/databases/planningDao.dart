@@ -140,10 +140,24 @@ class PlanningDao{
       });
     } catch(e) {
       print(e);
+      print(("failure when attempting to create day of contract"));
       return null;
     }
   }
 
+
+  Future<List<Day>> getDaysList(Contract contract) async{
+    //print("ID CONTRAT ${contract.documentId}");
+    Map<String,DateTime> dat=  new Map();
+  return  await contractCollection.document(contract.documentId).collection("days").getDocuments().then((qShot) {
+      return qShot.documents.map((doc){
+       // print(doc.documentID);
+        dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
+        dat['endHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endHour'].millisecondsSinceEpoch);
+        return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
+      }).toList();
+    });
+  }
   // liste de jours contenus dans un planning
 
   Stream<List<Day>>  getDaysOfPlanning (Contract contract){
@@ -205,6 +219,7 @@ Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Contract co
   }catch(e){
     print(e);
     print("failure while checking if period of day already exits");
+    return true;
   }
 }
 

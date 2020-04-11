@@ -1,4 +1,5 @@
 
+//deprecated
 class Planning{ // un planning est fait périodiquement pour des contrats variables (min 7 jours max 14 jours)
   // il commence toujours un lundi et se termine toujours un dimanche
   

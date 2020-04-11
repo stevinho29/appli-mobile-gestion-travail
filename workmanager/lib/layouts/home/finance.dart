@@ -21,8 +21,12 @@ class _FinanceState extends State<Finance> {
     return Scaffold(
         body: Container(
           padding: EdgeInsets.fromLTRB(20, 5, 20, 0),
-            child: StreamProvider<List<Contract>>.value(
-                value: ContractDao(uid: user.uid).getContracts,
-                child: FinanceHomeList())));
+            child: MultiProvider(
+              providers: [
+                StreamProvider<List<Contract>>(create: (_) => ContractDao(uid: user.uid).getContracts),
+              ],
+              child: FinanceHomeList(),
+            )
+    ));
   }
 }

@@ -65,7 +65,7 @@ class _ExceptionSettingState extends State<ExceptionSetting> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
+    //final user = Provider.of<User>(context);
 
     String numberValidator(String value) {
       if (value == null) {

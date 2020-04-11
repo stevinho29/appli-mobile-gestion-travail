@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/proposition.dart';
+import 'package:work_manager/services/calculator.dart';
 
 class ContractDao{
 
@@ -15,6 +16,17 @@ class ContractDao{
         'libelle': libelle,
         'price':price,
         'dates': dat,
+      });
+    }catch(e){
+      print(e);
+      return null;
+    }
+  }
+
+  Future updateContractCursor(Contract contractData,int cursor) async {
+    try{
+      return contractCollection.document(contractData.documentId).updateData({
+        'cursorPayment': cursor,
       });
     }catch(e){
       print(e);
@@ -71,6 +83,7 @@ class ContractDao{
         'libelle': proposition.libelle,
         'description': proposition.description,
         'pricePerHour': proposition.price,
+        'cursorPayment': 0,
         'canceled': false,
         'dates': proposition.dat,
         'employerInfo': employerInfo,
@@ -127,6 +140,26 @@ class ContractDao{
       print("failure when attempting to delete exception in a contract");
     }
   }
+Future<List<Exceptions>> getExceptionList(Contract contract) async {
+    try{
+      return await contractCollection.document(contract.documentId).collection('exceptions').getDocuments().then((qShot){
+        return qShot.documents.map((doc){
+          return Exceptions(
+              documentId: doc.documentID,
+              contratId: doc.data['contratId'],
+              motif: doc.data['motif'],
+              price: doc.data['price'],
+              startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
+              endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
+          );
+        }).toList();
+      });
+    }catch(e){
+      print(e);
+      print("failure when attempting to get exceptions list");
+      return null;
+    }
+}
 
   Stream<List<Exceptions>>  getContractExceptions(Contract contract){
     //print("EXCEPTIONS CONTRACT ${contract.documentId}");
@@ -197,7 +230,7 @@ class ContractDao{
       employerInfo['employerCodePostal']= doc.data['employerInfo']['employerCodePostal'] ?? "59000";
       //print("JE REGARDE LADDRESS${doc.data['employerInfo']['employerAddress']}");
       return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],doc.data['description'] ?? "",
-          doc.data['pricePerHour'],DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
+          doc.data['pricePerHour'],doc.data['cursorPayment'] ?? 0, DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
       employerInfo,employeeInfo,doc.data['planningVariable'] ??false, ['geolocation']);
     }).toList();
   }
@@ -221,7 +254,7 @@ class ContractDao{
 
       return contractCollection.document(contract.documentId).updateData(({
         'dates':dat,
-        'canceled':false
+        'canceled':true
       }));
     }catch(e){
       print(e);
@@ -229,5 +262,74 @@ class ContractDao{
       return null;
     }
   }
+
+
+
+  ////          PaymentDao
+
+  Future createPayment(Contract contract,Calculator calculator) async{
+    try{
+
+      return await contractCollection.document(contract.documentId).collection("payments").document().setData({
+        'contratId':contract.documentId,
+        'startDate': calculator.startDate,
+        'endDate': calculator.endDate,
+        'cursorPayment': contract.cursorPayment+1,
+        'workedHour': calculator.normalHours,
+        'exceptionsHour':calculator.exceptionsHour,
+        'basicSalary': calculator.normalHourPrice,
+        //'additionalHour':calculator.ov,
+        'overtime':calculator.overtime,
+        'finalSalary':calculator.totalHourPrice
+      });
+    }catch(e){
+      print(e);
+      print("failure when attempting to create a payment in a contract");
+      return null;
+    }
+  }
+  Future deletePayment(Payment paymentData) async {
+    try{
+      return await contractCollection.document(paymentData.contratId).collection("payments").document(paymentData.documentId).delete();
+    }catch(e){
+      print(e);
+      print("failure when attempting to delete exception in a contract");
+    }
+  }
+
+  Stream<List<Payment>>  getPayments(Contract contract){
+    //print("PAYMENTS CONTRACT ${contract.documentId}");
+    Stream<List<Payment>> list= contractCollection.document(contract.documentId).collection('payments').snapshots().map(_fromSnapToPayments);
+    list.listen((event) {
+      try {
+        print(event[0].finalSalary);
+      }catch(e){
+        print(e);
+        print("empty payment list");
+      }
+    });
+
+    return list;
+  }
+
+  List<Payment> _fromSnapToPayments(QuerySnapshot snapshot){
+    return snapshot.documents.map((doc) {
+      //print(doc.documentID);
+      return Payment(
+          documentId: doc.documentID,
+          contratId: doc.data['contratId'],
+          startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
+          endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch),
+          cursorPayment: doc.data['cursorPayment'],
+          workedHour: doc.data['workedHour'],
+          exceptionsHour: doc.data['exceptionsHour'],
+          basicSalary: doc.data['basicSalary'],
+          //additionalHour: doc.data['additionalHour'],
+          overtime: doc.data['overtime'],
+          finalSalary: doc.data['finalSalary']
+      );
+    }).toList();
+  }
+
 
 }

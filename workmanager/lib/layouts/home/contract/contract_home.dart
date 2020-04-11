@@ -23,6 +23,7 @@ class _ContractHomeState extends State<ContractHome>{
   bool notVariable= false;
   @override
   void initState() {
+    super.initState();
     initializeDateFormatting('fr-FR');
     if(widget.contract.planningVariable)
         notVariable= false;

@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/account.dart';
 import 'package:work_manager/layouts/home/work.dart';
-import 'package:work_manager/models/user.dart';
 import 'finance.dart';
 import 'main_home.dart';
 
@@ -46,7 +43,7 @@ class _HomeState extends State<Home> {
 
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: ${message}");
+        print("onMessage: $message");
 
         showDialog(
           context: context,

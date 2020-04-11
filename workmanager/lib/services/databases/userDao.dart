@@ -25,7 +25,7 @@ Future updateUserDataWithToken(String token,String platform){
     tok['token']= token;
     tok['platform']= platform;
     try{
-    userCollection.document(uid).updateData({
+   return userCollection.document(uid).updateData({
       'token':tok,
     });
     }catch(e){

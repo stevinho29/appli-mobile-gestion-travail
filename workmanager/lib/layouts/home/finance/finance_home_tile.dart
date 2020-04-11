@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:work_manager/layouts/home/finance/payment/main_payment.dart';
+import 'package:work_manager/layouts/home/finance/payment/payment_form.dart';
 import 'package:work_manager/models/contract.dart';
-import 'package:work_manager/models/user.dart';
+
 
 
 
@@ -21,8 +25,16 @@ class _FinanceHomeTileState extends State<FinanceHomeTile>{
 
   bool selected= false;
 
+
+  @override
+  void initState() {
+  super.initState();
+  initializeDateFormatting('fr-FR');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final paymentList = Provider.of<List<Payment>>(context) ?? [];
 
     // TODO: implement build
 
@@ -30,12 +42,15 @@ class _FinanceHomeTileState extends State<FinanceHomeTile>{
       return Container(
           child: Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Text(" ${widget.contractData.libelle}",style: TextStyle(fontSize: 20),),
-                ],
+              Card(
+                child:
+                  Row(
+                    children: <Widget>[
+                      SizedBox(width: 28,),
+                      Text(" ${widget.contractData.libelle}",style: TextStyle(fontSize: 20),),
+                    ],
+                  ),
               ),
-              SizedBox(height: 10,),
               Card(
                 child: Container(
                     width: 400,
@@ -48,7 +63,9 @@ class _FinanceHomeTileState extends State<FinanceHomeTile>{
                           padding: EdgeInsets.all(10),
                           child: Row(
                             children: <Widget>[
-                              Expanded(child: Text("Période  en  cours:")),
+                             Text("Période actuelle:   début le  "),
+                              Text(widget.contractData.cursorPayment == 0 ? DateFormat.yMd('fr-FR').format(widget.contractData.startDate):
+                              DateFormat.yMd('fr-FR').format(paymentList[widget.contractData.cursorPayment -1].endDate),style: TextStyle(fontWeight: FontWeight.bold),),
                               SizedBox(width: 15,),
                               Icon(Icons.payment,color: Colors.cyan[100],),
                             ],
@@ -67,10 +84,19 @@ class _FinanceHomeTileState extends State<FinanceHomeTile>{
                               padding: EdgeInsets.all(10),
                               child: Row(
                                 children: <Widget>[
-                                  Expanded(child: Text("fiches de paie")),
-
+                                  Expanded(child: Text("Payer",style: TextStyle(fontWeight: FontWeight.bold),)),
                                   SizedBox(width: 15,),
-                                  Icon(Icons.euro_symbol,color:Colors.cyan[100]),
+                                  RaisedButton(
+                                    color: Colors.cyan[100],
+                                    child: Icon(Icons.call_to_action,color: Colors.white,),
+                                    onPressed: () async {
+                                      await showDialog(context: context,
+                                      child:AlertDialog(
+                                          content:  PaymentForm(contractData: widget.contractData,paymentList: paymentList,),
+
+                                        ));
+                                    },
+                                  ),
                                 ],
 
                               ),
@@ -82,20 +108,24 @@ class _FinanceHomeTileState extends State<FinanceHomeTile>{
                         thickness: 1.0,
                         color: Colors.cyan[100],
                       ),
-                      GestureDetector(
-                        child: InkWell(
-                          splashColor: Colors.blue.withAlpha(30),
-                          child: Container(
+                      Container(
                             padding: EdgeInsets.all(10),
                             child: Row(
                               children: <Widget>[
-                                Expanded(child: Text("payer")),
+                                Expanded(child: Text("Historique",style: TextStyle(fontWeight: FontWeight.bold),)),
                                 SizedBox(width: 50,),
-                                Icon(Icons.call_to_action,color: Colors.cyan[100],),
-                              ],
+                                RaisedButton(
+                                  color: Colors.cyan[100],
+                                    child: Icon(Icons.history,color: Colors.white,),
+                                  onPressed: (){
 
-                            ),
-                          ),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => PaymentOverview(paymentList: paymentList,)),
+                                    );
+                                  },
+                                ),
+                              ],
                         ),
                       ),
                     ],
