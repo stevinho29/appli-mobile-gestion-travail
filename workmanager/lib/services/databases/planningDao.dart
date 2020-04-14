@@ -37,7 +37,7 @@ class PlanningDao{
            print(("KEYS ${keys[i]}"));
            dat['startDate']= choosedat[keys[i]];
            dat['endDate']= choosedat[keys[i]];
-           createDayOfPlanning(documentId, dat, "no QR");
+           createDayOfPlanning(documentId, dat, "no QR",0);
          }
        });
     } catch(e) {
@@ -128,7 +128,7 @@ class PlanningDao{
     }
   }
 
-  Future createDayOfPlanning(String documentId,Map<String,DateTime> dat,String QR) async {
+  Future createDayOfPlanning(String documentId,Map<String,DateTime> dat,String QR,double responsibleHour) async {
     try {
       print("creating DAY of PLANNING");
       return await contractCollection.document(documentId).collection("days").document().setData({
@@ -136,6 +136,7 @@ class PlanningDao{
         'dates': dat,
         'startValidated':false,
         'endValidated':false,
+        'responsibleHour':responsibleHour,
         'QR': QR ?? "no QR"
       });
     } catch(e) {
@@ -154,7 +155,7 @@ class PlanningDao{
        // print(doc.documentID);
         dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
         dat['endHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endHour'].millisecondsSinceEpoch);
-        return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
+        return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['responsibleHour']  ?? 0.0,doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
       }).toList();
     });
   }
@@ -173,7 +174,7 @@ class PlanningDao{
       print("DAYS ${doc.data['contractId']}");
       dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
       dat['endHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endHour'].millisecondsSinceEpoch);
-      return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
+      return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['responsibleHour'] ?? 0.0,doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
     }).toList();
   }
 
@@ -205,6 +206,7 @@ Future<bool> checkIfPeriodOfDayAlreadyExist(Map<String,DateTime> dat,Contract co
             doc.data['contractId'],
             dat['startHour'],
             dat['endHour'],
+            doc.data['responsibleHour'],
             doc.data['startValidated'],
             doc.data['endValidated'],
             doc.data['QR']);

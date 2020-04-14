@@ -4,7 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 
 class PositionValidator {
-
+//todo remplacer par le plugin location
   static Geolocator geolocator = Geolocator()..forceAndroidLocationManager= true;
 
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Alert {
-
+//todo  personnaliser les messages alert
   Future<void> goodAlert(BuildContext context,String title,String message) async {
     return showDialog<void>(
       context: context,

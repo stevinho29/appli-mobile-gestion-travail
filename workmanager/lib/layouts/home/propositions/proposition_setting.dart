@@ -27,7 +27,7 @@ class _PropositionSettingState extends State<PropositionSetting> {
   String error = "";
   String _currentLibelle;
 
-  int _currentPricePerHour;
+  double _currentPricePerHour;
   Map<String, DateTime> dat = new Map();
 
   DateTime _currentStartDate = DateTime(DateTime

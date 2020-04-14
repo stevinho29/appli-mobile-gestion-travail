@@ -28,7 +28,7 @@ class _FinanceHomeListState extends State<FinanceHomeList>{
     if(contracts.length == 0){
       _delayUntilStop().then((value) {
         return Scaffold(
-          body: Center(child: Text('Aucun contrat pourr le moment'),),
+          body: Center(child: Text('Aucun contrat pour le moment'),),
         );
       });
       return Loading();

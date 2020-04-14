@@ -10,7 +10,7 @@ class ContractDao{
 
   final CollectionReference contractCollection= Firestore.instance.collection("contracts");
 
-  Future updateContractData(Contract contractData,String libelle,int price,Map<String,DateTime> dat) async {
+  Future updateContractData(Contract contractData,String libelle,double price,Map<String,DateTime> dat) async {
     try{
       return contractCollection.document(contractData.documentId).updateData({
         'libelle': libelle,
@@ -82,6 +82,7 @@ class ContractDao{
         'employeeId': proposition.receiverId,
         'libelle': proposition.libelle,
         'description': proposition.description,
+        'hourPerWeek': proposition.hourPerWeek,
         'pricePerHour': proposition.price,
         'cursorPayment': 0,
         'canceled': false,
@@ -99,7 +100,7 @@ class ContractDao{
     }
   }
 
-  Future updateContractException(Exceptions exceptions,int price,Map<String,DateTime> dat,String motif) async{
+  Future updateContractException(Exceptions exceptions,double price,Map<String,DateTime> dat,String motif) async{
     try{
         return await contractCollection.document(exceptions.contratId).collection('exceptions').document(exceptions.documentId)
             .updateData({
@@ -113,7 +114,7 @@ class ContractDao{
       print("failure when attempting to uopdate an exception of a contract");
     }
   }
-  Future createContractException(Contract contract, Map<String,DateTime> dat,String motif,int price) async{
+  Future createContractException(Contract contract, Map<String,DateTime> dat,String motif,double price) async{
     try{
       String origin;
       if(contract.employerId== uid) origin= "employer";
@@ -148,7 +149,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
               documentId: doc.documentID,
               contratId: doc.data['contratId'],
               motif: doc.data['motif'],
-              price: doc.data['price'],
+              price: doc.data['price'].toDouble(),
               startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
               endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
           );
@@ -178,7 +179,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
         documentId: doc.documentID,
         contratId: doc.data['contratId'],
         motif: doc.data['motif'],
-        price: doc.data['price'],
+        price: doc.data['price'].toDouble(),
         startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
         endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
       );
@@ -188,8 +189,8 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
   // liste de contrats
   Stream<List<Contract>> get getContracts{
 
-    return  contractCollection.where("employerId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
-    /*list.listen((event) {
+    Stream<List<Contract>> list=  contractCollection.where("employerId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
+    list.listen((event) {
       try {
         print("ICI ${event[0].libelle}");
       }catch(e){
@@ -197,7 +198,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
         print("failure on getContracts stream");
         }
     });
-    return list;*/
+    return list;
   }
   Stream<List<Contract>> get getEmployeeContracts{
 
@@ -205,7 +206,10 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
     list.listen((event) {
       try {
         print(event[0].libelle);
-      }catch(e){print(e);}
+      }catch(e){
+        print(e);
+        print('failure on getEmploye Stream');
+      }
     });
     return list;
   }
@@ -230,7 +234,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
       employerInfo['employerCodePostal']= doc.data['employerInfo']['employerCodePostal'] ?? "59000";
       //print("JE REGARDE LADDRESS${doc.data['employerInfo']['employerAddress']}");
       return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],doc.data['description'] ?? "",
-          doc.data['pricePerHour'],doc.data['cursorPayment'] ?? 0, DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
+         doc.data['hourPerWeek'].toDouble() ?? 30.0, doc.data['pricePerHour'].toDouble() ?? 0.0,doc.data['cursorPayment'] ?? 0, DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
       employerInfo,employeeInfo,doc.data['planningVariable'] ??false, ['geolocation']);
     }).toList();
   }
@@ -321,12 +325,12 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
           startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
           endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch),
           cursorPayment: doc.data['cursorPayment'],
-          workedHour: doc.data['workedHour'],
-          exceptionsHour: doc.data['exceptionsHour'],
-          basicSalary: doc.data['basicSalary'],
+          workedHour: doc.data['workedHour'].toDouble(),
+          exceptionsHour: doc.data['exceptionsHour'].toDouble(),
+          basicSalary: doc.data['basicSalary'].toDouble(),
           //additionalHour: doc.data['additionalHour'],
-          overtime: doc.data['overtime'],
-          finalSalary: doc.data['finalSalary']
+          overtime: doc.data['overtime'].toDouble(),
+          finalSalary: doc.data['finalSalary'].toDouble()
       );
     }).toList();
   }

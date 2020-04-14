@@ -19,11 +19,12 @@ class Day{
   String documentId;
   DateTime startHour;  // jour et heure de début fixée
   DateTime endHour;  // jour et heure de fin fixée
+  int responsibleHour; // nombre d'heures responsable dans la journée
   bool startValidated; // si le début de séance a été validé ( la séance a été crée)
   bool endValidated; // si la fin de séance a été validée ( la séance a été crée)
-  String QR;        // QR code associé à la journée
+  String QR;         // QR code associé à la journée
   
-    Day(this.documentId,this.contractId,this.startHour,this.endHour,this.startValidated,this.endValidated,this.QR);
+    Day(this.documentId,this.contractId,this.startHour,this.endHour,this.responsibleHour,this.startValidated,this.endValidated,this.QR);
 }
 class Seance{
   

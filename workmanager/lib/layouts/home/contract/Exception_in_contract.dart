@@ -25,7 +25,7 @@ class _CreateExceptionState extends State<CreateException> {
   final _formKey = GlobalKey<FormState>();
   String error = "";
   String _currentMotif;
-  int _currentPricePerHour;
+  double _currentPricePerHour;
 
   Map<String, DateTime> dat = new Map();
 

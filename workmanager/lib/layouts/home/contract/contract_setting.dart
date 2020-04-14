@@ -28,7 +28,7 @@ class _ContractSettingState extends State<ContractSetting> {
   String error = "";
   String _currentLibelle;
 
-  int _currentPricePerHour;
+  double _currentPricePerHour;
   Map<String, DateTime> dat = new Map();
 
   DateTime _currentStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);

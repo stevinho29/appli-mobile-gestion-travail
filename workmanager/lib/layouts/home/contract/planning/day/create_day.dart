@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/services/databases/planningDao.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:work_manager/shared/constants.dart';
 
 class CreateDay extends StatefulWidget{
   Contract contract;
@@ -20,8 +22,9 @@ class CreateDay extends StatefulWidget{
 
 class _CreateDayState extends State<CreateDay>{
   List<String> weekday= ['Lundi', 'Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-
-
+  final _formKey = GlobalKey<FormState>();
+  final myController = TextEditingController();
+  double responsibleHour;
 
   DateTime helperStart= DateTime.now();
   DateTime helperEnd= DateTime.now();
@@ -36,20 +39,48 @@ class _CreateDayState extends State<CreateDay>{
     super.initState();
     initializeDateFormatting('fr-FR');
   }
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    myController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
 
+    String numberValidator(String value) {
+      if (myController.text == null) {
+        return "saisissez un montant valide";
+      }
+      final n = num.tryParse(myController.text);
+      if (n == null) {
+        print(value);
+        return 'saisissez un nombre valide';
+      }
+      else {
+        if(n > (endHour.hour - startHour.hour))
+          return 'nombre supérieur à la plage horaire ';
+        else{
+          setState(() {
+            responsibleHour = n.toDouble();
+          });
+          return null;
+        }
+
+      }
+    }
 
 
     // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 70,horizontal: 35),
+        padding: EdgeInsets.symmetric(vertical: 50,horizontal: 35),
         child: Column(
           children: <Widget>[
-            Icon(Icons.event,size: 100,),
+            Icon(Icons.event,size: 70,),
             SizedBox(height: 20,),
             Card(
               child: GestureDetector(
@@ -111,6 +142,97 @@ class _CreateDayState extends State<CreateDay>{
                 },
               ),
             ),
+            Card(
+              child: GestureDetector(
+                child: ListTile(
+                  leading: Text("Heures \n responsables"),
+                  title: Text(responsibleHour?.toString() ?? "0"),
+                  trailing: Icon(Icons.watch_later),
+                ),
+                onTap: () async {
+                  showDialog(context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("heures responsables"),
+                          content: Container(
+                            height: 200,
+                            padding: EdgeInsets.all(20),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: <Widget>[
+                                  TextFormField(
+                                    controller: myController,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      BlacklistingTextInputFormatter(
+                                          new RegExp('[\\-|\\ ]'))
+                                    ],
+                                    style: TextStyle(color: Colors.black87),
+                                    decoration: textInputDecoration.copyWith(
+                                        hintText: "heures responsables")
+                                        .copyWith(
+                                      labelText: "HR",)
+                                        .copyWith(
+                                        suffixIcon: IconButton(
+                                          icon: Icon(Icons.hourglass_empty,
+                                            color: Colors.black,),
+                                        )),
+                                    validator: numberValidator,
+                                    onChanged: (val) {
+                                      setState(() =>
+                                      responsibleHour = num.tryParse(myController.text).toDouble());
+                                    },
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 2),
+                                        child: RaisedButton(
+                                            color: Colors.white,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Row(children: <Widget>[
+                                                Text("valider",style: TextStyle(color: Colors.black87),),
+                                              ]),
+                                            ),
+                                          onPressed: (){
+                                              if(_formKey.currentState.validate())
+                                                Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 0),
+                                        child: RaisedButton(
+                                          color: Colors.white,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 5),
+                                            child: Row(children: <Widget>[
+                                              Text("annuler",style: TextStyle(color: Colors.black87),),
+                                            ]),
+                                          ),
+                                          onPressed: (){
+                                            setState(() {
+                                              responsibleHour= 0;
+                                            });
+                                              Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),);
+                      }
+                  );
+
+                },
+              ),
+            ),
             SizedBox(height: 5,),
             Row(
               children: <Widget>[
@@ -148,14 +270,14 @@ class _CreateDayState extends State<CreateDay>{
                     Map<String, DateTime> dat = new Map();
                     dat['startHour'] = helperStart;
                     dat['endHour'] = helperEnd;
-
+                    responsibleHour = responsibleHour ?? 0.0;
 
                     try {
                        PlanningDao().checkIfPeriodOfDayAlreadyExist(
                           dat, widget.contract).then((result) async {
                         if (!result) {
                            PlanningDao().createDayOfPlanning(
-                              widget.contract.documentId, dat, "no QR").then((
+                              widget.contract.documentId, dat, "no QR",responsibleHour).then((
                               value) {
                             Alert().goodAlert(
                                 context, "le jour de travail crée",

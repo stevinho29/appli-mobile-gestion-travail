@@ -2,6 +2,7 @@ import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/planning.dart';
 import 'package:work_manager/services/databases/contractDao.dart';
 import 'package:work_manager/services/databases/planningDao.dart';
+import 'package:work_manager/shared/constantSalary.dart';
 
 class Calculator{
 
@@ -13,15 +14,16 @@ Calculator({this.contract,this.paymentList});
 static List<Exceptions> exceptionList;
 static List<Day> dayList;
 
- int overtime=0;
- int overtimePrice=0;
- int exceptionsHour=0;
- int exceptionsHourPrice=0;
- int normalHours=0;
- int normalHourPrice=0;
- int donationHour=0;
- int donationHourPrice=0;
- int totalHourPrice=0;
+ double overtime=0;
+ double overtimePrice=0;
+ double exceptionsHour=0;
+ double exceptionsHourPrice=0;
+ double normalHours=0;
+ double responsibleHour=0;
+ double normalHourPrice=0;
+ double donationHour=0;
+ double donationHourPrice=0;
+ double totalHourPrice=0;
 
 DateTime startDate;
 DateTime endDate;
@@ -41,7 +43,6 @@ int totalHour;
 
   orchestrator(){
     _getNormalHours();
-    _getOvertimeHours();
     _getExceptionalHours();
     _getTotalPriceForNormalHours();
     _getTotalPriceForOvertimeHours();
@@ -56,41 +57,48 @@ int totalHour;
   _getStaticNormalHours(){ //todo
 
   }
+
    _getNormalHours(){
+    normalHours= contract.hourPerWeek.toDouble();
     dayList?.forEach((day) {
-      if( day.startHour.difference(startDate).inDays >= 0 && endDate.difference(day.endHour).inDays >=0)
-        normalHours += day.endHour.difference(day.startHour).inHours;
+      if(contract.startDate.difference(startDate).inDays <=0 && contract.endDate.difference(endDate).inDays >=0)
+        responsibleHour +=  day.responsibleHour;
     });
+    if(normalHours.toDouble() + ((responsibleHour*2)/3) <= 40.toDouble())
+      normalHourPrice= (((contract.hourPerWeek * 52) / 12)  * contract.pricePerHour +  ((responsibleHour*2)/3 * contract.pricePerHour) );
+    else{ // dans le cas d'heures supplémentaires
+      normalHourPrice= 40 * contract.pricePerHour;  // les 40 heures complémentaires calculées au cout horaire de base
+      overtime= (normalHours + (responsibleHour*2)/3) - 40;
+    }
   }
 
-  _getOvertimeHours(){
-    if(normalHours > 40)
-      overtime = normalHours-40;
-  }
   _getExceptionalHours(){
     exceptionList?.forEach((exception) {
       exceptionsHour += exception.endDate.difference(exception.endDate).inHours;
-      exceptionsHourPrice += exception.endDate.difference(exception.endDate).inHours*exception.price;
     });
   }
   _getTotalPriceForNormalHours(){    // à modifier si on opte pour la solution du prix par jour
-    normalHourPrice = normalHours* contract.pricePerHour;
+    normalHourPrice = normalHours * contract.pricePerHour;
   }
 
   _getTotalPriceForOvertimeHours(){
-  // overtimePrice= overtime*
+    if(overtime <=8)  // majoration à 25%
+    overtimePrice= overtime*((contract.pricePerHour+ contract.pricePerHour*supplementaryHoursPercentageLessThan8)/100) ;
+    else // majoration à 50 %
+      overtimePrice= overtime*((contract.pricePerHour+ contract.pricePerHour*supplementaryHoursPercentageMoreThan8)/100);
+
   }
 
-  getTotalPriceForExceptionalHours(){
-    return exceptionsHourPrice;
+  getTotalPriceForExceptionalHours(){   // montant déductible du salaire de base mensuel
+    return exceptionsHourPrice= exceptionsHour * contract.pricePerHour;
   }
 
-  getTotalPriceForDonation(int nbHours,int price){
+  getTotalPriceForDonation(double nbHours,double price){
     donationHour= nbHours;
     donationHourPrice = nbHours*price;
   }
 
   getTotal(){
-      totalHourPrice = normalHourPrice+exceptionsHourPrice+overtimePrice+donationHourPrice;
+      totalHourPrice = (normalHourPrice - exceptionsHourPrice+overtimePrice+donationHourPrice);
   }
 }

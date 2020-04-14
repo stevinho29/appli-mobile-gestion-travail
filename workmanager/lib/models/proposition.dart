@@ -23,14 +23,15 @@ class Proposition{  // contient des données dénormalisées sur l'employeur et 
  String libelle;    // libelle de la proposition
  String origin;     // origine de la proposition employeur/prestataire voulant vendre ses services
  String description; // descriptif détaillé de la proposition
- int price;
+ double hourPerWeek;   // nombre d'heures par semaine
+ double price;
  DateTime sendDate; // date d'envoi de la proposition
  String status;  // la proposition a t-elle été  ["en attente", "REJETE", "ACCEPTE"]
  bool visible;  // proposition est elle visible(affichable) ou pas
  Map<String,DateTime> dat;  // date de début et de fin du contrat
  bool planningVariable;
 
- Proposition({this.documentId,this.senderId,this.receiverId,this.libelle,this.origin,this.description,this.price,this.sendDate,this.status,this.visible,this.dat,this.senderInfo,this.receiverInfo,this.planningVariable});
+ Proposition({this.documentId,this.senderId,this.receiverId,this.libelle,this.origin,this.description,this.hourPerWeek,this.price,this.sendDate,this.status,this.visible,this.dat,this.senderInfo,this.receiverInfo,this.planningVariable});
 
 
 

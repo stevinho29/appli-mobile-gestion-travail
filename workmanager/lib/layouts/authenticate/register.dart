@@ -10,7 +10,6 @@ class Register extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _RegisterState();
   }
 
@@ -33,7 +32,6 @@ class _RegisterState extends State<Register>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return loading? Loading():Scaffold(
       resizeToAvoidBottomInset: false, // disabled les widgets flottants
       backgroundColor: Colors.cyan,

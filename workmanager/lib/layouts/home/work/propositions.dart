@@ -29,7 +29,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
   String _currentLibelle ;
   String _currentOrigin= "employer";  // whether if the proposition comes from an employer or an employee
   String _currentDescription;       //description de la proposition
-  int _currentPricePerHour;
+  double _currentPricePerHour;
   Map<String,DateTime> dat= new Map();
 
   Planning _planning = Planning.fixe;
@@ -311,7 +311,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                               dat,
                                               planningVariable,
                                               _currentOrigin,
-                                              _currentDescription)
+                                              _currentDescription,28)
                                               .then((res) {
                                             Alert()
                                                 .goodAlert(
@@ -413,7 +413,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                           SizedBox(height: 5,),
                           Card(
                             child: ListTile(
-                              title: const Text('necessite des prévisions: planning variable'),
+                              title: const Text('necessite des prévisions: planning pouvant varier'),
                               leading: Radio(
                                 value: Planning.variable ,
                                 groupValue: _planning,
@@ -503,7 +503,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                               dat,
                                               planningVariable,
                                               _currentOrigin,
-                                              _currentDescription)
+                                              _currentDescription,30)
                                               .then((res) {
                                             Alert()
                                                 .goodAlert(

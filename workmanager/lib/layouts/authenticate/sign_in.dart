@@ -13,7 +13,6 @@ class SignIn extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _SignInState();
   }
 }
@@ -35,7 +34,6 @@ class _SignInState extends State<SignIn>{
 
   @override
     Widget build(BuildContext context) {
-      // TODO: implement build
       return loading? Loading():Scaffold(
         resizeToAvoidBottomInset: false, // disabled les widgets flottants
         backgroundColor: Colors.cyan,

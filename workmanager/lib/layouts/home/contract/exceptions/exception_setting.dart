@@ -28,7 +28,7 @@ class _ExceptionSettingState extends State<ExceptionSetting> {
   final _formKey = GlobalKey<FormState>();
   String error = "";
   String _currentMotif;
-  int _currentPricePerHour;
+  double _currentPricePerHour;
   Map<String, DateTime> dat = new Map();
 
   DateTime _currentStartDate ;
@@ -205,13 +205,13 @@ class _ExceptionSettingState extends State<ExceptionSetting> {
                             dat['startDate'] = _currentStartDate ;
                             dat['endDate'] = _currentEndDate ;
                             await ContractDao().updateContractException(widget.exceptionData, _currentPricePerHour,dat,_currentMotif) .then((res) {
-                              Alert().goodAlert(context, "Exception modifiée", "votre ${_currentMotif} a été modifiée avec succès")
+                              Alert().goodAlert(context, "Exception modifiée", "votre _currentMotif a été modifiée avec succès")
                                   .then((value) => Navigator.pop(context));
                             });
                           } catch (e) {
                             print(e.toString());
                             Alert().badAlert(context, "opération a échoué",
-                                "votre exception: ${_currentMotif}  n'a pas pu etre modifiée");
+                                "votre exception: $_currentMotif  n'a pas pu etre modifiée");
                           }
                         } else {
                           setState(() {

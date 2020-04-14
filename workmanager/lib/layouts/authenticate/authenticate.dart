@@ -5,7 +5,6 @@ import 'package:work_manager/layouts/authenticate/sign_in.dart';
 class Authenticate extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _AuthenticateState();
   }
 }
@@ -18,7 +17,6 @@ class _AuthenticateState extends State<Authenticate>{
   }
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return showSignIn ? SignIn( toggleView: toggleView): Register( toggleView: toggleView);
   }
 

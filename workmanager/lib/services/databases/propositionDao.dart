@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:work_manager/models/proposition.dart';
 import 'package:work_manager/models/user.dart';
@@ -13,7 +12,7 @@ class PropositionDao{
   final CollectionReference propositionCollection= Firestore.instance.collection("propositions");
 
 
-  Future updatePropositionData(Proposition propositionData,String libelle,int price,Map<String,DateTime> dat) async {
+  Future updatePropositionData(Proposition propositionData,String libelle,double price,Map<String,DateTime> dat) async {
     try{
         return propositionCollection.document(propositionData.documentId).updateData({
           'libelle': libelle,
@@ -28,7 +27,7 @@ class PropositionDao{
     }
   }
 
-  Future createProposition(UserData choosedUserData,String libelle,int price,Map<String,DateTime> dat,bool planningVariable,String origin,String description) async {
+  Future createProposition(UserData choosedUserData,String libelle,double price,Map<String,DateTime> dat,bool planningVariable,String origin,String description,double hourPerWeek) async {
 
     UserData userData = await UserDao(uid).getUserData();
     Map<String, String> senderInfo = new Map();
@@ -55,6 +54,7 @@ class PropositionDao{
         'libelle': libelle,
         'origin': origin,
         'description': description,
+        'hourPerWeek': hourPerWeek,
         'price': price,
         'sendDate': DateTime.now(),
         'status': 'EN ATTENTE',
@@ -105,8 +105,9 @@ class PropositionDao{
         libelle: doc.data['libelle'],
           origin: doc.data['origin'] ?? "employer" ,
           description: doc.data["description"] ?? "",
+          hourPerWeek: doc.data['hourPerWeek'].toDouble() ?? 10.0,
           sendDate:  DateTime.fromMillisecondsSinceEpoch(doc.data['sendDate'].millisecondsSinceEpoch),
-        price: doc.data['price'],
+        price: doc.data['price'].toDouble(),
         status: doc.data['status'],
         visible: doc.data['visible'],
         dat: dat,

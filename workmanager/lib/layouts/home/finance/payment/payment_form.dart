@@ -44,13 +44,13 @@ class _PaymentFormState extends State<PaymentForm>{
   bool loading= true;
   DateTime startDate;
   DateTime endDate;
-  int overtime;
-  int overtimePrice;
-  int exceptionsHour;
-  int exceptionsHoutPrice;
-  int totalHour;
-  int donationHour;
-  int donationHourPrice;
+  double overtime;
+  double overtimePrice;
+  double exceptionsHour;
+  double exceptionsHourPrice;
+  double totalHour;
+  double donationHour;
+  double donationHourPrice;
   String error="";
   @override
   void initState() {
