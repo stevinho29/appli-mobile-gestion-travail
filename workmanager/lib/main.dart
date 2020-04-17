@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/services/auth.dart';
-import 'layouts/splashscreen/splash_screen.dart';
+import 'layouts/wrapper.dart';
 import 'models/user.dart';
 
 
-
 void main() {
+
+  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(MyApp());
 
@@ -30,20 +31,22 @@ void main() {
 
 }
 
+
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return StreamProvider<User>.value(
       value: AuthService().user,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: SplashScreen(),
+        home: Wrapper(),
       ),
     );
   }
 }
-
 
 /*
 void callbackDispatcher() {

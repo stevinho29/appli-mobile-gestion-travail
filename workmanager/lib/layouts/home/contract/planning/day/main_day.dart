@@ -23,7 +23,7 @@ class DayOverview extends StatefulWidget{
 }
 
 class _DayOverviewState extends State<DayOverview>{
-bool permission;
+bool permission=false;
   @override
   Widget build(BuildContext context) {
 

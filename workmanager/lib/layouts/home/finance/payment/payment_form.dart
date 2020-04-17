@@ -29,15 +29,8 @@ class _PaymentFormState extends State<PaymentForm>{
   final _controller = PageController(
     initialPage: 0,
   );
-  final snackBar = SnackBar(
-    content: Text('Vous devez cochez la case'),
-    action: SnackBarAction(
-      label: 'Undo',
-      onPressed: () {
-        // Some code to undo the change.
-      },
-    ),
-  );
+  final donationHourController= TextEditingController();
+  final donationPriceController= TextEditingController();
 
   static Calculator _calculator;
   bool isSwitched = false;
@@ -52,6 +45,14 @@ class _PaymentFormState extends State<PaymentForm>{
   double donationHour;
   double donationHourPrice;
   String error="";
+
+  @override
+  void dispose() {
+  donationHourController.dispose();
+  donationPriceController.dispose();
+  super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -85,7 +86,7 @@ class _PaymentFormState extends State<PaymentForm>{
           children: <Widget>[
             Text(_calculator.normalHours.toString()),
             SizedBox(width: 50,),
-            Text(_calculator.normalHourPrice.toString()),
+            Text(_calculator.normalHourPrice.round().toString()),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],
@@ -97,7 +98,7 @@ class _PaymentFormState extends State<PaymentForm>{
           children: <Widget>[
             Text(_calculator.overtime.toString()),
             SizedBox(width: 50,),
-            Text(_calculator.overtimePrice.toString()),
+            Text(_calculator.overtimePrice.floor().toString()),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],
@@ -109,7 +110,7 @@ class _PaymentFormState extends State<PaymentForm>{
           children: <Widget>[
             Text(_calculator.exceptionsHour.toString()),
             SizedBox(width: 50,),
-            Text(_calculator.exceptionsHourPrice.toString()),
+            Text(_calculator.exceptionsHourPrice.floor().toString()),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],
@@ -137,6 +138,7 @@ class _PaymentFormState extends State<PaymentForm>{
                 onChanged: (val){
                   setState(() {
                     donationHour= num.tryParse(val);
+                    print(donationHour);
                     _calculator.getTotalPriceForDonation(donationHour ?? 0, donationHourPrice ?? 0);
                   });
                 },
@@ -156,7 +158,8 @@ class _PaymentFormState extends State<PaymentForm>{
                 onChanged: (val){
                   setState(() {
                     donationHourPrice= num.tryParse(val);
-                    _calculator.getTotalPriceForDonation(donationHour ?? 0, donationHourPrice ?? 0);
+                    print(donationHourPrice);
+                    _calculator.getTotalPriceForDonation(donationHour ?? 0.0, donationHourPrice ?? 0.0);
                     _calculator.getTotal();
                   });
                 },
@@ -179,7 +182,7 @@ class _PaymentFormState extends State<PaymentForm>{
           children: <Widget>[
             Text("Total",style: TextStyle(fontWeight: FontWeight.bold),),
             SizedBox(width: 50,),
-            Text(_calculator.totalHourPrice.toString()),
+            Text(_calculator.totalHourPrice.floor().toString()),
             SizedBox(width: 10,),
             Icon(Icons.euro_symbol)
           ],
@@ -281,11 +284,13 @@ class _PaymentFormState extends State<PaymentForm>{
   Future _delayToInitializeCalculator() async{
       _calculator.initializeCalculator().then((value) {
         if(widget.contractData.planningVariable) {
+          print("dynamic orchestrator");
           _calculator.orchestrator();
           setState(() {
             loading = false;
           });
         }else{
+          print("static orchestrator");
           _calculator.staticOrchestrator();
           setState(() {
             loading = false;

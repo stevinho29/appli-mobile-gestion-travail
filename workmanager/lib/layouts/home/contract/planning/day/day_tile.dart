@@ -67,7 +67,7 @@ class _DayTileState extends State<DayTile>{
 
     // TODO: implement build
     final user = Provider.of<User>(context);
-    if (widget.contractData.employerId == user.uid) {  //  controle la provenance de la proposition
+    if (widget.contractData.employerId != user.uid) {  //  controle la provenance de la proposition
       return GestureDetector(
         child: Padding(
           padding: EdgeInsets.only(top: 5.0),
@@ -233,10 +233,7 @@ class _DayTileState extends State<DayTile>{
                               dat['startHour']= DateTime.now();
                               dat['endHour']= null;
                               if(!widget.dayData.startValidated) {
-                                if (DateTime.now().difference(widget.dayData.startHour)
-                                    .inMinutes > 0 && widget.dayData.endHour
-                                    .difference(DateTime.now())
-                                    .inMinutes > 15) {
+                                if (true) {
                                   PositionValidator()
                                       .checkIfLocationPermission()
                                       .then((value) {

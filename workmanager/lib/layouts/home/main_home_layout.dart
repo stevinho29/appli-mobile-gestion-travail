@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/account.dart';
 import 'package:work_manager/layouts/home/work.dart';
 import 'finance.dart';
 import 'main_home.dart';
+import 'package:connectivity/connectivity.dart';
 
 class Home extends StatefulWidget {
 
@@ -28,6 +30,13 @@ class _HomeState extends State<Home> {
 
   final FirebaseMessaging _fcm = FirebaseMessaging();
   StreamSubscription iosSubscription;
+
+  final Connectivity _connectivity = Connectivity();
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -72,6 +81,10 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Stream<ConnectivityResult> getConnectivityState(){
+    return _connectivity.onConnectivityChanged;
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -90,134 +103,134 @@ class _HomeState extends State<Home> {
   Icon account= Icon(Icons.account_circle,color: Colors.cyan,key: Key("fourth"));
 
   int _currentSlideVal= 100;
+  GlobalKey scaffoldKey= GlobalKey();
 
-  
   @override
   Widget build(BuildContext context) {
 
-
-
-
-    // TODO: implement build
-    return Scaffold(
-      backgroundColor: Colors.white,
-
-      body:
+    return StreamProvider<ConnectivityResult>.value(
+      value: getConnectivityState(),
+      child:Scaffold(
+          key: scaffoldKey,
+          backgroundColor: Colors.white,
+          body:
           Container(
-            padding: EdgeInsets.symmetric(vertical: 30.0),
-            child: Column(
-              children: <Widget>[
-                Column(
+                padding: EdgeInsets.symmetric(vertical: 30.0),
+                child: Column(
                   children: <Widget>[
-                    Row(
+                    Column(
                       children: <Widget>[
-                        Expanded(
-                        child: GestureDetector(child: actu,
-                            onTap: (){ setState((){
-                              setState(() {
-                                _currentSlideVal= 100;
-                                if ( _controller.hasClients) {
-                                  _controller.animateToPage(
-                                    0,
-                                    duration: const Duration(milliseconds: 400),
-                                    curve: Curves.easeInOut,
-                                  );
-                                }
-                              });
-                            });
-                            })),
-                        Expanded(
-                            child:GestureDetector(child:work,
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                            child: GestureDetector(child: actu,
                                 onTap: (){ setState((){
                                   setState(() {
-                                    if (_controller.hasClients) {
+                                    _currentSlideVal= 100;
+                                    if ( _controller.hasClients) {
                                       _controller.animateToPage(
-                                        1,
+                                        0,
                                         duration: const Duration(milliseconds: 400),
                                         curve: Curves.easeInOut,
                                       );
-                                      actu= Icon(Icons.new_releases,color: _colorInactive,key: Key("first"));
+                                    }
+                                  });
+                                });
+                                })),
+                            Expanded(
+                                child:GestureDetector(child:work,
+                                    onTap: (){ setState((){
+                                      setState(() {
+                                        if (_controller.hasClients) {
+                                          _controller.animateToPage(
+                                            1,
+                                            duration: const Duration(milliseconds: 400),
+                                            curve: Curves.easeInOut,
+                                          );
+                                          actu= Icon(Icons.new_releases,color: _colorInactive,key: Key("first"));
 
-                                    }
-                                  });
-                                });
-                                })),
-                        Expanded(
-                            child:GestureDetector(child:balance,
-                                onTap: (){ setState((){
-                                  setState(() {
-                                    _currentSlideVal= 100+ 2*100;
-                                    if (_controller.hasClients) {
-                                      _controller.animateToPage(
-                                        2,
-                                        duration: const Duration(milliseconds: 400),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    }
-                                  });
-                                });
-                                })),
-                        Expanded(
-                            child:GestureDetector(child:account,
-                                onTap: (){ setState((){
-                                  setState(() {
-                                    _currentSlideVal= 100+ 3*100;
-                                    if (_controller.hasClients) {
-                                      _controller.animateToPage(
-                                        3,
-                                        duration: const Duration(milliseconds: 400),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    }
-                                  });
-                                });
-                                }))
+                                        }
+                                      });
+                                    });
+                                    })),
+                            Expanded(
+                                child:GestureDetector(child:balance,
+                                    onTap: (){ setState((){
+                                      setState(() {
+                                        _currentSlideVal= 100+ 2*100;
+                                        if (_controller.hasClients) {
+                                          _controller.animateToPage(
+                                            2,
+                                            duration: const Duration(milliseconds: 400),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                      });
+                                    });
+                                    })),
+                            Expanded(
+                                child:GestureDetector(child:account,
+                                    onTap: (){ setState((){
+                                      setState(() {
+                                        _currentSlideVal= 100+ 3*100;
+                                        if (_controller.hasClients) {
+                                          _controller.animateToPage(
+                                            3,
+                                            duration: const Duration(milliseconds: 400),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                      });
+                                    });
+                                    }))
+                          ],
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child:Slider(
+                                value: _currentSlideVal.toDouble(),
+                                activeColor:
+                                Colors.cyan,
+                                inactiveColor:
+                                Colors.grey,
+                                min: 100,
+                                max: 400,
+                                divisions: 3,
+                                onChanged: (val) {
+                                  //setState(() => _currentSlideVal = val.round());
+                                },
+                              )
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child:Slider(
-                            value: _currentSlideVal.toDouble(),
-                            activeColor:
-                            Colors.cyan,
-                            inactiveColor:
-                            Colors.grey,
-                            min: 100,
-                            max: 400,
-                            divisions: 3,
-                            onChanged: (val) {
-                              //setState(() => _currentSlideVal = val.round());
-                            },
-                          )
-                          ),
-                        ],
-                      ),
+                    Expanded(
+                      child:PageView(
+                      controller: _controller,
+                      onPageChanged: (val) {
+                        setState(() {
+                          _currentSlideVal= 100+val*100;
+                        });
+                      },
+                      children: <Widget>[
+                        MainHome(),
+                        Work(),
+                        Finance(),
+                        Account()
+                      ],
+                    ),
                     )
                   ],
                 ),
-                Expanded(
-                  child:PageView(
-                  controller: _controller,
-                  onPageChanged: (val) {
-                    setState(() {
-                      _currentSlideVal= 100+val*100;
-                    });
-                  },
-                  children: <Widget>[
-                    MainHome(),
-                    Work(),
-                    Finance(),
-                    Account()
-                  ],
-                ),
-                )
-              ],
-            ),
-          ),
-    );
+              ),
+         )
+        );
+      }
   }
-}
+
 

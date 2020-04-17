@@ -155,7 +155,7 @@ class PlanningDao{
        // print(doc.documentID);
         dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
         dat['endHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endHour'].millisecondsSinceEpoch);
-        return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['responsibleHour']  ?? 0.0,doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
+        return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['responsibleHour'].toDouble()  ?? 0.0,doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
       }).toList();
     });
   }
@@ -174,7 +174,7 @@ class PlanningDao{
       print("DAYS ${doc.data['contractId']}");
       dat['startHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startHour'].millisecondsSinceEpoch);
       dat['endHour']= DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endHour'].millisecondsSinceEpoch);
-      return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['responsibleHour'] ?? 0.0,doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
+      return Day(doc.documentID,doc.data['contractId'],dat['startHour'],dat['endHour'],doc.data['responsibleHour'].toDouble() ?? 0.0,doc.data['startValidated']??false,doc.data['endValidated']??false,doc.data['QR']);
     }).toList();
   }
 

@@ -33,29 +33,51 @@ Future signInAnon() async{
   }
 }
   // sign in with email and password
-Future signInWithRegisterAndPassword(String email, String password) async{
+Future<int> signInWithRegisterAndPassword(String email, String password) async{
     try{
       AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser user= result.user;
-      return _userFromFirebaseUser(user);
+      return 0;
     }catch(e){
       print(e);
-      return null;
+      if(e.toString().contains("ERROR_WRONG_PASSWORD"))
+        return 1;
+      else if(e.toString().contains("ERROR_INVALID_EMAIL"))
+        return 2;
+      else if(e.toString().contains("ERROR_USER_NOT_FOUND"))
+        return 3;
+      else if(e.toString().contains("ERROR_USER_DISABLED"))
+        return 4;
+      else if(e.toString().contains("ERROR_TOO_MANY_REQUESTS"))
+        return 5;
+      else if(e.toString().contains("ERROR_NETWORK_REQUEST_FAILED"))
+        return 6;
+      else
+        return 7;
     }
 }
 
   // register with email and password
-Future registerWithEmailAndPassword(String name,String surname,String email, String password) async{
+Future<int> registerWithEmailAndPassword(String name,String surname,String email, String password) async{
     try{
       AuthResult result=await  _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user= result.user;
       await UserDao(user.uid).createUserData(name, surname,email); // on save le user dans la database
       String fcmToken = await _fcm.getToken();
       await UserDao(user.uid).updateUserDataWithToken(fcmToken, Platform.operatingSystem);  // on save le token
-      return _userFromFirebaseUser(user);
+      return 0;
     }catch(e){
       print(e);
-      return null;
+      if(e.toString().contains("ERROR_WEAK_PASSWORD"))
+        return 1;
+      else if(e.toString().contains("ERROR_INVALID_EMAIL"))
+        return 2;
+      else if(e.toString().contains("ERROR_EMAIL_ALREADY_IN_USE"))
+        return 3;
+      else if(e.toString().contains("ERROR_NETWORK_REQUEST_FAILED"))
+        return 4;
+      else
+        return 5;
     }
 }
 
@@ -78,19 +100,28 @@ Future registerWithEmailAndPassword(String name,String surname,String email, Str
     }
   }
 
-  Future<bool> changePassword(String password) async{
+  Future<int> changePassword(String password) async{
     //Create an instance of the current user.
     FirebaseUser _user = await _firebaseAuth.currentUser();
 
     //Pass in the password to updatePassword.
     try{
       await _user.updatePassword(password);
-      print("Succesfull changed password");
-      return true;
+      print("Succesfully changed password");
+      return 0;
     }catch(e)
     {
       print("Password can't be changed" + e.toString());
-      return false;
+      if(e.toString().contains("ERROR_REQUIRES_RECENT_LOGIN"))
+        return 1;
+      else if(e.toString().contains("ERROR_WEAK_PASSWORD"))
+        return 2;
+      else if(e.toString().contains("ERROR_USER_DISABLED"))
+        return 3;
+      else if(e.toString().contains("ERROR_NETWORK_REQUEST_FAILED"))
+        return 4;
+      else
+        return 5;
       //This might happen, when the wrong password is in, the user isn't found, or if the user hasn't logged in recently.
     }
 

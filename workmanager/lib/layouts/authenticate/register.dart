@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/services/auth.dart';
 import 'package:work_manager/shared/constants.dart';
 import 'package:work_manager/shared/loading.dart';
@@ -141,13 +142,21 @@ class _RegisterState extends State<Register>{
                       setState(() {
                         loading = true;
                       });
-                      dynamic result = await _authService.registerWithEmailAndPassword(name,surname,email, password);
-                      if (result == null) {
-                        setState(() {
-                          loading = false;
-                          error = "email non valide";
-                        });
-                      }
+                      await _authService.registerWithEmailAndPassword(name,surname,email, password).then((result)
+                      {
+                          setState(() {
+                            loading = false;
+                          });
+                          switch(result){
+                            case 1: Alert().badAlert(context, "Mot de passe trop faible", "il est conseillé d'utiliser chiffres,lettres et caractères spéciaux ");break;
+                            case 2: Alert().badAlert(context, "Email non valide", "l'adresse email ytilisée n'est pas correcte");break;
+                            case 3: Alert().badAlert(context, "Email deja utilisé", "l'adresse email utilisée semble appartenir à un autre compte");break;
+                            case 4: Alert().badAlert(context, "Une erreur s'est produite", "Impossible d'établir une connexion avec les serveurs");break;
+                            default:  Alert().badAlert(context, "Une erreur s'est produite", "Une erreur s'est produite, veuillez réessayer plus tard");
+                          }
+
+                      });
+
                     }
                   }else{
                     setState(() {

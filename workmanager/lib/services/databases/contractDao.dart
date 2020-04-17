@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/proposition.dart';
 import 'package:work_manager/services/calculator.dart';
@@ -273,7 +274,8 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
 
   Future createPayment(Contract contract,Calculator calculator) async{
     try{
-
+      print('CREATING PAYMENT');
+      print(calculator.startDate);
       return await contractCollection.document(contract.documentId).collection("payments").document().setData({
         'contratId':contract.documentId,
         'startDate': calculator.startDate,
@@ -284,6 +286,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
         'basicSalary': calculator.normalHourPrice,
         //'additionalHour':calculator.ov,
         'overtime':calculator.overtime,
+        'pricePerHour': contract.pricePerHour,
         'finalSalary':calculator.totalHourPrice
       });
     }catch(e){
@@ -330,6 +333,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
           basicSalary: doc.data['basicSalary'].toDouble(),
           //additionalHour: doc.data['additionalHour'],
           overtime: doc.data['overtime'].toDouble(),
+          pricePerHour: doc.data['pricePerHour'].toDouble() ?? 7.93,
           finalSalary: doc.data['finalSalary'].toDouble()
       );
     }).toList();

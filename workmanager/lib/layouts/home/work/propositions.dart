@@ -5,6 +5,7 @@ import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/propositionDao.dart';
 import 'package:work_manager/services/databases/userDao.dart';
+import 'package:work_manager/shared/constantSalary.dart';
 
 import 'package:work_manager/shared/constants.dart';
 
@@ -24,12 +25,15 @@ class PropositionMaker extends StatefulWidget{
 enum Planning { fixe, variable} // nécessite un planning hebdomadaire(variable) ou alors fixe
 class _PropositionMakerState extends State<PropositionMaker>{
 
+  final priceController= TextEditingController();
+  final hourPerWeekController= TextEditingController();
   final _formKey= GlobalKey<FormState>();
   String error="";
   String _currentLibelle ;
   String _currentOrigin= "employer";  // whether if the proposition comes from an employer or an employee
   String _currentDescription;       //description de la proposition
   double _currentPricePerHour;
+  double _currentHourPerWeek= 25.0;       // nombre d'heures de travail par semaine
   Map<String,DateTime> dat= new Map();
 
   Planning _planning = Planning.fixe;
@@ -70,8 +74,16 @@ class _PropositionMakerState extends State<PropositionMaker>{
   final _controller = PageController(
     initialPage: 0,
   );
-
   bool visibility= true;
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    priceController.dispose();
+    hourPerWeekController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -84,11 +96,11 @@ class _PropositionMakerState extends State<PropositionMaker>{
         return 'saisissez un montant valide';
       }
       else{
-        if(n < 11)
-          return "gratification minimum non respectée";
+        if(n.toDouble() < minNetSalary)
+          return " minimum est de $minNetSalary €";
         else {
           setState(() {
-            _currentPricePerHour= n;
+            _currentPricePerHour= n.toDouble();
           });
           return null;
         }
@@ -191,6 +203,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                           ),
                           SizedBox(height: 10,),
                           TextFormField(
+                            controller: priceController,
                             keyboardType: TextInputType.number,
                             inputFormatters: [BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))],
                             style: TextStyle(color: Colors.black87),
@@ -200,7 +213,31 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                 )),
                             validator: numberValidator,
                             onChanged: (val) {
-                              setState(() => _currentPricePerHour =  num.tryParse(val));
+                              setState(() {
+                                _currentPricePerHour =
+                                    num.tryParse(priceController.text).toDouble();
+                              });
+                            }
+                          ),
+                          SizedBox(height: 10,),
+                          TextFormField(
+                            initialValue: _currentHourPerWeek?.toString() ?? "10",
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))],
+                            style: TextStyle(color: Colors.black87),
+                            decoration: textInputDecoration.copyWith(hintText: "Nombres d'heures par semaines").copyWith(labelText: "heures / semaine",).copyWith(
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.hourglass_empty, color: Colors.black,),
+                                )),
+                            validator: (val){
+                              double number= num.tryParse(val).toDouble();
+                              if(number <= maxRegularHourPerMonth && number > minRegularHourPerMonth) return null;
+                            else if(number < minRegularHourPerMonth) return "nombre d'heures par semaine inférieur à 10h";
+                            else return "le nombre est supérieur à 35 h";},
+                            onChanged: (val) {
+                              setState(() { _currentHourPerWeek =  num.tryParse(hourPerWeekController.text)?.toDouble();
+
+                              });
                             },
                           ),
                           SizedBox(height: 10,),
@@ -301,6 +338,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                           error = "";
                                         });
                                         try {
+
                                           dat['startDate'] = _currentStartDate;
                                           dat['endDate'] = _currentEndDate;
                                           await PropositionDao(uid: user.uid)
@@ -311,7 +349,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                               dat,
                                               planningVariable,
                                               _currentOrigin,
-                                              _currentDescription,28)
+                                              _currentDescription,_currentHourPerWeek)
                                               .then((res) {
                                             Alert()
                                                 .goodAlert(
@@ -387,7 +425,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                             keyboardType: TextInputType.number,
                             inputFormatters: [BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))],
                             style: TextStyle(color: Colors.black87),
-                            decoration: textInputDecoration.copyWith(hintText: "Gratification en euros").copyWith(labelText: "prix / heure",).copyWith(
+                            decoration: textInputDecoration.copyWith(hintText: "Gratification nette en euros").copyWith(labelText: "prix / heure net",).copyWith(
                                 suffixIcon: IconButton(
                                   icon: Icon(Icons.euro_symbol, color: Colors.black,),
                                 )),

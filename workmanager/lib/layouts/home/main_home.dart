@@ -1,9 +1,8 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/news/main_news.dart';
 import 'package:work_manager/layouts/home/propositions/main_propositions.dart';
-
-import 'package:work_manager/models/user.dart';
 
 class MainHome extends StatefulWidget{
   @override
@@ -15,11 +14,20 @@ class MainHome extends StatefulWidget{
 
 class _MainHomeState extends State<MainHome>{
 
+String value;
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    final value = Provider.of<ConnectivityResult>(context).toString();
+    if (value.contains("mobile")) {
+      this.value = value;
+      print(value);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    //final user = Provider.of<User>(context);
 
-    final user = Provider.of<User>(context);
-    // TODO: implement build
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
       child: ListView(

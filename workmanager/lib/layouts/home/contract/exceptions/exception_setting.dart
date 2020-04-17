@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/contract.dart';
-import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/contractDao.dart';
 import 'package:work_manager/shared/constants.dart';
 import 'package:intl/date_symbol_data_local.dart';

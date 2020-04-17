@@ -1,6 +1,9 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/contract/main_contract.dart';
 import 'package:work_manager/layouts/home/work/search_station.dart';
+import 'package:work_manager/shared/constants.dart';
 
 class Work extends StatefulWidget{
   @override
@@ -12,11 +15,10 @@ class Work extends StatefulWidget{
 }
 
 class _WorkState extends State<Work>{
-
   bool isEmployer;
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return  Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: ListView(

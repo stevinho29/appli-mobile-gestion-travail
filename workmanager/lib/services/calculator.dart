@@ -44,14 +44,12 @@ int totalHour;
   orchestrator(){
     _getNormalHours();
     _getExceptionalHours();
-    _getTotalPriceForNormalHours();
     _getTotalPriceForOvertimeHours();
     getTotal();
   }
   staticOrchestrator(){   // à retoucher
   _getStaticNormalHours();
   _getExceptionalHours();
-  _getTotalPriceForNormalHours();
   getTotal();
   }
   _getStaticNormalHours(){ //todo
@@ -59,16 +57,16 @@ int totalHour;
   }
 
    _getNormalHours(){
-    normalHours= contract.hourPerWeek.toDouble();
+    normalHours= contract.hourPerWeek;
     dayList?.forEach((day) {
       if(contract.startDate.difference(startDate).inDays <=0 && contract.endDate.difference(endDate).inDays >=0)
         responsibleHour +=  day.responsibleHour;
     });
-    if(normalHours.toDouble() + ((responsibleHour*2)/3) <= 40.toDouble())
+    if((normalHours + ((responsibleHour*2)/3)) <= 40.0)
       normalHourPrice= (((contract.hourPerWeek * 52) / 12)  * contract.pricePerHour +  ((responsibleHour*2)/3 * contract.pricePerHour) );
     else{ // dans le cas d'heures supplémentaires
-      normalHourPrice= 40 * contract.pricePerHour;  // les 40 heures complémentaires calculées au cout horaire de base
-      overtime= (normalHours + (responsibleHour*2)/3) - 40;
+      normalHourPrice= ((contract.hourPerWeek * 52) / 12)  * contract.pricePerHour + (40- contract.hourPerWeek) * contract.pricePerHour;  // les heures par semaine selon contrat + les heures complémentaires calculées au cout horaire de base
+      overtime= (normalHours + (responsibleHour * 2) / 3) - 40;
     }
   }
 
@@ -76,9 +74,6 @@ int totalHour;
     exceptionList?.forEach((exception) {
       exceptionsHour += exception.endDate.difference(exception.endDate).inHours;
     });
-  }
-  _getTotalPriceForNormalHours(){    // à modifier si on opte pour la solution du prix par jour
-    normalHourPrice = normalHours * contract.pricePerHour;
   }
 
   _getTotalPriceForOvertimeHours(){
@@ -99,6 +94,12 @@ int totalHour;
   }
 
   getTotal(){
-      totalHourPrice = (normalHourPrice - exceptionsHourPrice+overtimePrice+donationHourPrice);
+    try {
+      totalHourPrice = (normalHourPrice - exceptionsHourPrice + overtimePrice +
+          donationHourPrice);
+    }catch(e){
+      print(e);
+      print("error when calculating total Price");
+    }
   }
 }

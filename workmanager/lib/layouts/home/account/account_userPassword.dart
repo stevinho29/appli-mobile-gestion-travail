@@ -64,7 +64,7 @@ class _PasswordState extends State<Password>{
                 ),
                 obscureText: passwordVisible,
                 validator: (val) {
-                  return val.isEmpty ? "au moins 6 caractères": null;
+                  return val.length < 6 ? "au moins 6 caractères": null;
                 },
                 onChanged: (val) {
                   setState(() => password = val);
@@ -98,13 +98,23 @@ class _PasswordState extends State<Password>{
                           setState(() => loading= true);
                          _authService.changePassword(password).then((status) async {
                            print("statut:  $status ");
-                           if(status) {
+                           if(status == 0) {
                              await Alert().goodAlert(context, "mise à jour réussie", "le mot de passe a bien été changé");
                              Navigator.pop(context);
                            }
                            else {
                              setState(() => loading = false); // something went wrong
-                             Alert().badAlert(context, "mise à jour impossible", "le mot de passe n'a pas pu etre changé\n reconnectez-vous d'abord puis essayez à nouveau ");
+                             switch(status){
+                                 case 1:  Alert().badAlert(context, "mise à jour refusée", "Pour vérifier votre identité,\n reconnectez-vous d'abord puis essayez à nouveau ");
+                                 break;
+                                 case 2:  Alert().badAlert(context, "mise à jour refusée", "mot de passe faible,\n il est conseillé d'utiliser des caractères des chiffres, lettres, caractères spéciaux");
+                                 break;
+                                 case 3:  Alert().badAlert(context, "mise à jour refusée", "Votre compte a été désactivé,\n ");
+                                 break;
+                                 case 4:  Alert().badAlert(context, "mise à jour refusée", "Impossible d'établir une connexion avec les serveurs\n ");
+                                 break;
+                               default:  Alert().badAlert(context, "mise à jour refusée", "Une erreur s'est produite, veuillez réessayer plus tard\n ");
+                           }
                            }
                          });
 

@@ -5,12 +5,12 @@ import 'package:permission_handler/permission_handler.dart';
 
 class PositionValidator {
 //todo remplacer par le plugin location
-  static Geolocator geolocator = Geolocator()..forceAndroidLocationManager= true;
+  static Geolocator geolocator = Geolocator();
 
 
   Future<bool> checkIfLocationPermission() async{
     bool result;
-    geolocator = Geolocator()..forceAndroidLocationManager= true;
+    geolocator = Geolocator();
 
 try {
   await geolocator.checkGeolocationPermissionStatus().then((value) async {

@@ -24,22 +24,18 @@ class _SearchStationState extends State<SearchStation>{
 
   bool isBlank = true;
   bool loading = false;
+  final myController = TextEditingController();
 
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    myController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-    final myController = TextEditingController();
-
-
-    @override
-    void dispose() {
-      // Clean up the controller when the widget is removed from the
-      // widget tree.
-      myController.dispose();
-      super.dispose();
-    }
-    // TODO: implement build
-
     return Scaffold(
       body: Column(
         children: <Widget>[

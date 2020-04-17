@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/layouts/authenticate/sendResetPasswordEmail.dart';
 import 'package:work_manager/services/auth.dart';
 import 'package:work_manager/shared/constants.dart';
@@ -104,18 +105,28 @@ class _SignInState extends State<SignIn>{
                         setState(() {
                           loading = true;
                         });
-                        dynamic result = await _authService.signInWithRegisterAndPassword(email, password);
-                        if (result == null){
-                          setState(() {
-                            loading = false;
-                            error= "svp entrez un email valide";
-                          });
-                        }
-                        else{
+                      await _authService.signInWithRegisterAndPassword(email, password).then((result) async {
+                        setState(() {
+                          loading = false;
+                        });
+                        if (result == 0){
                           final SharedPreferences prefs = await SharedPreferences.getInstance();
                           prefs.setString(("email"), email);
                           prefs.setString("password", password);
                         }
+                        else{
+                          switch(result){
+                            case 1: Alert().badAlert(context, "Mot de passe érroné", "le mot de passe ne correspond pas ");break;
+                            case 2: Alert().badAlert(context, "Email non valide", "l'adresse email utilisée n'est pas correcte");break;
+                            case 3: Alert().badAlert(context, "utilisateur non trouvé", "aucun utilisateur ne correspond à cette adresse mail ");break;
+                            case 4: Alert().badAlert(context, "Connexion impossible", "votre compte a été désactivé");break;
+                            case 5: Alert().badAlert(context, "Connexion désactivée", "Vous avez tentez plusieurs fois de vous connecter,\n il vous est donc impossible de vous connecter pendant un certain temps");break;
+                            case 6: Alert().badAlert(context, "Connexion impossible", "Impossible d'établir une connexion avec les serveurs");break;
+                            default:  Alert().badAlert(context, "Une erreur s'est produite", "Une erreur s'est produite, veuillez réessayer plus tard");
+                          }
+                        }
+                      });
+
                       }
                     },
                   ),

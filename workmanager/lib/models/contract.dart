@@ -55,7 +55,8 @@ class Payment{
   double basicSalary;          // salaire de base basé sur les heures validées et les exceptions faites
   double additionalHour;       // heures complémentaires
   double overtime;             // heures supplémentaires
+  double pricePerHour;
   double finalSalary;
 Payment({this.documentId,this.contratId,this.startDate,this.endDate,this.cursorPayment,
-  this.workedHour,this.exceptionsHour,this.basicSalary,this.overtime,this.finalSalary});
+  this.workedHour,this.exceptionsHour,this.basicSalary,this.overtime,this.pricePerHour,this.finalSalary});
 }

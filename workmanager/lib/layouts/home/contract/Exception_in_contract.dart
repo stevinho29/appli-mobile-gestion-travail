@@ -61,22 +61,20 @@ class _CreateExceptionState extends State<CreateException> {
       }
     });
   }
+  final myController = TextEditingController();
 
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    myController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
 
     final user = Provider.of<User>(context);
-    final myController = TextEditingController();
-
-    @override
-    void dispose() {
-      // Clean up the controller when the widget is removed from the
-      // widget tree.
-      myController.dispose();
-      super.dispose();
-    }
-
     String numberValidator(String value) {
       if (value == null) {
         return "saisissez un montant valide";

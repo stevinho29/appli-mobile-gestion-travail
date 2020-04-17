@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -23,3 +25,6 @@ List<Widget> loadingWidget=
   ),
 ];
 
+final snackBar = SnackBar(
+  content: Text("Vous n\'etes pas connecté à internet...les opérations que vous performez peuvent ne pas aboutir"),
+);
