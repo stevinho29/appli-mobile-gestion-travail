@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:work_manager/models/contract.dart';
 import 'package:work_manager/models/proposition.dart';
 import 'package:work_manager/services/calculator.dart';
@@ -150,7 +149,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
               documentId: doc.documentID,
               contratId: doc.data['contratId'],
               motif: doc.data['motif'],
-              price: doc.data['price'].toDouble(),
+              price: doc.data['price']?.toDouble() ?? 0.0,
               startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
               endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
           );
@@ -165,12 +164,20 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
 
   Stream<List<Exceptions>>  getContractExceptions(Contract contract){
     //print("EXCEPTIONS CONTRACT ${contract.documentId}");
-    Stream<List<Exceptions>> list= contractCollection.document(contract.documentId).collection('exceptions').snapshots().map(_fromSnapToExceptions);
-    list.listen((event) {
-      print(event[0].motif);
-    });
+    try {
+      Stream<List<Exceptions>> list = contractCollection.document(
+          contract.documentId).collection('exceptions').snapshots().map(
+          _fromSnapToExceptions);
+      list.listen((event) {
+        print(event[0].motif);
+        return list;
+      });
+    }catch(e){
+      print(e);
+      print("failure on getContracts Exceptions stream");
+    }
 
-    return list;
+
   }
 
   List<Exceptions> _fromSnapToExceptions(QuerySnapshot snapshot){
@@ -180,7 +187,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
         documentId: doc.documentID,
         contratId: doc.data['contratId'],
         motif: doc.data['motif'],
-        price: doc.data['price'].toDouble(),
+        price: doc.data['price']?.toDouble() ?? 0.0,
         startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
         endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
       );

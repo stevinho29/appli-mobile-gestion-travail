@@ -60,6 +60,7 @@ class _SearchStationState extends State<SearchStation>{
                           print("VALEUR DE LA LISTE $value");
                           
                           list = UserDao(user.uid).hireableUserFromQshot(value);
+                          list.removeWhere((element) => element.uid== user.uid); // je retire les données du user trouvé quand il s'agit de  l'utilisateur lui mm
                           isBlank=false;
                           loading = !loading;
                         });

@@ -110,7 +110,7 @@ class _PaymentFormState extends State<PaymentForm>{
           children: <Widget>[
             Text(_calculator.exceptionsHour.toString()),
             SizedBox(width: 50,),
-            Text(_calculator.exceptionsHourPrice.floor().toString()),
+            Text("- ${_calculator.exceptionsHourPrice.floor().toString()}"),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],

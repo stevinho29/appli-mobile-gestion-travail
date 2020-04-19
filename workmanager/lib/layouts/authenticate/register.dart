@@ -154,7 +154,6 @@ class _RegisterState extends State<Register>{
                             case 4: Alert().badAlert(context, "Une erreur s'est produite", "Impossible d'établir une connexion avec les serveurs");break;
                             default:  Alert().badAlert(context, "Une erreur s'est produite", "Une erreur s'est produite, veuillez réessayer plus tard");
                           }
-
                       });
 
                     }

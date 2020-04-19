@@ -143,10 +143,10 @@ class _PaymentTileState extends State<PaymentTile>{
                                 if(value== PermissionStatus.granted){
                                   print(value);
                                   try {
-                                    final output = await getApplicationDocumentsDirectory(); // use the [path_provider (https://pub.dartlang.org/packages/path_provider) library:
+                                    final output = await getExternalStorageDirectories(); // use the [path_provider (https://pub.dartlang.org/packages/path_provider) library:
                                     print(output);
                                     //File("workmanager/example.pdf").create().then((value) async {
-                                    File file= File("${output.path}/example.pdf");
+                                    File file= File("${output[1]}/example.pdf");
                                     await file.writeAsBytes(pdf.save()).then((value){
                                       print(value);
                                     });

@@ -27,7 +27,7 @@ class _CreateDayState extends State<CreateDay>{
   double responsibleHour;
 
   DateTime helperStart= DateTime.now();
-  DateTime helperEnd= DateTime.now();
+  DateTime helperEnd= DateTime.now().add(Duration(hours: 7));
   TimeOfDay startHour= TimeOfDay.now();
   TimeOfDay endHour= TimeOfDay.now();
   DateTime currentDate= DateTime.now();
@@ -89,8 +89,8 @@ class _CreateDayState extends State<CreateDay>{
                   title: Row(
                     children: <Widget>[
                       Text(weekday[currentDate.weekday-1]),
-                      SizedBox(width: 3,),
-                      Text(DateFormat.yMMMMd('fr-FR').format(currentDate),style: TextStyle(fontSize: 15),),
+                      SizedBox(width: 2,),
+                      Text(DateFormat.yMd('fr-FR').format(currentDate),style: TextStyle(fontSize: 15),),
                     ],
                   ),
                   trailing: Icon(Icons.calendar_today),

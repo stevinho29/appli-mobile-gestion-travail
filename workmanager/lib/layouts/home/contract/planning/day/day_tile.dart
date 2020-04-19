@@ -64,10 +64,8 @@ class _DayTileState extends State<DayTile>{
 
   @override
   Widget build(BuildContext context) {
-
-    // TODO: implement build
     final user = Provider.of<User>(context);
-    if (widget.contractData.employerId != user.uid) {  //  controle la provenance de la proposition
+    if (widget.contractData.employerId == user.uid) {  //  controle la provenance de la proposition
       return GestureDetector(
         child: Padding(
           padding: EdgeInsets.only(top: 5.0),

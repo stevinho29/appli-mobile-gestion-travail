@@ -119,7 +119,7 @@ class _CreateExceptionState extends State<CreateException> {
                 },
 
               ),
-              SizedBox(height: 15),
+              /*SizedBox(height: 15),
               TextFormField(
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -136,7 +136,7 @@ class _CreateExceptionState extends State<CreateException> {
                 onChanged: (val) {
                   setState(() => _currentPricePerHour = num.tryParse(val));
                 },
-              ),
+              ),*/
               SizedBox(height: 15,),
               Row(
                   children: <Widget>[

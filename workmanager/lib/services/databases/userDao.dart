@@ -124,6 +124,7 @@ Future updateUserDataWithToken(String token,String platform){
 
 
   Future<QuerySnapshot> specificHireableUser(String name){  // utilisé
+    name= name.trim();  // remove any leading or trailing caracter
     int pos= name.indexOf(" ");
     if(pos != -1) {
       print("en haut");

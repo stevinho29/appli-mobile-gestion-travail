@@ -44,6 +44,7 @@ int totalHour;
   orchestrator(){
     _getNormalHours();
     _getExceptionalHours();
+    _getTotalPriceForExceptionalHours();
     _getTotalPriceForOvertimeHours();
     getTotal();
   }
@@ -59,21 +60,35 @@ int totalHour;
    _getNormalHours(){
     normalHours= contract.hourPerWeek;
     dayList?.forEach((day) {
-      if(contract.startDate.difference(startDate).inDays <=0 && contract.endDate.difference(endDate).inDays >=0)
-        responsibleHour +=  day.responsibleHour;
+      if(contract.startDate.difference(startDate).inDays <=0 && contract.endDate.difference(endDate).inDays >=0) {
+        responsibleHour += day.responsibleHour;
+        print("RESPONSIBLE HOURS $responsibleHour");
+      }
     });
-    if((normalHours + ((responsibleHour*2)/3)) <= 40.0)
-      normalHourPrice= (((contract.hourPerWeek * 52) / 12)  * contract.pricePerHour +  ((responsibleHour*2)/3 * contract.pricePerHour) );
-    else{ // dans le cas d'heures supplémentaires
+    if((normalHours + ((responsibleHour*2)/3)) <= 40.0) {
+      normalHourPrice =
+      (((contract.hourPerWeek * 52) / 12) * contract.pricePerHour +
+          ((responsibleHour * 2) / 3 * contract.pricePerHour));
+      normalHours = normalHours + ((responsibleHour * 2) / 3);
+    }else{ // dans le cas d'heures supplémentaires
       normalHourPrice= ((contract.hourPerWeek * 52) / 12)  * contract.pricePerHour + (40- contract.hourPerWeek) * contract.pricePerHour;  // les heures par semaine selon contrat + les heures complémentaires calculées au cout horaire de base
       overtime= (normalHours + (responsibleHour * 2) / 3) - 40;
+      normalHours= 40;
     }
   }
 
   _getExceptionalHours(){
     exceptionList?.forEach((exception) {
-      exceptionsHour += exception.endDate.difference(exception.endDate).inHours;
+      if(exception.startDate.difference(startDate).inHours >= 0 && endDate.difference(exception.endDate).inHours >= 0 ) {
+        //exceptionsHour += (exception.endDate.difference(exception.startDate).inDays * contract.hourPerWeek)  / 7;
+        dayList.forEach((day) {
+          if(day.startHour.difference(exception.startDate).inDays >=0 && exception.endDate.difference(day.startHour).inDays >=0)
+            exceptionsHour += day.endHour.difference(day.startHour).inHours;
+        });
+        //print(exception.endDate.difference(exception.endDate).inDays);
+      }
     });
+    print("EXCEPTION HOURS $exceptionsHour");
   }
 
   _getTotalPriceForOvertimeHours(){
@@ -84,8 +99,9 @@ int totalHour;
 
   }
 
-  getTotalPriceForExceptionalHours(){   // montant déductible du salaire de base mensuel
-    return exceptionsHourPrice= exceptionsHour * contract.pricePerHour;
+  _getTotalPriceForExceptionalHours(){   // montant déductible du salaire de base mensuel
+     exceptionsHourPrice= exceptionsHour * contract.pricePerHour;
+     print(exceptionsHourPrice);
   }
 
   getTotalPriceForDonation(double nbHours,double price){
