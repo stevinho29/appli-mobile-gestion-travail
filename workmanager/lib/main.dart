@@ -4,7 +4,7 @@ import 'package:work_manager/services/auth.dart';
 import 'layouts/wrapper.dart';
 import 'models/user.dart';
 
-
+//version 2.0
 void main() {
 
   WidgetsFlutterBinding.ensureInitialized();

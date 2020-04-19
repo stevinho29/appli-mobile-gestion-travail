@@ -113,7 +113,7 @@ class _HomeState extends State<Home> {
                 Scaffold.of(context).showSnackBar(snackBar);
               }
               else{
-                offline= !offline;
+                offline=false;
               }
             });
 

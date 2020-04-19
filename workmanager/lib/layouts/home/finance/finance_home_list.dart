@@ -33,24 +33,14 @@ class _FinanceHomeListState extends State<FinanceHomeList>{
   void didChangeDependencies() {
     super.didChangeDependencies();
     contracts= Provider.of<List<Contract>>(context) ?? [];
-    _delayUntilStop().then((value) {
-      setState(() {
-        loading= false;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     if(contracts.length == 0){
-      _delayUntilStop().then((value) {
-        return loading ? Loading():Scaffold(
+     return Scaffold(
           body: Center(child: Text('Aucun contrat pour le moment'),),
         );
-      });
-      return Loading();
     }
     else {
       return ListView.builder(
