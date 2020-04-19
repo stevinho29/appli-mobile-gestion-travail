@@ -83,7 +83,7 @@ class _PropositionsTileState extends State<PropositionTile>{
                             children: <Widget>[
                               SizedBox(width: 10,),
                               Text("Recu de: ${widget.propositionsData
-                                  .senderInfo['senderName'].toUpperCase()}     fonction:$statut"),
+                                  .senderInfo['senderName'].toUpperCase()}      fonction:$statut"),
                             ],
                           ),
                           SizedBox(height: 2,),
@@ -215,7 +215,7 @@ class _PropositionsTileState extends State<PropositionTile>{
                             children: <Widget>[
                               SizedBox(width: 10,),
                               Text("Contacté: ${widget.propositionsData
-                                  .receiverInfo['receiverName'].toUpperCase()}         fonction: $statut"),
+                                  .receiverInfo['receiverName'].toUpperCase()}     fonction: $statut"),
                             ],
                           ),
                           SizedBox(height: 2,),

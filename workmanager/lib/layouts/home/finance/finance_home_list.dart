@@ -10,34 +10,51 @@ class FinanceHomeList extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _FinanceHomeListState();
   }
 }
 
 class _FinanceHomeListState extends State<FinanceHomeList>{
 
+  List<Contract> contracts= [];
+  bool loading= true;
+  @override
+  void dispose() {
+    super.dispose();
+    Loading();
+  }
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    contracts= Provider.of<List<Contract>>(context) ?? [];
+    _delayUntilStop().then((value) {
+      setState(() {
+        loading= false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
 
-    final contracts= Provider.of<List<Contract>>(context) ?? [];
-
-    // TODO: implement build
 
     if(contracts.length == 0){
       _delayUntilStop().then((value) {
-        return Scaffold(
+        return loading ? Loading():Scaffold(
           body: Center(child: Text('Aucun contrat pour le moment'),),
         );
       });
       return Loading();
-
     }
     else {
-
       return ListView.builder(
-        itemCount: contracts.length,
+        itemCount: contracts?.length,
         itemBuilder: (context, index) {
           return StreamProvider<List<Payment>>.value(
             value: ContractDao().getPayments(contracts[index]),
@@ -50,6 +67,6 @@ class _FinanceHomeListState extends State<FinanceHomeList>{
   }
 
   Future _delayUntilStop() async{
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 2));
 }
 }

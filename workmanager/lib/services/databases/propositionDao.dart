@@ -81,8 +81,12 @@ class PropositionDao{
     Map<String,String> receiverInfo=  new Map();
     Map<String,String> senderInfo=  new Map();
     Map<String,DateTime> dat=  new Map();
-
-    return snapshot.documents.map((doc){
+    return snapshot.documents.where((element) {
+      if(element.data['receiverId'] == uid || element.data['senderId'] == uid)
+        return true;
+      else
+        return false;
+    }).map((doc){
       receiverInfo['receiverName']= doc.data['receiverInfo']['receiverName'];
       receiverInfo['receiverSurname']= doc.data['receiverInfo']['receiverSurname'];
       receiverInfo['receiverEmail']= doc.data['receiverInfo']['receiverEmail'];
@@ -105,9 +109,9 @@ class PropositionDao{
         libelle: doc.data['libelle'],
           origin: doc.data['origin'] ?? "employer" ,
           description: doc.data["description"] ?? "",
-          hourPerWeek: doc.data['hourPerWeek'].toDouble() ?? 10.0,
+          hourPerWeek: doc.data['hourPerWeek']?.toDouble() ?? 10.0,
+          price: doc.data['price']?.toDouble(),
           sendDate:  DateTime.fromMillisecondsSinceEpoch(doc.data['sendDate'].millisecondsSinceEpoch),
-        price: doc.data['price'].toDouble(),
         status: doc.data['status'],
         visible: doc.data['visible'],
         dat: dat,

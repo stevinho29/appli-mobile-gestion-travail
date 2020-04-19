@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:work_manager/layouts/home/propositions/propositions_list.dart';
 import 'package:work_manager/models/proposition.dart';
 import 'package:work_manager/models/user.dart';
@@ -13,10 +12,10 @@ class PropositionsOverview extends StatefulWidget{
     // TODO: implement createState
     return _PropositionsOverviewState();
   }
-
 }
 
 class _PropositionsOverviewState extends State<PropositionsOverview>{
+  bool select;
   @override
   Widget build(BuildContext context) {
 
@@ -28,7 +27,7 @@ class _PropositionsOverviewState extends State<PropositionsOverview>{
           List<Proposition> list= snapshot.data;
           if (snapshot.hasData) {
             try {
-              print("dans MAIN PROPOSITION  ${list[0].dat['endDate']}");
+              //print("dans MAIN PROPOSITION  ${list[0].dat['endDate']}");
             }catch(e){print(e);}
             return  PropositionList(propositionList: list);
           }else

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/contract.dart';
-
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/contractDao.dart';
 import 'package:work_manager/shared/constants.dart';
@@ -47,8 +48,8 @@ class _ContractSettingState extends State<ContractSetting> {
         if (value != null) {
           setState(() {
             _currentStartDate = value;
-            _startDate = value.toString().split(" ")[0];
-            print(_startDate);
+            /*_startDate = value.toString().split(" ")[0];
+            print(_startDate);*/
           });
         }
       }
@@ -56,12 +57,19 @@ class _ContractSettingState extends State<ContractSetting> {
         if (value != null) {
           setState(() {
             _currentEndDate = value;
-            _endDate = value.toString().split(" ")[0];
-            print(_endDate);
+            /*_endDate = value.toString().split(" ")[0];
+            print(_endDate);*/
           });
         }
       }
     });
+  }
+
+
+  @override
+  void initState() {
+  super.initState();
+  initializeDateFormatting("fr-FR");
   }
 
   @override
@@ -142,13 +150,7 @@ class _ContractSettingState extends State<ContractSetting> {
                                 color: Colors.black87,
                                 width: 2.0,
                                 style: BorderStyle.solid)),
-                        child: Text(_startDate ?? DateTime(DateTime
-                            .now()
-                            .year, DateTime
-                            .now()
-                            .month, DateTime
-                            .now()
-                            .day + 1).toString().split(" ")[0]),
+                        child: Text(DateFormat.yMd('fr-FR').format(_currentStartDate) ?? DateFormat.yMd('fr-FR').format(widget.contractData.startDate)),
                       ),
                       onTap: () {
                         selectedDate(context, "left");
@@ -168,13 +170,7 @@ class _ContractSettingState extends State<ContractSetting> {
                                 color: Colors.black87,
                                 width: 2.0,
                                 style: BorderStyle.solid)),
-                        child: Text(_endDate ?? DateTime(DateTime
-                            .now()
-                            .year, DateTime
-                            .now()
-                            .month, DateTime
-                            .now()
-                            .day + 1).toString().split(" ")[0]),
+                        child: Text(DateFormat.yMd('fr-FR').format(_currentEndDate) ?? DateFormat.yMd('fr-FR').format(widget.contractData.endDate)),
                       ),
                       onTap: () {
                         selectedDate(context, "right");

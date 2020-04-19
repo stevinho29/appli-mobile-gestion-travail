@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/account.dart';
 import 'package:work_manager/layouts/home/work.dart';
+import 'package:work_manager/shared/constants.dart';
 import 'finance.dart';
 import 'main_home.dart';
 import 'package:connectivity/connectivity.dart';
@@ -84,13 +84,6 @@ class _HomeState extends State<Home> {
   Stream<ConnectivityResult> getConnectivityState(){
     return _connectivity.onConnectivityChanged;
   }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-  }
-
   final _controller = PageController(
     initialPage: 0,
   );
@@ -104,113 +97,123 @@ class _HomeState extends State<Home> {
 
   int _currentSlideVal= 100;
   GlobalKey scaffoldKey= GlobalKey();
+  String value= "connectivityResult.wifi";
+  bool offline= false;
 
   @override
   Widget build(BuildContext context) {
 
-    return StreamProvider<ConnectivityResult>.value(
-      value: getConnectivityState(),
-      child:Scaffold(
+  return Scaffold(
           key: scaffoldKey,
           backgroundColor: Colors.white,
-          body:
-          Container(
-                padding: EdgeInsets.symmetric(vertical: 30.0),
-                child: Column(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Row(
+          body: Builder(builder: (BuildContext context){
+            _connectivity.onConnectivityChanged.listen((result) {
+              if(result.toString().contains("none")  && !offline) {
+                offline= true;
+                Scaffold.of(context).showSnackBar(snackBar);
+              }
+              else{
+                offline= !offline;
+              }
+            });
+
+            return Container(
+              padding: EdgeInsets.symmetric(vertical: 30.0),
+              child: Column(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: GestureDetector(child: actu,
+                                  onTap: (){ setState((){
+                                    setState(() {
+                                      _currentSlideVal= 100;
+                                      if ( _controller.hasClients) {
+                                        _controller.animateToPage(
+                                          0,
+                                          duration: const Duration(milliseconds: 400),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      }
+                                    });
+                                  });
+                                  })),
+                          Expanded(
+                              child:GestureDetector(child:work,
+                                  onTap: (){ setState((){
+                                    setState(() {
+                                      if (_controller.hasClients) {
+                                        _controller.animateToPage(
+                                          1,
+                                          duration: const Duration(milliseconds: 400),
+                                          curve: Curves.easeInOut,
+                                        );
+                                        actu= Icon(Icons.new_releases,color: _colorInactive,key: Key("first"));
+
+                                      }
+                                    });
+                                  });
+                                  })),
+                          Expanded(
+                              child:GestureDetector(child:balance,
+                                  onTap: (){ setState((){
+                                    setState(() {
+                                      _currentSlideVal= 100+ 2*100;
+                                      if (_controller.hasClients) {
+                                        _controller.animateToPage(
+                                          2,
+                                          duration: const Duration(milliseconds: 400),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      }
+                                    });
+                                  });
+                                  })),
+                          Expanded(
+                              child:GestureDetector(child:account,
+                                  onTap: (){ setState((){
+                                    setState(() {
+                                      _currentSlideVal= 100+ 3*100;
+                                      if (_controller.hasClients) {
+                                        _controller.animateToPage(
+                                          3,
+                                          duration: const Duration(milliseconds: 400),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      }
+                                    });
+                                  });
+                                  }))
+                        ],
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0),
+                        child: Row(
                           children: <Widget>[
                             Expanded(
-                            child: GestureDetector(child: actu,
-                                onTap: (){ setState((){
-                                  setState(() {
-                                    _currentSlideVal= 100;
-                                    if ( _controller.hasClients) {
-                                      _controller.animateToPage(
-                                        0,
-                                        duration: const Duration(milliseconds: 400),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    }
-                                  });
-                                });
-                                })),
-                            Expanded(
-                                child:GestureDetector(child:work,
-                                    onTap: (){ setState((){
-                                      setState(() {
-                                        if (_controller.hasClients) {
-                                          _controller.animateToPage(
-                                            1,
-                                            duration: const Duration(milliseconds: 400),
-                                            curve: Curves.easeInOut,
-                                          );
-                                          actu= Icon(Icons.new_releases,color: _colorInactive,key: Key("first"));
-
-                                        }
-                                      });
-                                    });
-                                    })),
-                            Expanded(
-                                child:GestureDetector(child:balance,
-                                    onTap: (){ setState((){
-                                      setState(() {
-                                        _currentSlideVal= 100+ 2*100;
-                                        if (_controller.hasClients) {
-                                          _controller.animateToPage(
-                                            2,
-                                            duration: const Duration(milliseconds: 400),
-                                            curve: Curves.easeInOut,
-                                          );
-                                        }
-                                      });
-                                    });
-                                    })),
-                            Expanded(
-                                child:GestureDetector(child:account,
-                                    onTap: (){ setState((){
-                                      setState(() {
-                                        _currentSlideVal= 100+ 3*100;
-                                        if (_controller.hasClients) {
-                                          _controller.animateToPage(
-                                            3,
-                                            duration: const Duration(milliseconds: 400),
-                                            curve: Curves.easeInOut,
-                                          );
-                                        }
-                                      });
-                                    });
-                                    }))
+                                child:Slider(
+                                  value: _currentSlideVal.toDouble(),
+                                  activeColor:
+                                  Colors.cyan,
+                                  inactiveColor:
+                                  Colors.grey,
+                                  min: 100,
+                                  max: 400,
+                                  divisions: 3,
+                                  onChanged: (val) {
+                                    //setState(() => _currentSlideVal = val.round());
+                                  },
+                                )
+                            ),
                           ],
                         ),
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 20.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child:Slider(
-                                value: _currentSlideVal.toDouble(),
-                                activeColor:
-                                Colors.cyan,
-                                inactiveColor:
-                                Colors.grey,
-                                min: 100,
-                                max: 400,
-                                divisions: 3,
-                                onChanged: (val) {
-                                  //setState(() => _currentSlideVal = val.round());
-                                },
-                              )
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    Expanded(
-                      child:PageView(
+                      )
+                    ],
+                  ),
+                  Expanded(
+                    child:PageView(
                       controller: _controller,
                       onPageChanged: (val) {
                         setState(() {
@@ -224,11 +227,12 @@ class _HomeState extends State<Home> {
                         Account()
                       ],
                     ),
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
-         )
+            );
+          })
+
         );
       }
   }

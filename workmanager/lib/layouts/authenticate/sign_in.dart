@@ -106,15 +106,17 @@ class _SignInState extends State<SignIn>{
                           loading = true;
                         });
                       await _authService.signInWithRegisterAndPassword(email, password).then((result) async {
-                        setState(() {
-                          loading = false;
-                        });
+
                         if (result == 0){
                           final SharedPreferences prefs = await SharedPreferences.getInstance();
                           prefs.setString(("email"), email);
                           prefs.setString("password", password);
                         }
                         else{
+                          setState(() {
+                            loading = false;
+                          });
+
                           switch(result){
                             case 1: Alert().badAlert(context, "Mot de passe érroné", "le mot de passe ne correspond pas ");break;
                             case 2: Alert().badAlert(context, "Email non valide", "l'adresse email utilisée n'est pas correcte");break;
@@ -126,7 +128,6 @@ class _SignInState extends State<SignIn>{
                           }
                         }
                       });
-
                       }
                     },
                   ),

@@ -137,7 +137,7 @@ class _PaymentFormState extends State<PaymentForm>{
                 decoration: textInputDecoration.copyWith(hintText: "je rajoute des heures").copyWith(labelText: "je rajoute des heures"),
                 onChanged: (val){
                   setState(() {
-                    donationHour= num.tryParse(val);
+                    donationHour= num.tryParse(val)?.toDouble();
                     print(donationHour);
                     _calculator.getTotalPriceForDonation(donationHour ?? 0, donationHourPrice ?? 0);
                   });
@@ -157,7 +157,7 @@ class _PaymentFormState extends State<PaymentForm>{
                 },
                 onChanged: (val){
                   setState(() {
-                    donationHourPrice= num.tryParse(val);
+                    donationHourPrice= num.tryParse(val)?.toDouble();
                     print(donationHourPrice);
                     _calculator.getTotalPriceForDonation(donationHour ?? 0.0, donationHourPrice ?? 0.0);
                     _calculator.getTotal();
