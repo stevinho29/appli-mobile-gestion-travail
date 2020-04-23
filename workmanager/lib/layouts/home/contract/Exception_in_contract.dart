@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/contract.dart';
@@ -9,9 +8,8 @@ import 'package:work_manager/shared/constants.dart';
 
 class CreateException extends StatefulWidget{
 
-  Contract contract;
+ final Contract contract;
   CreateException({this.contract});
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -75,21 +73,7 @@ class _CreateExceptionState extends State<CreateException> {
   Widget build(BuildContext context) {
 
     final user = Provider.of<User>(context);
-    String numberValidator(String value) {
-      if (value == null) {
-        return "saisissez un montant valide";
-      }
-      final n = num.tryParse(value);
-      if (n == null) {
-        return 'saisissez un montant valide';
-      }
-      else {
-          setState(() {
-            _currentPricePerHour = n;
-          });
-          return null;
-      }
-    }
+
 
     // TODO: implement build
     return Scaffold(

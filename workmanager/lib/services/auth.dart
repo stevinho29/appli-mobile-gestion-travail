@@ -35,8 +35,8 @@ Future signInAnon() async{
   // sign in with email and password
 Future<int> signInWithRegisterAndPassword(String email, String password) async{
     try{
-      AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-      FirebaseUser user= result.user;
+       await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      //FirebaseUser user= result.user;
       return 0;
     }catch(e){
       print(e);

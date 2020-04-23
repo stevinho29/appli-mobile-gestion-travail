@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Alert {
@@ -54,8 +55,39 @@ class Alert {
               },
             ),
           ],
+          elevation: 20.0,
+        );
+      },
+    );
+  }
+
+  Future<void> badAlertIos(BuildContext context,String title, String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+                //Text('You\’re like me. I’m never satisfied.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('continuer'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
         );
       },
     );
   }
 }
+
+

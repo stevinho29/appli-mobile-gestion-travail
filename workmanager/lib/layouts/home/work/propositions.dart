@@ -89,10 +89,13 @@ class _PropositionMakerState extends State<PropositionMaker>{
 
     String numberValidator(String value) {
       if(value == null) {
+        print("ici");
         return "saisissez un montant valide";
+
       }
-      final n = num.tryParse(value);
+      final n = num.tryParse(value)?.toDouble();
       if(n == null) {
+        print("ici 2");
         return 'saisissez un montant valide';
       }
       else{
@@ -213,15 +216,15 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                 )),
                             validator: numberValidator,
                             onChanged: (val) {
+                              double price = num.tryParse(priceController.text)?.toDouble();
                               setState(() {
-                                _currentPricePerHour =
-                                    num.tryParse(priceController.text).toDouble();
+                                _currentPricePerHour = price;
                               });
                             }
                           ),
                           SizedBox(height: 10,),
                           TextFormField(
-                            initialValue: _currentHourPerWeek?.toString() ?? "10",
+                            initialValue: _currentHourPerWeek?.toString() ?? "25",
                             keyboardType: TextInputType.number,
                             inputFormatters: [BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))],
                             style: TextStyle(color: Colors.black87),
@@ -230,14 +233,28 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                   icon: Icon(Icons.hourglass_empty, color: Colors.black,),
                                 )),
                             validator: (val){
-                              double number= num.tryParse(val).toDouble();
-                              if(number <= maxRegularHourPerMonth && number > minRegularHourPerMonth) return null;
-                            else if(number < minRegularHourPerMonth) return "nombre d'heures par semaine inférieur à 10h";
-                            else return "le nombre est supérieur à 35 h";},
-                            onChanged: (val) {
-                              setState(() { _currentHourPerWeek =  num.tryParse(hourPerWeekController.text)?.toDouble();
+                              try {
+                                double number = num.tryParse(val)?.toDouble();
+                                if (number <= maxRegularHourPerMonth &&
+                                    number >= minRegularHourPerMonth)
+                                  return null;
+                                else if (number < minRegularHourPerMonth)
+                                  return "nombre d'heures par semaine inférieur à 10h";
+                                else
+                                  return "le nombre est supérieur à 35 h";
+                              }catch(e){
+                                print(e);
+                                return "une erreur s'est produite";
+                              }
+                            },
 
-                              });
+                            onChanged: (val) {
+                              double n= num.tryParse(hourPerWeekController.text)?.toDouble();
+                              if(n != null) {
+                                setState(() {
+                                  _currentHourPerWeek = n;
+                                });
+                              }
                             },
                           ),
                           SizedBox(height: 10,),
@@ -328,7 +345,8 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                 ),
                                 onPressed: () async {
                                   UserData userData= await UserDao(user.uid).getUserData();
-                                  if(userData.address != null && userData.codePostal !=null || userData.address != null && userData.codePostal !=null && !planningVariable ) {
+                                  if( (userData.address != "null" && (userData.codePostal != "null") ) || ((userData.address == "null") && (userData.codePostal == "null") && !planningVariable) ) {
+                                    print("here");
                                     if (_formKey.currentState.validate()) {
                                       Duration difference = _currentEndDate
                                           .difference(_currentStartDate);
@@ -431,7 +449,12 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                 )),
                             validator: numberValidator,
                             onChanged: (val) {
-                              setState(() => _currentPricePerHour =  num.tryParse(val));
+                              double n=  num.tryParse(priceController.text)?.toDouble();
+                              if(n != null) {
+                                setState(() {
+                                  _currentPricePerHour = n;
+                                });
+                              }
                             },
                           ),
                           SizedBox(height: 10,),
@@ -521,7 +544,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                   ]),
                                 ),
                                 onPressed: () async {
-                                  if(widget.choosedUser.address != null && widget.choosedUser.codePostal !=null || widget.choosedUser.address == null && widget.choosedUser.codePostal ==null && !planningVariable) {
+                                  if( ((widget.choosedUser.address != "null") && (widget.choosedUser.codePostal !="null")) || ((widget.choosedUser.address == "null") && (widget.choosedUser.codePostal =="null") && !planningVariable)) {
                                     if (_formKey.currentState.validate()) {
                                       Duration difference = _currentEndDate
                                           .difference(_currentStartDate);
@@ -533,6 +556,7 @@ class _PropositionMakerState extends State<PropositionMaker>{
                                         try {
                                           dat['startDate'] = _currentStartDate;
                                           dat['endDate'] = _currentEndDate;
+                                          print("apres date");
                                           await PropositionDao(uid: user.uid)
                                               .createProposition(
                                               widget.choosedUser,

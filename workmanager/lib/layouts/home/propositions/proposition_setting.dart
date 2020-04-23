@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
 import 'package:work_manager/models/proposition.dart';
@@ -30,22 +32,9 @@ class _PropositionSettingState extends State<PropositionSetting> {
   double _currentPricePerHour;
   Map<String, DateTime> dat = new Map();
 
-  DateTime _currentStartDate = DateTime(DateTime
-      .now()
-      .year, DateTime
-      .now()
-      .month, DateTime
-      .now()
-      .day + 1);
-  DateTime _currentEndDate = DateTime(DateTime
-      .now()
-      .year, DateTime
-      .now()
-      .month, DateTime
-      .now()
-      .day + 1);
-  String _endDate;
-  String _startDate;
+  DateTime _currentStartDate ;
+  DateTime _currentEndDate ;
+
 
   Future selectedDate(BuildContext context, String side) async {
     showDatePicker(
@@ -70,8 +59,6 @@ class _PropositionSettingState extends State<PropositionSetting> {
         if (value != null) {
           setState(() {
             _currentStartDate = value;
-            _startDate = value.toString().split(" ")[0];
-            print(_startDate);
           });
         }
       }
@@ -79,17 +66,25 @@ class _PropositionSettingState extends State<PropositionSetting> {
         if (value != null) {
           setState(() {
             _currentEndDate = value;
-            _endDate = value.toString().split(" ")[0];
-            print(_endDate);
           });
         }
       }
     });
   }
 
+
+  @override
+  void initState() {
+  super.initState();
+  initializeDateFormatting('fr-FR');
+  }
+
   @override
   Widget build(BuildContext context) {
+
     final user = Provider.of<User>(context);
+      _currentStartDate= widget.propositionData.dat['startDate'];
+      _currentEndDate= widget.propositionData.dat['endDate'];
 
     String numberValidator(String value) {
       if (value == null) {
@@ -149,7 +144,7 @@ class _PropositionSettingState extends State<PropositionSetting> {
                   setState(() => _currentPricePerHour = num.tryParse(val));
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               Row(
                   children: <Widget>[
                     Text(" début"),
@@ -165,7 +160,7 @@ class _PropositionSettingState extends State<PropositionSetting> {
                                 color: Colors.black87,
                                 width: 2.0,
                                 style: BorderStyle.solid)),
-                        child: Text(_startDate ?? DateTime(DateTime
+                        child: Text(DateFormat.yMd('fr-FR').format(_currentStartDate) ?? DateTime(DateTime
                             .now()
                             .year, DateTime
                             .now()
@@ -178,33 +173,38 @@ class _PropositionSettingState extends State<PropositionSetting> {
                       },
                     ),
                     SizedBox(width: 15,),
-                    Text(" fin"),
-                    SizedBox(width: (5),),
-                    GestureDetector(
-                      child: Container(
-                        padding: EdgeInsets.all(13),
-                        decoration: new BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                            const BorderRadius.all(const Radius.circular(5.0)),
-                            border: new Border.all(
-                                color: Colors.black87,
-                                width: 2.0,
-                                style: BorderStyle.solid)),
-                        child: Text(_endDate ?? DateTime(DateTime
-                            .now()
-                            .year, DateTime
-                            .now()
-                            .month, DateTime
-                            .now()
-                            .day + 1).toString().split(" ")[0]),
-                      ),
-                      onTap: () {
-                        selectedDate(context, "right");
-                      },
-                    ),
 
                   ]),
+              SizedBox(height: 10,),
+              Row(
+                children: <Widget>[
+                  Text(" fin"),
+                  SizedBox(width: (25),),
+                  GestureDetector(
+                    child: Container(
+                      padding: EdgeInsets.all(13),
+                      decoration: new BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          const BorderRadius.all(const Radius.circular(5.0)),
+                          border: new Border.all(
+                              color: Colors.black87,
+                              width: 2.0,
+                              style: BorderStyle.solid)),
+                      child: Text(DateFormat.yMd('fr-FR').format(_currentEndDate) ?? DateTime(DateTime
+                          .now()
+                          .year, DateTime
+                          .now()
+                          .month, DateTime
+                          .now()
+                          .day + 1).toString().split(" ")[0]),
+                    ),
+                    onTap: () {
+                      selectedDate(context, "right");
+                    },
+                  ),
+                ],
+              ),
               SizedBox(height: 10,),
               Text(error, style: TextStyle(color: Colors.red),),
               Container(
@@ -212,7 +212,7 @@ class _PropositionSettingState extends State<PropositionSetting> {
                 child: RaisedButton(
                     color: Colors.white,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 50),
+                      padding: EdgeInsets.symmetric(horizontal: 6),
                       child: Row(children: <Widget>[
                         Text("soumettre"),
                         SizedBox(width: 5,),

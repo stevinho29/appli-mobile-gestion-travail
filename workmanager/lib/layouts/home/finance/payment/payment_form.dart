@@ -33,6 +33,7 @@ class _PaymentFormState extends State<PaymentForm>{
   final donationPriceController= TextEditingController();
 
   static Calculator _calculator;
+  bool initialized= false;
   bool isSwitched = false;
   bool loading= true;
   DateTime startDate;
@@ -58,7 +59,7 @@ class _PaymentFormState extends State<PaymentForm>{
     super.initState();
     initializeDateFormatting('fr-FR');
     _calculator= Calculator(contract: widget.contractData,paymentList: widget.paymentList);
-    _delayToInitializeCalculator();
+    //_delayToInitializeCalculator();
 
     print("curseur ${widget.contractData.cursorPayment}");
     if(widget.contractData.cursorPayment == 0)
@@ -84,9 +85,9 @@ class _PaymentFormState extends State<PaymentForm>{
         SizedBox(height: 10,),
         Row(
           children: <Widget>[
-            Text(_calculator.normalHours.toString()),
+            Text(_calculator.normalHours.toStringAsFixed(3)),
             SizedBox(width: 50,),
-            Text(_calculator.normalHourPrice.round().toString()),
+            Text(_calculator.normalHourPrice.toStringAsFixed(3)),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],
@@ -96,9 +97,9 @@ class _PaymentFormState extends State<PaymentForm>{
         SizedBox(height: 10,),
         Row(
           children: <Widget>[
-            Text(_calculator.overtime.toString()),
+            Text(_calculator.overtime.toStringAsFixed(3)),
             SizedBox(width: 50,),
-            Text(_calculator.overtimePrice.floor().toString()),
+            Text(_calculator.overtimePrice.toStringAsFixed(3)),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],
@@ -108,9 +109,9 @@ class _PaymentFormState extends State<PaymentForm>{
         SizedBox(height: 10,),
         Row(
           children: <Widget>[
-            Text(_calculator.exceptionsHour.toString()),
+            Text(_calculator.exceptionsHour.toStringAsFixed(3)),
             SizedBox(width: 50,),
-            Text("- ${_calculator.exceptionsHourPrice.floor().toString()}"),
+            Text("- ${_calculator.exceptionsHourPrice.toStringAsFixed(3)}"),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],
@@ -128,7 +129,7 @@ class _PaymentFormState extends State<PaymentForm>{
             children: <Widget>[
               SizedBox(height: 15,),
               TextFormField(
-                initialValue: donationHour?.toString() ?? "0",
+                initialValue: donationHour?.toStringAsFixed(3) ?? "0",
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
@@ -145,7 +146,7 @@ class _PaymentFormState extends State<PaymentForm>{
               ),
               SizedBox(height: 10,),
               TextFormField(
-                initialValue: donationHourPrice?.toString() ?? "0",
+                initialValue: donationHourPrice?.toStringAsFixed(3) ?? "0",
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
@@ -170,9 +171,9 @@ class _PaymentFormState extends State<PaymentForm>{
         SizedBox(height: 15,),
         Row(
           children: <Widget>[
-            Text(_calculator.donationHour.toString()),
+            Text(_calculator.donationHour.toStringAsFixed(3)),
             SizedBox(width: 50,),
-            Text(_calculator.donationHourPrice.toString()),
+            Text(_calculator.donationHourPrice.toStringAsFixed(3)),
             SizedBox(width: 15,),
             Icon(Icons.euro_symbol)
           ],
@@ -246,57 +247,92 @@ class _PaymentFormState extends State<PaymentForm>{
       ],
     );
     // TODO: implement build
-    return loading? Loading():Container(
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: PageView(
-              controller: _controller,
-              onPageChanged: (val){
+    return FutureBuilder<int>(
+      future: _delayToInitializeCalculator(),
+        builder: (BuildContext context, AsyncSnapshot<int> snapshot){
+      Widget child;
+      if (snapshot.hasData) {
+        child = Container(
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: PageView(
+                  controller: _controller,
+                  onPageChanged: (val){
 
-              },
+                  },
+                  children: <Widget>[
+                    firstPage,
+                    secondPage
+                  ],
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  SizedBox(width: 65,),
+                  GestureDetector(child: Icon(Icons.navigate_before,size: 40,),
+                    onTap: (){
+                      _controller.previousPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+                    },),
+                  SizedBox(width: 10,),
+                  GestureDetector(child: Icon(Icons.navigate_next,size: 40,),
+                      onTap: (){
+                        _controller.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+                      })
+                ],
+              )
+            ],
+          ),
+        );
+      } else if (snapshot.hasError) {
+        child =
+          Icon(
+            Icons.error_outline,
+            color: Colors.red,
+            size: 60,
+          );
+
+      } else {
+        child =
+          Container(
+            padding: EdgeInsets.only(top: 100),
+            child: Column(
               children: <Widget>[
-                firstPage,
-                secondPage
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Awaiting result...'),
+                )
               ],
             ),
-          ),
-          Row(
-            children: <Widget>[
-              SizedBox(width: 65,),
-              GestureDetector(child: Icon(Icons.navigate_before,size: 40,),
-                onTap: (){
-                  _controller.previousPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
-                },),
-              SizedBox(width: 10,),
-              GestureDetector(child: Icon(Icons.navigate_next,size: 40,),
-                onTap: (){
-                _controller.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
-                  })
-            ],
-          )
-        ],
-      ),
-    );
-  }
+          );
+      }
+      return  Center(child: child);
+    });
 
-  Future _delayToInitializeCalculator() async{
-      _calculator.initializeCalculator().then((value) {
-        if(widget.contractData.planningVariable) {
-          print("dynamic orchestrator");
-          _calculator.orchestrator();
-          setState(() {
-            loading = false;
-          });
-        }else{
-          print("static orchestrator");
-          _calculator.staticOrchestrator();
-          setState(() {
-            loading = false;
-          });
-        }
-        //return null;
-       });
+  }
+  Future<int> _delayToInitializeCalculator() async{
+    if(!initialized) {
+      await _calculator.initializeCalculator();
+      initialized=true;
+      setState(() {   // besoin de provoquer le rebuild du widget pour qu'il prenne en compte les nouvelles valeurs de calculator
+      });
+      if(widget.contractData.planningVariable) {
+        print("dynamic orchestrator");
+        await _calculator.orchestrator();
+        return 1;
+      }else{
+        print("static orchestrator");
+        _calculator.staticOrchestrator();
+        return 0;
+      }
+    }
+    else
+      return 2;
 }
 }

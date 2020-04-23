@@ -25,13 +25,12 @@ class _ContractsOverviewState extends State<ContractsOverview>{
     dynamic employer= StreamBuilder<List<Contract>>(
         stream: ContractDao(uid: user.uid).getContracts,
         builder: (context, snapshot) {
+          Widget child1;
           List list= snapshot.data;
           print("LISTE DE CONTRAT $list");
           if (snapshot.hasData) {
-            try {
               print("SNAPSHOT $snapshot");
-            }catch(e){print(e);}
-            return  Scaffold(
+            child1=  Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
                   title: Text("Mes Contrats / Employeur"),
@@ -40,22 +39,49 @@ class _ContractsOverviewState extends State<ContractsOverview>{
                     padding: EdgeInsets.all(20),
                     child: ContractList(contractList: list))
             );
-          }else
-            return Scaffold(
-                body:Container(
-                  child: Text("NO PROPOSITIONS SO FAR"),
+          } else if(snapshot.hasError){
+            child1= Column(
+              children: <Widget>[
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 60,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Text('Error: ${snapshot.error}'),
                 )
+              ],
             );
+          }
+          else {
+            child1=  Column(
+              children: <Widget>[
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Awaiting result...'),
+                )
+              ],
+            );
+          }
+          return child1;
         }
     );
-    dynamic employee= StreamBuilder<List<Contract>>(
-        stream: ContractDao(uid: user.uid).getEmployeeContracts,
+
+    dynamic employee= FutureBuilder<List<Contract>>(
+        future: ContractDao(uid: user.uid).getEmployeeContractsRightNow,
         builder: (context, snapshot) {
+          Widget child;
           List secondlist= snapshot.data;
           print("LISTE DE CONTRAT $secondlist");
           if (snapshot.hasData) {
             print("SNAPSHOT $snapshot");
-            return  Scaffold(
+            child=  Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
                   title: Text("Mes Contrats / prestataire"),
@@ -64,12 +90,37 @@ class _ContractsOverviewState extends State<ContractsOverview>{
                     padding: EdgeInsets.all(20),
                     child: ContractList(contractList: secondlist))
             );
-          }else
-            return Scaffold(
-                body:Container(
-                  child: Text("NO PROPOSITIONS SO FAR"),
+          }else if(snapshot.hasError){
+            child= Column(
+              children: <Widget>[
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 60,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Text('Error: ${snapshot.error}'),
                 )
+              ],
             );
+          }
+          else {
+            child= Column(
+              children: <Widget>[
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Awaiting result...'),
+                )
+              ],
+            );
+          }
+          return child;
         }
     );
     // TODO: implement build

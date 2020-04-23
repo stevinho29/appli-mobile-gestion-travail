@@ -25,14 +25,15 @@ class _ExceptionsOverviewState extends State<ExceptionsOverview>{
 
     final user = Provider.of<User>(context);
     // TODO: implement build
-    return StreamBuilder<List<Exceptions>>(
-        stream: ContractDao(uid: user.uid).getContractExceptions(widget.contract),
+    return FutureBuilder<List<Exceptions>>(
+        future: ContractDao(uid: user.uid).getContractExceptionsRightNow(widget.contract),
         builder: (context, snapshot) {
+          Widget child;
           List list= snapshot.data;
           print("LISTE DES Exceptions $list");
           if (snapshot.hasData) {
             print("SNAPSHOT $snapshot");
-            return  Scaffold(
+            child=  Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
                   title: Text("Exceptions "),
@@ -41,12 +42,36 @@ class _ExceptionsOverviewState extends State<ExceptionsOverview>{
                     padding: EdgeInsets.all(20),
                     child: ExceptionList(contract: widget.contract,exceptionList: list))
             );
-          }else
-            return Scaffold(
-                body:Container(
-                  child: Center(child: Text("AUCUNE EXCEPTION DECLAREE ")),
+          }else if(snapshot.hasError){
+              child= Column(
+                children: <Widget>[
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Text('Error: ${snapshot.error}'),
+                  )
+                ],
+              );
+          } else {
+            child= Column(
+              children: <Widget>[
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Awaiting result...'),
                 )
+              ],
             );
+          }
+          return child;
         }
     );
   }

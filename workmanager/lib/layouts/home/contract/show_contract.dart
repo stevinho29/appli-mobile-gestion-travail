@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/alerts/alert.dart';
@@ -25,19 +27,11 @@ class ShowContract extends StatefulWidget{
 
 class _ShowContractState extends State<ShowContract>{
 
+  double sliderValue;
   @override
   Widget build(BuildContext context) {
 
     final user = Provider.of<User>(context);
-
-    void _showSettingsPanel(Contract contract){
-      showModalBottomSheet(context: context, builder: (context){
-        return Container(
-          padding: EdgeInsets.all(20),
-          child: ContractSetting(contractData: contract),
-        );
-      });
-    }
 
     // TODO: implement build
     return Scaffold(
@@ -65,8 +59,16 @@ class _ShowContractState extends State<ShowContract>{
             ListTile(
               leading: Icon(Icons.create),
               title: Text('Modifier les termes du contrat'),
-              onTap: (){
-                _showSettingsPanel(widget.contract);
+              onTap: () async {
+                if(widget.contract.startDate.difference(DateTime.now()).inHours <= 0) {
+                  await showDialog(context: context,
+                      child: AlertDialog(
+                        content: ContractSetting(contractData: widget.contract),
+
+                      ));
+                }else{
+                  Alert().badAlert(context, "Modification impossible", "il est impossible de modifier les termes d'un contrat une fois entamé ");
+                }
               },
             ),
             ListTile(
@@ -91,9 +93,95 @@ class _ShowContractState extends State<ShowContract>{
               },
             ),
             ListTile(
+              leading: Icon(Icons.visibility),
+              title: Text('Semaines de Congés sans solde:   ${widget.contract.weeksOfLeave.floor().toString()}  semaines'),
+              onTap: (){
+                showModalBottomSheet(context: context, builder: (context){
+
+                  return Container(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 15,),
+                        Text("mise à jour congés sans solde",style: TextStyle(fontWeight: FontWeight.bold),),
+                        SizedBox(height: 15,),
+                        Slider(
+                          value: sliderValue ?? widget.contract.weeksOfLeave,
+                          activeColor: Colors.cyan,
+                          inactiveColor: Colors.grey,
+                          min: 0,
+                          max: 10,
+                          divisions: 10,
+                          onChanged: (val) {
+                            setState(() {
+                              sliderValue= val.floorToDouble();
+                            });
+                          },
+                        ),
+                        Row(
+                          children: <Widget>[
+                            SizedBox(width: 20,),
+                            Text("nombre de semaines:"),
+                            SizedBox(width: 10,),
+                            Text(sliderValue?.toString() ?? widget.contract.weeksOfLeave.toString(),style: TextStyle(fontWeight: FontWeight.bold),)
+                          ],
+                        ),
+                        SizedBox(height: 15,),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 20,horizontal: 100),
+                          child: RaisedButton(
+                              color: Colors.white,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 50),
+                                child: Row(children: <Widget>[
+                                  Icon(Icons.update)
+                                ]),
+                              ),
+                              onPressed: () async {
+                                if(widget.contract.employerId == user.uid) {
+                                  try {
+                                    await ContractDao(uid: user.uid)
+                                        .updateContractWeeksOfLeave(
+                                        widget.contract, sliderValue);
+                                    Alert()
+                                        .goodAlert(
+                                        context, "Mise à jour réussie",
+                                        "le nombre de semaines de congés sans solde a bien été mis à jour")
+                                        .then((value) {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                      });
+                                    });
+                                  } catch (e) {
+                                    print(e);
+                                    Alert()
+                                        .badAlert(
+                                        context, "l'opération a échoué",
+                                        "une erreur s'est produite lors de la mise à jour..veuillez réessayer plus tard")
+                                        .then((value) {
+                                      Navigator.pop(context);
+                                    });
+                                  }
+                                }else{
+                                  Alert().badAlert(context, "Permission refusée", "Seul l'employeur peut modifier les semaines de congés sans solde");
+                                }
+                              }
+                          ),
+                        )
+                      ],
+                    ),
+
+                  );
+                });
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.file_download),
               title: Text('télécharger au format pdf'),
               onTap: () async {
+                if(Platform.isAndroid)
+                  Alert().badAlert(context, "À venir", "cette fonctionnalité sera implémentée sous peu...");
+                else
+                  Alert().badAlertIos(context, "À venir", "cette fonctionnalité sera implémentée sous peu...");
     /*  await Permission.storage.request().then((status) {
                   if(status == PermissionStatus.undetermined || status == PermissionStatus.denied ){
                     Navigator.push(
@@ -109,14 +197,34 @@ class _ShowContractState extends State<ShowContract>{
               leading: Icon(Icons.cancel),
               title: Text('annuler le contrat'),
               onTap: () async {
-                try {
-                  await ContractDao(uid: user.uid).cancelContract(widget.contract).then((value) {
-                    Alert().goodAlert(context, "Annulatiuon réussie", "le contrat a bien été annulé");
-                  });
-                }catch(e){
-                  print(e);
-                  Alert().badAlert(context, "l'Opération a échoué", "le contrat n'a pas pu etre annulé");
-                }
+                await showDialog(context: context,
+                child: AlertDialog(
+                  title: Text("              Important"),
+                  content: Text("l'annulation d'un contrat est une opération irréversible qui entraine son archivage\n "
+                      "et l'arret des fonctions de calcul et de suivi"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('annuler'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('continuer'),
+                      onPressed: () async {
+                        try {
+                          await ContractDao(uid: user.uid).cancelContract(widget.contract).then((value) {
+                            Alert().goodAlert(context, "Annulatiuon réussie", "le contrat a bien été annulé");
+                          });
+                        }catch(e){
+                          print(e);
+                          Alert().badAlert(context, "l'Opération a échoué", "le contrat n'a pas pu etre annulé");
+                        }
+                      },
+                    ),
+                  ],
+                ));
+
               },
             ),
             ListTile(
@@ -193,7 +301,7 @@ class _ShowContractState extends State<ShowContract>{
                       children: <Widget>[
                         Text("Période d'essai: ",style: TextStyle(color: Colors.red)),
                         SizedBox(width: 10,),
-                        Text("non renseigné"),
+                        Text("${widget.contract.trialPeriod.toString()} semaines"),
                       ],
                     ),
                     SizedBox(height: 10,),

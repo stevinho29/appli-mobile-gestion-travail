@@ -33,14 +33,14 @@ class _PropositionsTileState extends State<PropositionTile>{
   @override
   Widget build(BuildContext context) {
 
-    void _showSettingsPanel(Proposition proposition){
+    /*void _showSettingsPanel(Proposition proposition){
       showModalBottomSheet(context: context, builder: (context){
         return Container(
           padding: EdgeInsets.all(20),
           child: PropositionSetting(propositionData: proposition),
         );
       });
-    }
+    }*/
 
     // TODO: implement build
     final user = Provider.of<User>(context);
@@ -116,13 +116,27 @@ class _PropositionsTileState extends State<PropositionTile>{
                                     ]),
                                   ),
                                   onPressed: () {
+                                    if (widget.propositionsData
+                                        .dat['startDate']
+                                        .difference(DateTime.now())
+                                        .inHours >= 0) {
                                     try {
-                                      PropositionDao(uid: user.uid).acceptProposition(
-                                          widget.propositionsData);
-                                      Alert().goodAlert(context, "Proposition acceptée", "le contrat sera crée conformément aux termes ");
-                                    }catch(e){
+                                        PropositionDao(uid: user.uid)
+                                            .acceptProposition(
+                                            widget.propositionsData);
+                                        Alert().goodAlert(
+                                            context, "Proposition acceptée",
+                                            "le contrat sera crée conformément aux termes ");
+                                      } catch (e) {
                                       print(e);
-                                      Alert().badAlert(context, "problème survenu", "l'opération n'a pas pu etre éffectuée...");
+                                      Alert().badAlert(
+                                          context, "problème survenu",
+                                          "l'opération n'a pas pu etre éffectuée...");
+                                    }
+                                  }else{
+                                      Alert().badAlert(
+                                          context, "Opération impossible",
+                                          "la date de début de contrat spécifiée dans cette proposition est deja passée...");
                                     }
                                   },
                                 ),
@@ -285,8 +299,13 @@ class _PropositionsTileState extends State<PropositionTile>{
                                       Icon(Icons.edit, color: Colors.cyan,)
                                     ]),
                                   ),
-                                  onPressed: () {
-                                    _showSettingsPanel(widget.propositionsData);
+                                  onPressed: () async {
+                                    await showDialog(context: context,
+                                    child:AlertDialog(
+                                    content:  PropositionSetting(propositionData: widget.propositionsData,),
+
+                                    ));
+
                                   },
                                 ),
                               ),

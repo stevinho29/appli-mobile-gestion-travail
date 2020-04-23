@@ -29,19 +29,18 @@ class _ContractSettingState extends State<ContractSetting> {
   String error = "";
   String _currentLibelle;
 
+  int _trialPeriod;
   double _currentPricePerHour;
   Map<String, DateTime> dat = new Map();
 
-  DateTime _currentStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
-  DateTime _currentEndDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
-  String _endDate;
-  String _startDate;
+  DateTime _currentStartDate ;
+  DateTime _currentEndDate ;
 
   Future selectedDate(BuildContext context, String side) async {
     showDatePicker(
       context: context,
       initialDate: _currentStartDate,
-      firstDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
+      firstDate: DateTime.now(),
       lastDate: DateTime(DateTime.now().year + 1, DateTime.now().month, DateTime.now().day + 1),
     ).then((value) {
       if (side == "left") {
@@ -95,7 +94,8 @@ class _ContractSettingState extends State<ContractSetting> {
         }
       }
     }
-    // TODO: implement build
+    _currentStartDate= widget.contractData.startDate;
+    _currentEndDate= widget.contractData.endDate;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -134,7 +134,44 @@ class _ContractSettingState extends State<ContractSetting> {
                   setState(() => _currentPricePerHour = num.tryParse(val));
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
+              TextFormField(
+                initialValue: _trialPeriod?.toString() ?? widget.contractData.trialPeriod.toString(),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  BlacklistingTextInputFormatter(new RegExp('[\\-|\\ ]'))
+                ],
+                style: TextStyle(color: Colors.black87),
+                decoration: textInputDecoration.copyWith(
+                    hintText: "Période d'essai").copyWith(
+                  labelText: "période en semaines",).copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.euro_symbol, color: Colors.black,),
+                    )),
+                validator: (val){
+                  try {
+                    int period = num.tryParse(val);
+                    if(period != null) {
+                      setState(() {
+                        _trialPeriod = period;
+                      });
+                      return null;
+                    }else
+                      return "nombre invalide";
+                  }catch(e){
+                    print(e);
+                    return "une erreur s'est produite";
+                  }
+                },
+                onChanged: (val) {
+                  try {
+                    setState(() => _trialPeriod = num.tryParse(val));
+                  }catch(e){
+                    print(e);
+                  }
+                },
+              ),
+              SizedBox(height: 20),
               Row(
                   children: <Widget>[
                     Text(" début"),
@@ -150,34 +187,38 @@ class _ContractSettingState extends State<ContractSetting> {
                                 color: Colors.black87,
                                 width: 2.0,
                                 style: BorderStyle.solid)),
-                        child: Text(DateFormat.yMd('fr-FR').format(_currentStartDate) ?? DateFormat.yMd('fr-FR').format(widget.contractData.startDate)),
+                        child: Text(DateFormat.yMd('fr-FR').format(_currentStartDate) ),
                       ),
                       onTap: () {
                         selectedDate(context, "left");
                       },
                     ),
-                    SizedBox(width: 15,),
-                    Text(" fin"),
-                    SizedBox(width: (5),),
-                    GestureDetector(
-                      child: Container(
-                        padding: EdgeInsets.all(13),
-                        decoration: new BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                            const BorderRadius.all(const Radius.circular(5.0)),
-                            border: new Border.all(
-                                color: Colors.black87,
-                                width: 2.0,
-                                style: BorderStyle.solid)),
-                        child: Text(DateFormat.yMd('fr-FR').format(_currentEndDate) ?? DateFormat.yMd('fr-FR').format(widget.contractData.endDate)),
-                      ),
-                      onTap: () {
-                        selectedDate(context, "right");
-                      },
-                    ),
 
                   ]),
+              SizedBox(height: 15,),
+              Row(
+                children: <Widget>[
+                  Text(" fin"),
+                  SizedBox(width: (25),),
+                  GestureDetector(
+                    child: Container(
+                      padding: EdgeInsets.all(13),
+                      decoration: new BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          const BorderRadius.all(const Radius.circular(5.0)),
+                          border: new Border.all(
+                              color: Colors.black87,
+                              width: 2.0,
+                              style: BorderStyle.solid)),
+                      child: Text(DateFormat.yMd('fr-FR').format(_currentEndDate) ),
+                    ),
+                    onTap: () {
+                      selectedDate(context, "right");
+                    },
+                  ),
+                ],
+              ),
               SizedBox(height: 10,),
               Text(error, style: TextStyle(color: Colors.red),),
               Container(
@@ -185,7 +226,7 @@ class _ContractSettingState extends State<ContractSetting> {
                 child: RaisedButton(
                     color: Colors.white,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 50),
+                      padding: EdgeInsets.symmetric(horizontal: 6),
                       child: Row(children: <Widget>[
                         Text("soumettre"),
                         SizedBox(width: 5,),
@@ -207,7 +248,7 @@ class _ContractSettingState extends State<ContractSetting> {
 
                             dat['startDate'] = _currentStartDate ?? widget.contractData.startDate;
                             dat['endDate'] = _currentEndDate ?? widget.contractData.endDate;
-                            await ContractDao(uid: user.uid).updateContractData(widget.contractData, _currentLibelle, _currentPricePerHour, dat)
+                            await ContractDao(uid: user.uid).updateContractData(widget.contractData, _currentLibelle, _currentPricePerHour, dat,_trialPeriod)
                                 .then((res) {
                               Alert().goodAlert(context, "contrat modifiée", "votre contrat a été modifiée avec succès")
                                   .then((value) => Navigator.pop(context));

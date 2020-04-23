@@ -53,27 +53,77 @@ class _SearchStationState extends State<SearchStation>{
                       setState(() {
                         loading= !loading;
                         _name = myController.text;
+                        isBlank=false;
                       });
 
-                      UserDao(user.uid).specificHireableUser(_name).then((value) {
+                      /*UserDao(user.uid).specificHireableUser(_name).then((value) {
                         setState(() {
                           print("VALEUR DE LA LISTE $value");
-                          
-                          list = UserDao(user.uid).hireableUserFromQshot(value);
-                          list.removeWhere((element) => element.uid== user.uid); // je retire les données du user trouvé quand il s'agit de  l'utilisateur lui mm
-                          isBlank=false;
+
+                          //list = UserDao(user.uid).hireableUserFromQshot(value);
+                          //list.removeWhere((element) => element.uid== user.uid); // je retire les données du user trouvé quand il s'agit de  l'utilisateur lui mm
+
                           loading = !loading;
                         });
-                      });
+                      });*/
                     },
                   ),
                 ),
+                onChanged: (val){
+                  print("je teste ${val}");
+                  setState(() {
+                    loading= !loading;
+                    _name = val;
+                    isBlank=false;
+                  });
+
+                }),
               ),
             ),
-          ),
-          isBlank ? Blank(): Expanded(
+          isBlank ? Blank():FutureBuilder<List<UserData>>(
+            future: UserDao(user.uid).specificHireableUser(_name),
+              builder: ( context,snapshot){
+              Widget child;
+              if(snapshot.hasData){
+                List<UserData> list= snapshot.data;
+                list.removeWhere((element) => element.uid == user.uid);
+                child= Expanded(
+                  child: HireableUser(userList: list),
+                );
+              }else if(snapshot.hasError){
+                child= Column(
+                  children: <Widget>[
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 60,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Text('Error: ${snapshot.error}'),
+                    )
+                  ],
+                );
+              }else{
+                child= Column(
+                  children: <Widget>[
+                    SizedBox(
+                      child: CircularProgressIndicator(),
+                      width: 60,
+                      height: 60,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: Text('Awaiting result...'),
+                    )
+                  ],
+                );
+              }
+            return child;
+          }),
+          /*isBlank ? Blank(): Expanded(
             child: HireableUser(userList: list),
-          )
+          )*/
         ],
       ),
     );

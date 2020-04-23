@@ -10,7 +10,6 @@ class HireableUser extends StatefulWidget{
   HireableUser({this.userList});
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _HireableUserState();
   }
 
@@ -22,8 +21,6 @@ class _HireableUserState extends State<HireableUser>{
   Widget build(BuildContext context) {
 
 
-    // TODO: implement build
-
     if(widget.userList.length == 0){
       return Container(
         padding: EdgeInsets.symmetric(vertical: 30),
@@ -31,7 +28,6 @@ class _HireableUserState extends State<HireableUser>{
       );
     }
     else {
-
       return ListView.builder(
         itemCount: widget.userList.length,
         itemBuilder: (context, index) {

@@ -20,14 +20,16 @@ class Contract{  // contient des données dénormalisées sur l'employeur et l'e
   String libelle;
   String description;   //descriptif des taches ou des compétences
   double hourPerWeek;      // nombre d'heures par semaine
+  double weeksOfLeave;  // semainde de congés sans solde
   double pricePerHour;
+  int trialPeriod;    //période d'essai
   int cursorPayment;    // compteur qui indique combien de factures(fiche de paie) ont deja été délivrées pour ce contrat
   DateTime startDate;
   DateTime endDate;
   bool canceled;   // will determine if its whether editable or not
   bool planningVariable;
   List<String> validation;  // wether if the contract need geolcation or QR code for validation
-    Contract(this.documentId,this.employerId,this.employeeId,this.libelle,this.description,this.hourPerWeek,this.pricePerHour,this.cursorPayment,
+    Contract(this.documentId,this.employerId,this.employeeId,this.libelle,this.description,this.hourPerWeek,this.weeksOfLeave,this.pricePerHour,this.trialPeriod,this.cursorPayment,
         this.startDate,this.endDate,this.canceled,this.employerInfo,this.employeeInfo,this.planningVariable,this.validation);
 }
 

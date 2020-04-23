@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:work_manager/layouts/home/account/identity_setting_form.dart';
 import 'package:work_manager/models/user.dart';
 import 'package:work_manager/services/databases/userDao.dart';
-import 'package:work_manager/shared/loading.dart';
 
 class Identity extends StatefulWidget {
   @override
@@ -18,23 +17,14 @@ class _IdentityState extends State<Identity> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
 
-    void _showSettingsPanel(UserData userData){
-      showModalBottomSheet(context: context, builder: (context){
-        return Container(
-          padding: EdgeInsets.symmetric(vertical: 20.0,horizontal: 60.0),
-          child: IdentitySetting(userData: userData),
-        );
-      });
-    }
-
     // TODO: implement build
-    return StreamBuilder<UserData>(
-        stream: UserDao(user.uid).userData,
+    return FutureBuilder<UserData>(
+        future: UserDao(user.uid).getUserData(),
         builder: (context, snapshot) {
+          Widget scaffold;
           if (snapshot.hasData) {
             UserData userData = snapshot.data;
-
-            return Scaffold(
+            scaffold= Scaffold(
               appBar: AppBar(
                 centerTitle: true,
                 title: Container(
@@ -123,11 +113,30 @@ class _IdentityState extends State<Identity> {
                       child: Row(
                         children: <Widget>[
                           Text('Adresse: '),
-                          Text((userData.address +' '+userData.codePostal) ?? "no address" )
+                          Text(userData.address == 'null' ? 'non renseigné':userData.address  )
                         ],
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 10,),
+                    Container(
+                      decoration: new BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          const BorderRadius.all(const Radius.circular(10.0)),
+                          border: new Border.all(
+                              color: Colors.cyan,
+                              width: 2.0,
+                              style: BorderStyle.solid)),
+                      height: 50,
+                      //color: Colors.amber[500],
+                      child: Row(
+                        children: <Widget>[
+                          Text('code postal: '),
+                          Text(userData.codePostal == null ? 'non renseigné': userData.codePostal )
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
                     Container(
                       decoration: new BoxDecoration(
                           color: Colors.white,
@@ -142,7 +151,7 @@ class _IdentityState extends State<Identity> {
                       child: Row(
                         children: <Widget>[
                           Text('tel: '),
-                          Text((userData.tel.toString()) ?? "aucun numéro renseigné" )
+                          Text( userData.tel == 0 ? "aucun numéro renseigné": userData.tel.toString() )
                         ],
                       ),
                     ),
@@ -159,15 +168,50 @@ class _IdentityState extends State<Identity> {
                           ]),
                         ),
                         onPressed: () async {
-                          _showSettingsPanel(userData);
+                          await showDialog(context: context,
+                              child:AlertDialog(
+                                content:  IdentitySetting(userData: userData,),
+
+                              ));
+
                         }
                       ),
                     )
               ],
             ));
-          } else {
-            return Loading();
+          }else if(snapshot.hasError){
+            print("ERROR ${snapshot.hasError}");
+          scaffold =
+          Scaffold(
+            body:Center(
+              child: Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 60,
+              ),
+            ) ,
+
+          );
+          } else{
+            scaffold =
+                Container(
+                  padding: EdgeInsets.only(top: 100),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        child: CircularProgressIndicator(),
+                        width: 60,
+                        height: 60,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Text('Awaiting result...'),
+                      )
+                    ],
+                  ),
+                );
           }
+          return scaffold;
         });
   }
 }

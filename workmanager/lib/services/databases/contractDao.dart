@@ -10,12 +10,13 @@ class ContractDao{
 
   final CollectionReference contractCollection= Firestore.instance.collection("contracts");
 
-  Future updateContractData(Contract contractData,String libelle,double price,Map<String,DateTime> dat) async {
+  Future updateContractData(Contract contractData,String libelle,double price,Map<String,DateTime> dat,int trialPeriod) async {
     try{
       return contractCollection.document(contractData.documentId).updateData({
         'libelle': libelle,
         'price':price,
         'dates': dat,
+        'trialPeriod': trialPeriod,
       });
     }catch(e){
       print(e);
@@ -27,6 +28,16 @@ class ContractDao{
     try{
       return contractCollection.document(contractData.documentId).updateData({
         'cursorPayment': cursor,
+      });
+    }catch(e){
+      print(e);
+      return null;
+    }
+  }
+  Future updateContractWeeksOfLeave(Contract contractData,double weeksOfLeave) async {
+    try{
+      return contractCollection.document(contractData.documentId).updateData({
+        'weeksOfLeave': weeksOfLeave,
       });
     }catch(e){
       print(e);
@@ -83,7 +94,9 @@ class ContractDao{
         'libelle': proposition.libelle,
         'description': proposition.description,
         'hourPerWeek': proposition.hourPerWeek,
+        'weeksOfLeave': 0.0,
         'pricePerHour': proposition.price,
+        'trialPeriod':  0,
         'cursorPayment': 0,
         'canceled': false,
         'dates': proposition.dat,
@@ -167,7 +180,7 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
     try {
       Stream<List<Exceptions>> list = contractCollection.document(
           contract.documentId).collection('exceptions').snapshots().map(
-          _fromSnapToExceptions);
+          _fromQuerySnapToExceptions);
       list.listen((event) {
         print(event[0].motif);
         return list;
@@ -176,11 +189,17 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
       print(e);
       print("failure on getContracts Exceptions stream");
     }
-
-
   }
 
-  List<Exceptions> _fromSnapToExceptions(QuerySnapshot snapshot){
+Future<List<Exceptions>> getContractExceptionsRightNow(Contract contract){
+    print("utilitaire docSnap for exceptions");
+    return contractCollection.document(
+        contract.documentId).collection('exceptions').getDocuments().then((qShot){
+         return qShot.documents.map(_fromDocSnapToException).toList();
+    });
+}
+  List<Exceptions> _fromQuerySnapToExceptions(QuerySnapshot snapshot){
+    print("utilitaire QuerySnap for Exceptions");
    return snapshot.documents.map((doc) {
      //print(doc.documentID);
      return Exceptions(
@@ -192,6 +211,17 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
         endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
       );
     }).toList();
+  }
+
+  Exceptions _fromDocSnapToException(DocumentSnapshot doc){
+    return Exceptions(
+        documentId: doc.documentID,
+        contratId: doc.data['contratId'],
+        motif: doc.data['motif'],
+        price: doc.data['price']?.toDouble() ?? 0.0,
+        startDate: DateTime.fromMillisecondsSinceEpoch(doc.data['startDate'].millisecondsSinceEpoch),
+        endDate: DateTime.fromMillisecondsSinceEpoch(doc.data['endDate'].millisecondsSinceEpoch)
+    );
   }
 
   // liste de contrats
@@ -208,12 +238,13 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
     });
     return list;
   }
+
   Stream<List<Contract>> get getEmployeeContracts{
 
     Stream<List<Contract>> list= contractCollection.where("employeeId",isEqualTo: uid ).where("canceled",isEqualTo: false).snapshots().map(_contractListFromSnapshots);
     list.listen((event) {
       try {
-        print(event[0].libelle);
+        print("Contrats employés ${event[0].libelle}");
       }catch(e){
         print(e);
         print('failure on getEmploye Stream');
@@ -221,11 +252,23 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
     });
     return list;
   }
+  Future<List<Contract>> get getContractsRightNow{
+    return contractCollection.where("employerId",isEqualTo: uid ).where("canceled",isEqualTo: false).getDocuments().then((qShot){
+      return qShot.documents.map(_contractListFromDocSnap).toList();
+    });
+  }
+  Future<List<Contract>> get getEmployeeContractsRightNow{
+    return contractCollection.where("employeeId",isEqualTo: uid ).where("canceled",isEqualTo: false).getDocuments().then((qShot){
+      return qShot.documents.map(_contractListFromDocSnap).toList();
+    });
+  }
 
   //fonction utile pour le cast
   List<Contract> _contractListFromSnapshots(QuerySnapshot snapshot){
     Map<String,String> employerInfo=  new Map();
     Map<String,String> employeeInfo=  new Map();
+
+    print("utilitaire map using QuerySnap");    // ligne de debug
 
     return snapshot.documents.map((doc){
       print("je print DOC $doc");
@@ -242,10 +285,34 @@ Future<List<Exceptions>> getExceptionList(Contract contract) async {
       employerInfo['employerCodePostal']= doc.data['employerInfo']['employerCodePostal'] ?? "59000";
       //print("JE REGARDE LADDRESS${doc.data['employerInfo']['employerAddress']}");
       return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],doc.data['description'] ?? "",
-         doc.data['hourPerWeek'].toDouble() ?? 30.0, doc.data['pricePerHour'].toDouble() ?? 0.0,doc.data['cursorPayment'] ?? 0, DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
+         doc.data['hourPerWeek']?.toDouble() ?? 30.0,doc.data['weeksOfLeave']?.toDouble() ?? 0.0, doc.data['pricePerHour']?.toDouble() ?? 0.0,
+          doc.data['trialPeriod'] ?? 0,doc.data['cursorPayment'] ?? 0, DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),
+          DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
       employerInfo,employeeInfo,doc.data['planningVariable'] ??false, ['geolocation']);
     }).toList();
   }
+
+  Contract _contractListFromDocSnap(DocumentSnapshot doc){  //utilitaire pour maper une  liste de contrat à partir d'un documentSnapshot
+    Map<String,String> employerInfo=  new Map();
+    Map<String,String> employeeInfo=  new Map();
+
+    print("utilitaire map using docSnap");          // ligne de debug
+
+    employeeInfo['employeeName']= doc.data['employeeInfo']['employeeName'];
+    employeeInfo['employeeSurname']= doc.data['employeeInfo']['employeeSurname'];
+    employeeInfo['employeeEmail']= doc.data['employeeInfo']['employeeEmail'];
+    employeeInfo['employeeAddress']= doc.data['employeeInfo']['employeeAddress'] ?? "41 Boulevard Vauban";
+    employeeInfo['employeeCodePostal']= doc.data['employeeInfo']['employeeCodePostal'] ?? "59000";
+
+    employerInfo['employerName']= doc.data['employerInfo']['employerName'];
+    employerInfo['employerSurname']= doc.data['employerInfo']['employerSurname'];
+    employerInfo['employerEmail']= doc.data['employerInfo']['employerEmail'];
+    employerInfo['employerAddress']= doc.data['employerInfo']['employerAddress'] ?? "41 Boulevard Vauban";
+    employerInfo['employerCodePostal']= doc.data['employerInfo']['employerCodePostal'] ?? "59000";
+   return Contract(doc.documentID,doc.data['employerId'],doc.data['employeeId'],doc.data['libelle'],doc.data['description'] ?? "",
+       doc.data['hourPerWeek']?.toDouble() ?? 30.0,doc.data['weeksOfLeave']?.toDouble() ?? 0.0, doc.data['pricePerHour']?.toDouble() ?? 0.0,doc.data['trialPeriod'] ?? 0,doc.data['cursorPayment'] ?? 0, DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['startDate'].millisecondsSinceEpoch),DateTime.fromMillisecondsSinceEpoch(doc.data['dates']['endDate'].millisecondsSinceEpoch),doc.data['canceled'],
+       employerInfo,employeeInfo,doc.data['planningVariable'] ??false, ['geolocation']);
+}
 
   Future deleteContract(Contract contract){
     try{

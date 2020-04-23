@@ -28,6 +28,7 @@ static List<Day> dayList;
 DateTime startDate;
 DateTime endDate;
 
+int numberOfWeeks;
 int totalHour;
   Future initializeCalculator() async {    // must be done before using every function in this class
     exceptionList= await ContractDao().getExceptionList(contract);
@@ -39,6 +40,7 @@ int totalHour;
       startDate= paymentList[len -1].endDate;
     }
     endDate= DateTime.now();
+    numberOfWeeks= 52-contract.weeksOfLeave.floor();
   }
 
   orchestrator(){
@@ -67,11 +69,12 @@ int totalHour;
     });
     if((normalHours + ((responsibleHour*2)/3)) <= 40.0) {
       normalHourPrice =
-      (((contract.hourPerWeek * 52) / 12) * contract.pricePerHour +
-          ((responsibleHour * 2) / 3 * contract.pricePerHour));
+      (((contract.hourPerWeek * numberOfWeeks / 12) * contract.pricePerHour +
+          ((responsibleHour * 2) / 3 * contract.pricePerHour)));
       normalHours = normalHours + ((responsibleHour * 2) / 3);
+      print("normal $normalHours");
     }else{ // dans le cas d'heures supplémentaires
-      normalHourPrice= ((contract.hourPerWeek * 52) / 12)  * contract.pricePerHour + (40- contract.hourPerWeek) * contract.pricePerHour;  // les heures par semaine selon contrat + les heures complémentaires calculées au cout horaire de base
+      normalHourPrice= ((contract.hourPerWeek * numberOfWeeks) / 12)  * contract.pricePerHour + (40- contract.hourPerWeek) * contract.pricePerHour;  // les heures par semaine selon contrat + les heures complémentaires calculées au cout horaire de base
       overtime= (normalHours + (responsibleHour * 2) / 3) - 40;
       normalHours= 40;
     }

@@ -195,10 +195,8 @@ class _HomeState extends State<Home> {
                             Expanded(
                                 child:Slider(
                                   value: _currentSlideVal.toDouble(),
-                                  activeColor:
-                                  Colors.cyan,
-                                  inactiveColor:
-                                  Colors.grey,
+                                  activeColor: Colors.cyan,
+                                  inactiveColor: Colors.grey,
                                   min: 100,
                                   max: 400,
                                   divisions: 3,

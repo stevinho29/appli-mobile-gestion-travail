@@ -44,8 +44,6 @@ class PropositionDao{
   receiverInfo['receiverEmail'] = choosedUserData.email;
   receiverInfo['receiverAddress'] = choosedUserData.address;
   receiverInfo['receiverCodePostal'] = choosedUserData.codePostal;
-
-
     try {
       print("create PROPOSITION");
       return propositionCollection.document().setData({

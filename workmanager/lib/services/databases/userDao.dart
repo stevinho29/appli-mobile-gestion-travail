@@ -9,15 +9,10 @@ class UserDao{
 
   final CollectionReference userCollection= Firestore.instance.collection("users");
 
-  Future updateUserData(String name, String surname,String email,Map<String,String> address,int tel,bool findable) async{
-    return await userCollection.document(uid).setData({
-      'uid': uid,
-      'name':name,
-      'surname': surname,
-      'email': email,
+  Future updateUserData(Map<String,String> address,int tel) async{
+    return await userCollection.document(uid).updateData({
       'address': address,
       'tel':tel,
-      'findable': findable,
     });
   }
 Future updateUserDataWithToken(String token,String platform){
@@ -35,8 +30,8 @@ Future updateUserDataWithToken(String token,String platform){
 }
   Future createUserData(String name, String surname,String email) async{
       Map<String,String> address= new Map();
-      address['address']= null;
-      address['code_postal']= null;
+      address['address']= "null";
+      address['code_postal']= "null";
     return await userCollection.document(uid).setData({
       'uid':uid,
       'name':name,
@@ -55,12 +50,12 @@ Future updateUserDataWithToken(String token,String platform){
 
     print("GET USER Time TEST ${DateTime.fromMillisecondsSinceEpoch(millis.millisecondsSinceEpoch)}");
     return UserData(
-        uid: uid,
+        uid: snapshot.data['uid'] ?? 'no uid',
         name: snapshot.data['name'] ?? 'no name',
         surname: snapshot.data['surname'] ?? 'no surname',
         email: snapshot.data['email'] ?? 'no email',
-        address: snapshot.data['address']['address'] ?? 'no address',
-        codePostal: snapshot.data['address']['code_postal'] ?? 'no code',
+        address: snapshot.data['address']['address'] ?? "null",
+        codePostal: snapshot.data['address']['code_postal'] ?? "null",
         tel: snapshot.data['tel'] ?? 0,
         findable: snapshot.data['findable'],
         createdAt: DateTime.fromMillisecondsSinceEpoch(millis.millisecondsSinceEpoch) ?? DateTime.now() //DateTime.fromMillisecondsSinceEpoch(snapshot.data['createdAt'])
@@ -88,14 +83,14 @@ Future updateUserDataWithToken(String token,String platform){
    List<UserData> _hireListFromSnapshot(QuerySnapshot snapshot){
 
     return snapshot.documents.map((doc) {
-      print(doc.data['name']);
+      print(doc.data['uid']);
       return UserData(
           uid: doc.data['uid'] ?? 'no uid',
           name: doc.data['name'] ?? 'no name',
           surname: doc.data['surname'] ?? 'no surname',
           email: doc.data['email'] ?? 'no email',
-          address: doc.data['address']['address'] ?? 'no address',
-          codePostal: doc.data['address']['code_postal'] ?? 'no address',
+          address: doc.data['address']['address'] ?? "null",
+          codePostal: doc.data['address']['code_postal'] ?? "null",
           tel: doc.data['tel'] ?? 'no tel',
           findable: doc.data['findable'] ?? false,
           createdAt: doc.data['createdAt'] ?? DateTime(0000,00,00)
@@ -123,26 +118,26 @@ Future updateUserDataWithToken(String token,String platform){
 
 
 
-  Future<QuerySnapshot> specificHireableUser(String name){  // utilisé
+  Future<List<UserData>> specificHireableUser(String name){  // utilisé
     name= name.trim();  // remove any leading or trailing caracter
     int pos= name.indexOf(" ");
     if(pos != -1) {
       print("en haut");
       List<String> nameList = name.split(" ");
       print(nameList[1]);
-      Future<QuerySnapshot> query= userCollection.where("name", isEqualTo: nameList[0]).where("surname",isEqualTo: nameList[1]).where("findable",isEqualTo: true).getDocuments();
-      query.then((q) {
-        print( "taille ${q.documents.length}");
+      return userCollection.where("name", isEqualTo: nameList[0]).where("surname",isEqualTo: nameList[1]).where("findable",isEqualTo: true).getDocuments().then((qShot) {
+        print( "taille ${qShot.documents.length}");
+      return  qShot.documents.map(_userDataFromSnapchot).toList();
       });
-      return query;
+
     }
     else {
       print("en bas");
-      Future<QuerySnapshot> query= userCollection.where("name", isEqualTo: name).where("findable", isEqualTo: true).getDocuments();
-      query.then((q) {
-       print( "taille ${q.documents.length}");
+      return userCollection.where("name", isEqualTo: name).where("findable", isEqualTo: true).getDocuments().then((qShot) {
+       print( "taille ${qShot.documents.length}");
+       return qShot.documents.map(_userDataFromSnapchot).toList();
       });
-      return query;
+
     }
   }
 }

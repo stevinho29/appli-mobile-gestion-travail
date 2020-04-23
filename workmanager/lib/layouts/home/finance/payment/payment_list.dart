@@ -29,11 +29,6 @@ Loading();
 @override
 void initState() {
 super.initState();
-_delayUntilStop().then((value) {
-  setState(() {
-    loading= false;
-  });
-});
 }
 
 @override
@@ -43,7 +38,7 @@ _delayUntilStop().then((value) {
     // TODO: implement build
 
     if(widget.paymentList.length == 0) {
-      return loading ? Loading():Scaffold(
+      return Scaffold(
         body: Container(
           padding: EdgeInsets.all(60),
           child: Text("aucun paiement pour le moment",

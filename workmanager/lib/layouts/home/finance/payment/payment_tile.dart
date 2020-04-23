@@ -9,7 +9,6 @@ import 'package:work_manager/models/contract.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
 
-import 'package:work_manager/shared/constantPaths.dart';
 
 
 class PaymentTile extends StatefulWidget{

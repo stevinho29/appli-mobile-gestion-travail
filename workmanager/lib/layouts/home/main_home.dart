@@ -1,4 +1,3 @@
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:work_manager/layouts/home/news/main_news.dart';
 import 'package:work_manager/layouts/home/propositions/main_propositions.dart';
@@ -14,15 +13,9 @@ class MainHome extends StatefulWidget{
 
 class _MainHomeState extends State<MainHome>{
 
-  final Connectivity _connectivity = Connectivity();
-
 
   didChangeDependencies() {
     super.didChangeDependencies();
-   /* _connectivity.onConnectivityChanged.listen((state) {
-      if(state.toString().contains("none"))
-        Scaffold.of(context).showSnackBar(snackBar);
-    });*/
   }
 
   @override
